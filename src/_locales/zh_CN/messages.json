@@ -1,0 +1,286 @@
+{
+    "appName": {
+        "message": "时间标记抓取器",
+        "description": "Name of this extension: Timestamp Catcher"
+    },
+    "appDesc": {
+        "message": "提供取得特定网站的视频时间标记信息、截屏等功能。",
+        "description": "Description of this extension: Provide timestamp recording and take screenshot function for certain websites."
+    },
+    "popupTitle": {
+        "message": "显示已纪录的时间标记信息",
+        "description": "Title for popup.html HTML <head> element."
+    },
+    "stringBtnRemoveAll": {
+        "message": "全部清除",
+        "description": "String: Text for popup.html HTML <button type=\"button\" id=\"btnRemoveAll\"></button> element."
+    },
+    "stringBtnReload": {
+        "message": "重新加载",
+        "description": "String: Text for popup.html HTML <button type=\"button\" id=\"btnReload\"></button> element."
+    },
+    "stringBtnExport": {
+        "message": "导出数据",
+        "description": "String: Text for popup.html HTML <button type=\"button\" id=\"btnExport\"></button> element."
+    },
+    "stringBtnDownloadLocalVideoPlayer": {
+        "message": "下载本地简易视频播放器（正体中文）",
+        "description": "String: Text for popup.html HTML <button type=\"button\" id=\"btnDownloadLocalVideoPlayer\"></button> element."
+    },
+    "stringBtnGroup": {
+        "message": "双击以隐藏 / 显示已纪录的时间标记信息",
+        "description": "String: Title text for web ui HTML <div id=\"dBtnGroup\"></div> element."
+    },
+    "stringBtnHideToggle": {
+        "message": "隐藏 / 显示",
+        "description": "String: Text for web ui HTML <button type=\"button\" id=\"btnHideToggle\"></button> element."
+    },
+    "stringBtnRewind": {
+        "message": "倒转",
+        "description": "String: Text for web ui HTML <button type=\"button\" id=\"btnRewind\"></button> element."
+    },
+    "stringBtnFastForward": {
+        "message": "快转",
+        "description": "String: Text for web ui HTML <button type=\"button\" id=\"btnFastForward\"></button> element."
+    },
+    "stringBtnPauseSync": {
+        "message": "不同步 / 同步时间标记",
+        "description": "String: Text for web ui HTML <button type=\"button\" id=\"btnPauseSync\"></button> element."
+    },
+    "stringContextMenuExtractTimestamp": {
+        "message": "解析成时间标记",
+        "description": "String: Text for context menu item \"CMID_ExtractTimestamp\"."
+    },
+    "stringContextMenuExtractTimestampAutoAppendEndToken": {
+        "message": "解析成时间标记（自动附加结束标记）",
+        "description": "String: Text for context menu item \"CMID_ExtractTimestamp_AutoAppendEndToken\"."
+    },
+    "stringContextMenuViewYtThumbnail": {
+        "message": "查看此 YouTube 视频的预览图",
+        "description": "String: Text for context menu item \"CMID_ViewYtThumbnail\"."
+    },
+    "stringTitle": {
+        "message": "已纪录的时间标记信息：",
+        "description": "String: Text for popup.html HTML <b id=\"title\"></d> element."
+    },
+    "stringNotice": {
+        "message": "※如果有修改上方 <b style=\"color: #0f4c81\">&lt;textarea&gt;</b> 元素的内容时，请在修改完成后，点击旁边其他空白的地方，使其失去焦点，当它一失去焦点后，即会保存修改后的数据。",
+        "description": "String: Text for popup.html HTML <p id=\"notice\"></p> element."
+    },
+    "stringNoticeTitle": {
+        "message": "备注说明",
+        "description": "String: Title for popup.html HTML <p id=\"notice\"></p> element."
+    },
+    "stringUrl": {
+        "message": "网址：",
+        "description": "String: Url."
+    },
+    "stringFormatDescription": {
+        "message": "\n格式：{FFmpeg 时间格式}｜{YouTube 留言}｜{YouTube 秒数}｜{Twitch 时间格式}\n\n格式说明：\n1. 给予在 FFmpeg 的参数 -ss 或 -t 带入值使用。\n> e.g. .\\ffmpeg.exe -ss {时间标记} -i input.mp4 -vcodec copy -acodec copy -t {时间标记} -o output.mp4\n2. 给予在 YouTube 留言内标记时间点使用。\n3. 给予在 YouTube 网址参数 t 带入值使用。\n> e.g. https://www.youtube.com/watch?v={视频 ID}&t={时间标记}s\n4. 给予在 Twitch 网址参数 t 带入值使用。\n> e.g. https://www.twitch.tv/videos/{视频 ID}?t={时间标记}\n\n※时间标记，请以 YouTube / Twitch 网站上的视频为准。\n",
+        "description": "String: Description for format."
+    },
+    "stringTimestamp": {
+        "message": "时间标记：",
+        "description": "String: Timestamp."
+    },
+    "stringTimestampTitle": {
+        "message": "已纪录的时间标记信息",
+        "description": "String: Title for popup.html HTML <textarea id=\"timestampData\"></textarea> element."
+    },
+    "stringSongTimestamp": {
+        "message": "歌曲的时间标记：",
+        "description": "String: Song's Timestamp."
+    },
+    "stringRecordedTimestamp": {
+        "message": "已纪录的时间标记信息：",
+        "description": "String: Recorded Timestamp."
+    },
+    "stringOutputFormat": {
+        "message": "截屏格式：",
+        "description": "String: Output Format."
+    },
+    "stringEnableOutputLogLabel": {
+        "message": "在 DevTools 的「主控台」输出记录。",
+        "description": "String: Output log data to DevTools console."
+    },
+    "stringEnableSoundEffectLabel": {
+        "message": "激活播放音效。",
+        "description": "String: Enable play sound effect."
+    },
+    "stringEnableFormattedYTTimestampLabel": {
+        "message": "激活格式化 YouTube 时间标记。（hh:mm:ss）",
+        "description": "String: Enable formatted YouTube timestamp. (hh:mm:ss)"
+    },
+    "stringEnableYTUtaWakuModeLabel": {
+        "message": "激活 YouTube 歌回模式。",
+        "description": "String: Enable YouTube utawaku mode."
+    },
+    "stringEnableLegacyKeyListenerLabel": {
+        "message": "使用旧版按键监听模式。\n　　快速键说明：\n　　记录时间标记（Shift + Z）\n　　拍摄截屏（Shift + X）\n　　倒转（Shift + S）\n　　快转（Shift + D）\n　　不同步 / 同步时间标记（Shift + A）\n　　※请关闭「打字时直接搜索页面文本（随打即找）」功能。",
+        "description": "String: Enable legacy key listener.\n  Shortcut:\n  Record timestamp (Shift + Z)\n  Take screenshot (Shift + X)\n  Rewind (Shift + S)\n  Fast-forward (Shift + D)\n  Sync / pause timestamp (Shift + A)\n  *Please disabled \"Search for text when you start to type\"."
+    },
+    "stringEnableLeftSideSpacePaddingLabel": {
+        "message": "使用左侧填补空白模式。",
+        "description": "String: Enable left side space padding."
+    },
+    "stringEnableAppendingStartEndTokenLabel": {
+        "message": "激活自动在注解列的尾端补上\"（開始）\"或\"（結束）\"标记。",
+        "description": "String: Enable appending start or end token in the comment rows end."
+    },
+    "stringOpenPopup": {
+        "message": "激活扩充功能",
+        "description": "String: Enable extension."
+    },
+    "stringRecordTimestamp": {
+        "message": "记录时间标记",
+        "description": "String: Record timestamp."
+    },
+    "stringTakeScreenshot": {
+        "message": "拍摄截屏",
+        "description": "String: Take screenshot."
+    },
+    "stringTimestampStart": {
+        "message": "（開始）",
+        "description": "Used as a detect token for start, do not translate it."
+    },
+    "stringTimestampEnd": {
+        "message": "（結束）",
+        "description": "Used as a detect token for end, do not translate it."
+    },
+    "stringCommentStart": {
+        "message": "时间标记清单",
+        "description": "Used as a title for youtube comment."
+    },
+    "stringUnknownName": {
+        "message": "未知名称",
+        "description": "String: Unknown name."
+    },
+    "stringSelExportType": {
+        "message": "导出类型",
+        "description": "String: Title for popup.html HTML <select id=\"selExportType\"></select> element."
+    },
+    "stringOptTimestamp": {
+        "message": "时间标记",
+        "description": "String: Title for popup.html HTML <option id=\"optTimestamp\"></option> element."
+    },
+    "stringOptYtComment": {
+        "message": "YouTube 留言",
+        "description": "String: Title for popup.html HTML <option id=\"optYtComment\"></option> element."
+    },
+    "stringOptYtTimestampUrls": {
+        "message": "YouTube 视频时间网址",
+        "description": "String: Title for popup.html HTML <option id=\"optYtTimestampUrls\"></option> element."
+    },
+    "stringOptCustomYTPlayerPlaylist_Timestamps": {
+        "message": "自定义 YouTube 视频播放器的播放清单（时间标记）",
+        "description": "String: Title for popup.html HTML <option id=\"optCustomYTPlayerPlaylist_Timestamps\"></option> element."
+    },
+    "stringOptCustomYTPlayerPlaylist_Seconds": {
+        "message": "自定义 YouTube 视频播放器的播放清单（秒数）",
+        "description": "String: Title for popup.html HTML <option id=\"optCustomYTPlayerPlaylist_Seconds\"></option> element."
+    },
+    "stringOptJsoncPlaylist": {
+        "message": "*.jsonc 播放清单",
+        "description": "String: Title for popup.html HTML <option id=\"optJsoncPlaylist\"></option> element."
+    },
+    "stringOptCueSheet": {
+        "message": "CUE 脚本",
+        "description": "String: Title for popup.html HTML <option id=\"optCueSheet\"></option> element."
+    },
+    "stringWebUIBtnHideToogle": {
+        "message": "显",
+        "description": "String: Text for web ui HTML <button id=\"btnHideToogle\"></button> element."
+    },
+    "stringWebUIBtnRemoveAll": {
+        "message": "清",
+        "description": "String: Text for web ui HTML <button id=\"btnRemoveAll\"></button> element."
+    },
+    "stringWebUIBtnReload": {
+        "message": "重",
+        "description": "String: Text for web ui HTML <button id=\"btnReload\"></button> element."
+    },
+    "stringWebUIBtnPauseSync": {
+        "message": "同",
+        "description": "String: Text for web ui HTML <button id=\"btnPauseSync\"></button> element."
+    },
+    "stringWebUIBtnRecordTimestamp": {
+        "message": "记",
+        "description": "String: Text for web ui HTML <button id=\"btnRecordTimestamp\"></button> element."
+    },
+    "stringEnableAddAniGamerDanMuLabel": {
+        "message": "加入动画疯弹幕。",
+        "description": "String: Enable add danmu in screenshot for site ani.gamer.com.tw."
+    },
+    "messageTimestampDataUpdated": {
+        "message": "已更新纪录的时间标记信息。",
+        "description": "Message: Already update recored timestamp data."
+    },
+    "messageLoadedTimestampData": {
+        "message": "已加载纪录的时间标记信息。",
+        "description": "Message: Already load recored timestamp data."
+    },
+    "messageCanNotGetTimestamp": {
+        "message": "时间标记取得失败，在目前页面找不到 HTML <video> 元素。",
+        "description": "Message: Can't get timestamp, Can't not find HTML <video> element in this page."
+    },
+    "messageCanNotGetScreenshot": {
+        "message": "截屏失败，在目前页面找不到 HTML <video> 元素。",
+        "description": "Message: Can't take screenshot, Can't not find HTML <video> element in this page."
+    },
+    "messageNoTimestampDataToExport": {
+        "message": "无时间标记信息可供导出，请先记录时间标记信息后再使用本功能。",
+        "description": "Message: No timestamp data can export, plaese record it first."
+    },
+    "messageNoUrlDataToExport": {
+        "message": "无 YouTube 视频时间网址可供导出，请先记录时间标记信息后再使用本功能。",
+        "description": "Message: No YouTube timestamp url data can export, plaese record timestamp first."
+    },
+    "messageNoCueSheetDataToExport": {
+        "message": "无法导出 CUE 脚本，请先记录时间标记信息后再使用本功能。",
+        "description": "Message: No CUE Sheet data can export, plaese record timestamp first."
+    },
+    "messageNoCommentDataToExport": {
+        "message": "无 YouTube 留言可供导出，请先记录时间标记信息后再使用本功能。",
+        "description": "Message: No YouTube comment data can export, plaese record timestamp first."
+    },
+    "messageConfirmClearAll": {
+        "message": "您确定要清除全部已纪录的时间标记信息吗？",
+        "description": "Message: Are you sure to clear all timestamp data?"
+    },
+    "messageCanNotFindTextarea": {
+        "message": "时间标记信息导出失败，在目前页面找不到 HTML <textarea> 元素。",
+        "description": "Message: Can't not find HTML <textarea> element in this page."
+    },
+    "messageSettingsSaved": {
+        "message": "设置已保存。",
+        "description": "Message: Settigs saved."
+    },
+    "messageTabIdIsUndefined": {
+        "message": "\"tabId\" 是 undefined。",
+        "description": "Message: \"tabId\" is undefined."
+    },
+    "messageTabsIsEmpty": {
+        "message": "\"tabs\" 是空的。",
+        "description": "Message: \"tabs\" is empty."
+    },
+    "messageTheSelectionError": {
+        "message": "时间标记解析失败，请确认您所选取的项目是否正确？",
+        "description": "Message: Extract timestamp data failed, please confirm the selected data."
+    },
+    "messageTimestampParsedFailed": {
+        "message": "时间标记解析失败。",
+        "description": "Message: The timestamp data parse failed."
+    },
+    "messageDoYouWantToOverwriteTimestamp": {
+        "message": "您是否要覆盖目前已经纪录的时间标记数据？",
+        "description": "Message: Do you want to overwrite current timestamp data?"
+    },
+    "messagePleaseUseThisFeatureAfterViewingAValidYtVideoPage": {
+        "message": "请浏览有效的 YouTube 视频页面后，再使用此功能。",
+        "description": "Message: Please use this feature after viewing a valid YouTube video page."
+    },
+    "messageThereIsNoThumbnailForThisYtVideo": {
+        "message": "此 YouTube 视频无有效的预览图可供查看。",
+        "description": "Message: There is no thumbnail for this YouTube video."
+    }
+}

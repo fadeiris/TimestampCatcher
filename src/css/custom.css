@@ -1,0 +1,141 @@
+.cube {
+    width: 60px;
+    height: 60px;
+    opacity: 0.85;
+    background-color: #0f4c81;
+    animation-name: spin;
+    animation-duration: 1000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    position: absolute;
+    left: 45%;
+    top: 35%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#mainContainer {
+    z-index: 1;
+    min-width: 740px;
+}
+
+#indicator {
+    z-index: 2;
+}
+
+.leftGroup {
+    float: left;
+}
+
+.leftGroup>b#title {
+    vertical-align: middle;
+}
+
+.rightGroup {
+    float: right;
+    padding-bottom: 5px;
+}
+
+.longContent {
+    white-space: pre-wrap;
+}
+
+textarea {
+    width: 100%;
+}
+
+textarea:focus-visible {
+    outline-color: #0f4c81;
+}
+
+.buttonGroup {
+    padding-top: 5px;
+}
+
+.extCustomButton {
+    background: white;
+    height: 30px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+.extCustomButton:hover {
+    border: 2px solid goldenrod;
+}
+
+#dMiscSetting {
+    border: solid 1px #000000;
+    border-radius: 15px;
+}
+
+#dYTUtaWakuModeSetting {
+    margin-top: 8px;
+    border: solid 1px #000000;
+    border-radius: 15px;
+}
+
+#dTimestampSetting {
+    margin-top: 8px;
+    border: solid 1px #000000;
+    border-radius: 15px;
+}
+
+#dScreenshotSetting {
+    margin-top: 8px;
+    border: solid 1px #000000;
+    border-radius: 15px;
+}
+
+@media (prefers-color-scheme: dark) {
+    html {
+        background-color: #333333;
+        color: #eeeeee;
+    }
+
+    textarea {
+        background-color: #333333;
+        color: #eeeeee;
+    }
+
+    select {
+        background-color: #333333;
+        color: #eeeeee;
+    }
+
+    .extCustomButton {
+        background: #333333 !important;
+        color: #eeeeee;
+    }
+
+    #dMiscSetting {
+        border: solid 1px #eeeeee;
+        border-radius: 15px;
+    }
+
+    #dYTUtaWakuModeSetting {
+        margin-top: 8px;
+        border: solid 1px #eeeeee;
+        border-radius: 15px;
+    }
+
+    #dTimestampSetting {
+        margin-top: 8px;
+        border: solid 1px #eeeeee;
+        border-radius: 15px;
+    }
+
+    #dScreenshotSetting {
+        margin-top: 8px;
+        border: solid 1px #eeeeee;
+        border-radius: 15px;
+    }
+}

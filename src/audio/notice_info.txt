@@ -1,0 +1,33 @@
+This is the notice info for file "beep1.mp3" and "beep2.mp3".
+
+---
+
+beep1.mp3
+
+Reference link: https://freesound.org/people/Eponn/sounds/528862/
+
+Soft beepy sounds
+
+By Eponn
+
+July 25th, 2020
+
+This work is licensed under the Creative Commons 0 License.
+
+https://creativecommons.org/publicdomain/zero/1.0/
+
+---
+
+beep2.mp3
+
+Reference link: https://freesound.org/people/Eponn/sounds/531512/
+
+Soft blip sound
+
+By Eponn
+
+August 20th, 2020
+
+This work is licensed under the Creative Commons 0 License.
+
+https://creativecommons.org/publicdomain/zero/1.0/

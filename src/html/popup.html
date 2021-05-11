@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Popup</title>
+    <link href="../css/custom.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="mainContainer">
+        <div id="indicator" class="cube"></div>
+        <div>
+            <div class="leftGroup">
+                <b id="title"></b>
+            </div>
+            <div class="rightGroup">
+                <button type="button" id="btnRemoveAll" title="Remove All"></button>&nbsp;
+                <button type="button" id="btnReload" title="Reload"></button>&nbsp;
+                <select id="selExportType" title="Export type">
+                    <option id="optTimestamp" value="Timestamp" selected="selected"></option>
+                    <option id="optYtComment" value="YtComment"></option>
+                    <option id="optYtTimestampUrls" value="YtTimestampUrls"></option>
+                    <option id="optCustomYTPlayerPlaylist_Timestamps" value="CustomYTPlayerPlaylist_Timestamps"></option>
+                    <option id="optCustomYTPlayerPlaylist_Seconds" value="CustomYTPlayerPlaylist_Seconds"></option>
+                    <option id="optJsoncPlaylist" value="JsoncPlaylist"></option>
+                    <option id="optCueSheet" value="CueSheet"></option>
+                </select>&nbsp;
+                <button type="button" id="btnExport" title="Export"></button>&nbsp;
+            </div>
+        </div>
+        <textarea id="timestampData" class="longContent" rows="15" title="Timestamp"></textarea>
+        <p id="notice"></p>
+        <div class="buttonGroup">
+            <button type="button" id="btnDownloadLocalVideoPlayer" title="Download local video player"></button>
+        </div>
+
+    </div>
+    <script src="../js/popup.js"></script>
+</body>
+
+</html>

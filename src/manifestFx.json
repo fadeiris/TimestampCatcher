@@ -1,0 +1,97 @@
+{
+    "name": "__MSG_appName__",
+    "description": "__MSG_appDesc__",
+    "default_locale": "en",
+    "version": "1.16.1",
+    "manifest_version": 2,
+    "browser_action": {
+        "default_popup": "html/popup.html",
+        "default_title": "__MSG_popupTitle__",
+        "default_icon": {
+            "16": "images/icon16.png",
+            "32": "images/icon32.png",
+            "48": "images/icon48.png",
+            "128": "images/icon128.png"
+        }
+    },
+    "options_ui": {
+        "page": "html/options.html"
+    },
+    "permissions": [
+        "file:///*",
+        "*://*.youtube.com/*",
+        "*://*.twitch.tv/*",
+        "*://ani.gamer.com.tw/*",
+        "*://*.bilibili.com/*",
+        "contextMenus",
+        "storage",
+        "unlimitedStorage"
+    ],
+    "web_accessible_resources": [
+        "audio/beep1.mp3",
+        "audio/beep2.mp3"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "file:///*",
+                "*://*.youtube.com/*",
+                "*://*.twitch.tv/*",
+                "*://ani.gamer.com.tw/*",
+                "*://*.bilibili.com/*"
+            ],
+            "js": [
+                "js/core.js"
+            ],
+            "run_at": "document_start"
+        }
+    ],
+    "icons": {
+        "16": "images/icon16.png",
+        "32": "images/icon32.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "timestamp_cather@public.domain"
+        }
+    },
+    "background": {
+        "scripts": [
+            "background.js"
+        ]
+    },
+    "commands": {
+        "_execute_browser_action": {
+            "description": "__MSG_stringOpenPopup__"
+        },
+        "recordTimestamp": {
+            "suggested_key": {
+                "default": "Alt+Shift+Z"
+            },
+            "description": "__MSG_stringRecordTimestamp__"
+        },
+        "takeScreenshot": {
+            "suggested_key": {
+                "default": "Alt+Shift+X"
+            },
+            "description": "__MSG_stringTakeScreenshot__"
+        },
+        "rewind": {
+            "suggested_key": {
+                "default": "Alt+Shift+D"
+            },
+            "description": "__MSG_stringBtnRewind__"
+        },
+        "fastForward": {
+            "suggested_key": {
+                "default": "Alt+Shift+C"
+            },
+            "description": "__MSG_stringBtnFastForward__"
+        },
+        "pauseSync": {
+            "description": "__MSG_stringBtnPauseSync__"
+        }
+    }
+}

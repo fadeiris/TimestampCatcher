@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Options</title>
+    <link href="../css/custom.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="dMiscSetting">
+        <ul>
+            <li>
+                <input type="checkbox" id="enableOutputLog" title="Enable output log">
+                <label id="enableOutputLogLabel" for="enableOutputLog"></label>
+            </li>
+            <li>
+                <input type="checkbox" id="enableSoundEffect" title="Enable sound effect">
+                <label id="enableSoundEffectLabel" for="enableSoundEffect" class="longContent"></label>
+            </li>
+            <li>
+                <input type="checkbox" id="enableLegacyKeyListener" title="Enable legacy key listener">
+                <label id="enableLegacyKeyListenerLabel" for="enableLegacyKeyListener" class="longContent">
+                </label>
+            </li>
+        </ul>
+    </div>
+    <div id="dYTUtaWakuModeSetting">
+        <ul>
+            <li>
+                <input type="checkbox" id="enableYTUtaWakuMode" title="Enable YouTube uta waku mode">
+                <label id="enableYTUtaWakuModeLabel" for="enableYTUtaWakuMode"></label>
+            </li>
+            <li>
+                <input type="checkbox" id="enableFormattedYTTimestamp" title="Enable formatted YouTube timestamp">
+                <label id="enableFormattedYTTimestampLabel" for="enableFormattedYTTimestamp" class="longContent">
+                </label>
+            </li>
+            <li>
+                <input type="checkbox" id="enableLeftSideSpacePadding" title="Enable left side space padding">
+                <label id="enableLeftSideSpacePaddingLabel" for="enableLeftSideSpacePadding" class="longContent">
+                </label>
+            </li>
+        </ul>
+    </div>
+    <div id="dTimestampSetting">
+        <ul>
+            <li>
+                <input type="checkbox" id="enableAppendingStartEndToken"
+                    title="Enable appending start or token in the comment rows end">
+                <label id="enableAppendingStartEndTokenLabel" for="enableAppendingStartEndToken" class="longContent">
+                </label>
+            </li>
+        </ul>
+    </div>
+    <div id="dScreenshotSetting">
+        <ul>
+            <li>
+                <label id="outputFormat" for="selectMIME"></label>
+                <select id="selectMIME" name="selectMIME" title="Select a MIME">
+                    <option value="image/webp">WebP</option>
+                    <option value="image/png">PNG</option>
+                    <option value="image/jpeg">JPEG</option>
+                </select>
+            </li>
+            <li>
+                <input type="checkbox" id="enableAddAniGamerDanMu"
+                    title="Enable add danmu in screenshot for site ani.gamer.com.tw">
+                <label id="enableAddAniGamerDanMuLabel" for="enableAddAniGamerDanMu">
+                </label>
+            </li>
+        </ul>
+    </div>
+    <script src="../js/options.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,286 @@
+{
+    "appName": {
+        "message": "Timestamp Catcher",
+        "description": "Name of this extension: Timestamp Catcher"
+    },
+    "appDesc": {
+        "message": "Provide timestamp recording and take screenshot function for certain websites.",
+        "description": "Description of this extension: Provide timestamp recording and take screenshot function for certain websites."
+    },
+    "popupTitle": {
+        "message": "Show recorded timestamp",
+        "description": "Title for popup.html HTML <head> element."
+    },
+    "stringBtnRemoveAll": {
+        "message": "Remove All",
+        "description": "String: Text for popup.html HTML <button type=\"button\" id=\"btnRemoveAll\"></button> element."
+    },
+    "stringBtnReload": {
+        "message": "Reload",
+        "description": "String: Text for popup.html HTML <button type=\"button\" id=\"btnReload\"></button> element."
+    },
+    "stringBtnExport": {
+        "message": "Export",
+        "description": "String: Text for popup.html HTML <button type=\"button\" id=\"btnExport\"></button> element."
+    },
+    "stringBtnDownloadLocalVideoPlayer": {
+        "message": "Download local video player (Traditional Chinese)",
+        "description": "String: Text for popup.html HTML <button type=\"button\" id=\"btnDownloadLocalVideoPlayer\"></button> element."
+    },
+    "stringBtnGroup": {
+        "message": "Double-click to hide/show recorded timestamp.",
+        "description": "String: Title text for web ui HTML <div id=\"dBtnGroup\"></div> element."
+    },
+    "stringBtnHideToggle": {
+        "message": "Hide/Show",
+        "description": "String: Text for web ui HTML <button type=\"button\" id=\"btnHideToggle\"></button> element."
+    },
+    "stringBtnRewind": {
+        "message": "Rewind",
+        "description": "String: Text for web ui HTML <button type=\"button\" id=\"btnRewind\"></button> element."
+    },
+    "stringBtnFastForward": {
+        "message": "Fast-forward",
+        "description": "String: Text for web ui HTML <button type=\"button\" id=\"btnFastForward\"></button> element."
+    },
+    "stringBtnPauseSync": {
+        "message": "Unsync/Sync timestamp",
+        "description": "String: Text for web ui HTML <button type=\"button\" id=\"btnPauseSync\"></button> element."
+    },
+    "stringContextMenuExtractTimestamp": {
+        "message": "Extract timestamp",
+        "description": "String: Text for context menu item \"CMID_ExtractTimestamp\"."
+    },
+    "stringContextMenuExtractTimestampAutoAppendEndToken": {
+        "message": "Extract timestamp (Auto append end token)",
+        "description": "String: Text for context menu item \"CMID_ExtractTimestamp_AutoAppendEndToken\"."
+    },
+    "stringContextMenuViewYtThumbnail": {
+        "message": "View this YouTube video thumbnail",
+        "description": "String: Text for context menu item \"CMID_ViewYtThumbnail\"."
+    },
+    "stringTitle": {
+        "message": "Recorded timestamp:",
+        "description": "String: Text for popup.html HTML <b id=\"title\"></d> element."
+    },
+    "stringNotice": {
+        "message": "If you have modified the content of the <b style=\"color: #0f4c81\">&lt;textarea&gt;</b> element above, please click on the other blank space next to it to make it unfocused after you finish modifying it, and once it is unfocused, the modified data will be saved.",
+        "description": "String: Text for popup.html HTML <p id=\"notice\"></p> element."
+    },
+    "stringNoticeTitle": {
+        "message": "Notice",
+        "description": "String: Title for popup.html HTML <p id=\"notice\"></p> element."
+    },
+    "stringUrl": {
+        "message": "URL: ",
+        "description": "String: Url."
+    },
+    "stringFormatDescription": {
+        "message": "\nFormat：{FFmpeg Time Format}｜{YouTube Message}｜{YouTube Seconds}｜{Twitch Time Format} \n\nFormat Description： \n1. Give the parameter -ss or -t in FFmpeg to bring in the value. \n> e.g. . \\ffmpeg.exe -ss {timestamp} -i input.mp4 -vcodec copy -acodec copy -t {timestamp} -o output.mp4 \n2. Used to mark time points in YouTube messages. \n3. Use for bringing in the value of the YouTube URL parameter t. \n> e.g. https://www.youtube.com/watch?v={Video ID}&t={Timestamp}s\n4. Give use to bring in the value of the t parameter in the Twitch URL. \n> e.g. https://www.twitch.tv/videos/{Video ID}?t={timestamp}\n\n*For timestamp, please refer to the video on YouTube / Twitch website. \n",
+        "description": "String: Description for format."
+    },
+    "stringTimestamp": {
+        "message": "Timestamp:",
+        "description": "String: Timestamp."
+    },
+    "stringTimestampTitle": {
+        "message": "Recorded timestamp",
+        "description": "String: Title for popup.html HTML <textarea id=\"timestampData\"></textarea> element."
+    },
+    "stringSongTimestamp": {
+        "message": "Song timestamp",
+        "description": "String: Song's Timestamp."
+    },
+    "stringRecordedTimestamp": {
+        "message": "Recorded timestamp:",
+        "description": "String: Recorded Timestamp."
+    },
+    "stringOutputFormat": {
+        "message": "Screenshot format:",
+        "description": "String: Output Format."
+    },
+    "stringEnableOutputLogLabel": {
+        "message": "Output log data to DevTools console.",
+        "description": "String: Output log data to DevTools console."
+    },
+    "stringEnableSoundEffectLabel": {
+        "message": "Enable play sound effect.",
+        "description": "String: Enable play sound effect."
+    },
+    "stringEnableFormattedYTTimestampLabel": {
+        "message": "Enable formatted YouTube timestamp. (hh:mm:ss)",
+        "description": "String: Enable formatted YouTube timestamp. (hh:mm:ss)"
+    },
+    "stringEnableYTUtaWakuModeLabel": {
+        "message": "Enable YouTube utawaku mode.",
+        "description": "String: Enable YouTube utawaku mode."
+    },
+    "stringEnableLegacyKeyListenerLabel": {
+        "message": "Enable legacy key listener.\n  Shortcut:\n  Record timestamp (Shift + Z)\n  Take screenshot (Shift + X)\n  Rewind (Shift + S)\n  Fast-forward (Shift + D)\n  Sync / pause timestamp (Shift + A)\n  *Please disabled \"Search for text when you start to type\".",
+        "description": "String: Enable legacy key listener.\n  Shortcut:\n  Record timestamp (Shift + Z)\n  Take screenshot (Shift + X)\n  Rewind (Shift + S)\n  Fast-forward (Shift + D)\n  Sync / pause timestamp (Shift + A)\n  *Please disabled \"Search for text when you start to type\"."
+    },
+    "stringEnableLeftSideSpacePaddingLabel": {
+        "message": "Enable left side space padding.",
+        "description": "String: Enable left side space padding."
+    },
+    "stringEnableAppendingStartEndTokenLabel": {
+        "message": "Enable appending \"（開始）\" or \"（結束）\" token in the comment rows end.",
+        "description": "SString: Enable appending start or end token in the comment rows end."
+    },
+    "stringOpenPopup": {
+        "message": "Enable extension",
+        "description": "String: Enable extension."
+    },
+    "stringRecordTimestamp": {
+        "message": "Record timestamp",
+        "description": "String: Record timestamp."
+    },
+    "stringTakeScreenshot": {
+        "message": "Take screenshot",
+        "description": "String: Take screenshot."
+    },
+    "stringTimestampStart": {
+        "message": "（開始）",
+        "description": "Used as a detect token for start, do not translate it."
+    },
+    "stringTimestampEnd": {
+        "message": "（結束）",
+        "description": "Used as a detect token for end, do not translate it."
+    },
+    "stringCommentStart": {
+        "message": "Timestamp list",
+        "description": "Used as a title for youtube comment."
+    },
+    "stringUnknownName": {
+        "message": "Unknown",
+        "description": "String: Unknown name."
+    },
+    "stringSelExportType": {
+        "message": "Export format",
+        "description": "String: Title for popup.html HTML <select id=\"selExportType\"></select> element."
+    },
+    "stringOptTimestamp": {
+        "message": "Timestamp",
+        "description": "String: Title for popup.html HTML <option id=\"optTimestamp\"></option> element."
+    },
+    "stringOptYtComment": {
+        "message": "YouTube Comment",
+        "description": "String: Title for popup.html HTML <option id=\"optYtComment\"></option> element."
+    },
+    "stringOptYtTimestampUrls": {
+        "message": "YouTube Timestamp URL",
+        "description": "String: Title for popup.html HTML <option id=\"optYtTimestampUrls\"></option> element."
+    },
+    "stringOptCustomYTPlayerPlaylist_Timestamps": {
+        "message": "CustomYTPlayer Playlist (Timestamps)",
+        "description": "String: Title for popup.html HTML <option id=\"optCustomYTPlayerPlaylist_Timestamps\"></option> element."
+    },
+    "stringOptCustomYTPlayerPlaylist_Seconds": {
+        "message": "CustomYTPlayer Playlist (Seconds)",
+        "description": "String: Title for popup.html HTML <option id=\"optCustomYTPlayerPlaylist_Seconds\"></option> element."
+    },
+    "stringOptJsoncPlaylist": {
+        "message": "*.jsonc Playlist",
+        "description": "String: Title for popup.html HTML <option id=\"optJsoncPlaylist\"></option> element."
+    },
+    "stringOptCueSheet": {
+        "message": "CUE Sheet",
+        "description": "String: Title for popup.html HTML <option id=\"optCueSheet\"></option> element."
+    },
+    "stringWebUIBtnHideToogle": {
+        "message": "S",
+        "description": "String: Text for web ui HTML <button id=\"btnHideToogle\"></button> element."
+    },
+    "stringWebUIBtnRemoveAll": {
+        "message": "C",
+        "description": "String: Text for web ui HTML <button id=\"btnRemoveAll\"></button> element."
+    },
+    "stringWebUIBtnReload": {
+        "message": "R",
+        "description": "String: Text for web ui HTML <button id=\"btnReload\"></button> element."
+    },
+    "stringWebUIBtnPauseSync": {
+        "message": "P",
+        "description": "String: Text for web ui HTML <button id=\"btnPauseSync\"></button> element."
+    },
+    "stringWebUIBtnRecordTimestamp": {
+        "message": "T",
+        "description": "String: Text for web ui HTML <button id=\"btnRecordTimestamp\"></button> element."
+    },
+    "stringEnableAddAniGamerDanMuLabel": {
+        "message": "Enable add danmu in screenshot for site ani.gamer.com.tw.",
+        "description": "String: Enable add danmu in screenshot for site ani.gamer.com.tw."
+    },
+    "messageTimestampDataUpdated": {
+        "message": "Already update recored timestamp data.",
+        "description": "Message: Already update recored timestamp data."
+    },
+    "messageLoadedTimestampData": {
+        "message": " Already load recored timestamp data.",
+        "description": "Message: Already load recored timestamp data."
+    },
+    "messageCanNotGetTimestamp": {
+        "message": "Can't get timestamp, Can't not find HTML <video> element in this page.",
+        "description": "Message: Can't get timestamp, Can't not find HTML <video> element in this page."
+    },
+    "messageCanNotGetScreenshot": {
+        "message": "Can't take screenshot, Can't not find HTML <video> element in this page.",
+        "description": "Message: Can't take screenshot, Can't not find HTML <video> element in this page."
+    },
+    "messageNoTimestampDataToExport": {
+        "message": "No timestamp data can export, plaese record it first.",
+        "description": "Message: No timestamp data can export, plaese record it first."
+    },
+    "messageNoUrlDataToExport": {
+        "message": "No YouTube timestamp url data can export, plaese record timestamp first.",
+        "description": "Message: No YouTube timestamp url data can export, plaese record timestamp first."
+    },
+    "messageNoCueSheetDataToExport": {
+        "message": "No CUE Sheet data can export, plaese record timestamp first.",
+        "description": "Message: No CUE Sheet data can export, plaese record timestamp first."
+    },
+    "messageNoCommentDataToExport": {
+        "message": "No YouTube comment data can export, plaese record timestamp first.",
+        "description": "Message: No YouTube comment data can export, plaese record timestamp first."
+    },
+    "messageConfirmClearAll": {
+        "message": "Are you sure to clear all timestamp data?",
+        "description": "Message: Are you sure to clear all timestamp data?"
+    },
+    "messageCanNotFindTextarea": {
+        "message": "Can't not find HTML <textarea> element in this page.",
+        "description": "Message: Can't not find HTML <textarea> element in this page."
+    },
+    "messageSettingsSaved": {
+        "message": "Settigs saved.",
+        "description": "Message: Settigs saved."
+    },
+    "messageTabIdIsUndefined": {
+        "message": "\"tabId\" is undefined.",
+        "description": "Message: \"tabId\" is undefined."
+    },
+    "messageTabsIsEmpty": {
+        "message": "\"tabs\" is empty.",
+        "description": "Message: \"tabs\" is empty."
+    },
+    "messageTheSelectionError": {
+        "message": "Extract timestamp data failed, please confirm the selected data.",
+        "description": "Message: Extract timestamp data failed, please confirm the selected data."
+    },
+    "messageTimestampParsedFailed": {
+        "message": "The timestamp data parse failed.",
+        "description": "Message: The timestamp data parse failed."
+    },
+    "messageDoYouWantToOverwriteTimestamp": {
+        "message": "Do you want to overwrite current timestamp data?",
+        "description": "Message: Do you want to overwrite current timestamp data?"
+    },
+    "messagePleaseUseThisFeatureAfterViewingAValidYtVideoPage": {
+        "message": "Please use this feature after viewing a valid YouTube video page.",
+        "description": "Message: Please use this feature after viewing a valid YouTube video page."
+    },
+    "messageThereIsNoThumbnailForThisYtVideo": {
+        "message": "There is no thumbnail for this YouTube video.",
+        "description": "Message: There is no thumbnail for this YouTube video."
+    }
+}

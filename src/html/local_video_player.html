@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地簡易影片撥放器</title>
+    <style>
+        #fileUpload {
+            margin-bottom: 8px;
+        }
+
+        #videoPlayer {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <input type="file" id="fileUpload" placeholder="請選擇影片檔案" accept="video/*" />
+        &nbsp;
+        <button type="button" onclick="reset();">重置</button>
+    </div>
+    <div>
+        <video id="videoPlayer" width="640" height="360" controls autoplay>
+            您使用的網頁瀏覽器不支援 HTML &lt;video&gt; 標籤。
+        </video>
+    </div>
+    <script>
+        /* 在本地檔案頁面內無法撥放來自 chrome-extension:// 的音訊檔案。 */
+        var fileUpload, videoPlayer;
+
+        document.addEventListener("DOMContentLoaded", (event) => {
+            fileUpload = document.getElementById("fileUpload")
+            videoPlayer = document.getElementById("videoPlayer");
+
+            if (fileUpload !== undefined && fileUpload !== null) {
+                fileUpload.onchange = function (event) {
+                    const file = event.target.files[0];
+
+                    // 將頁面標題替換成檔案名稱，供截圖功能使用。
+                    document.title = file.name;
+
+                    const blobURL = URL.createObjectURL(file);
+
+                    if (videoPlayer !== undefined && videoPlayer !== null) {
+                        videoPlayer.style.display = "block";
+                        videoPlayer.src = blobURL;
+                    } else {
+                        console.error("找不到元素「videoPlayer」。");
+                    }
+                }
+            } else {
+                console.error("找不到元素「fileUpload」。");
+            }
+        });
+
+        function reset() {
+            // 重設頁面標題。
+            document.title = "本地簡易影片撥放器";
+
+            if (fileUpload !== undefined && fileUpload !== null) {
+                fileUpload.value = "";
+
+                if (videoPlayer !== undefined && videoPlayer !== null) {
+                    videoPlayer.style.display = "none";
+                    videoPlayer.src = "";
+                } else {
+                    console.error("找不到元素「videoPlayer」。");
+                }
+            } else {
+                console.error("找不到元素「fileUpload」。");
+            }
+        }
+    </script>
+</body>
+
+</html>
