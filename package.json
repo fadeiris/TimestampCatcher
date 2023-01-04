@@ -1,6 +1,6 @@
 {
   "name": "timestamp_catcher",
-  "version": "1.16.1",
+  "version": "1.16.2",
   "scripts": {
     "update": "npm update",
     "updateVersion": "webpack --config webpack.updateVersion.js",

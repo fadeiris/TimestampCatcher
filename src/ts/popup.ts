@@ -487,7 +487,7 @@ function exportYtTimestampUrls(): void {
 
 /**
  * 匯出特殊格式
- * 
+ *
  * @param {boolean} isJsonc 布林值，判斷是否匯出 *.jsonc，預設值為 false。
  * @param {PlaylistType} type 列舉 PlaylistType，播放清單的類型，預設值為 Playlist.Timestamps。
  */
