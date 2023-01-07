@@ -184,6 +184,9 @@ function injectElemToVideoPlayerControl(): void {
 
         if (elemTwitchLeftCtrl !== undefined && elemTwitchLeftCtrl !== null) {
             elemTwitchLeftCtrl.forEach((item) => {
+                elemTempAnchor.style.setProperty("opacity", "1", "important");
+                elemTempAnchor.style.setProperty("visibility", "visible", "important");
+
                 item.appendChild(elemTempAnchor);
             });
         }
@@ -219,6 +222,9 @@ function injectElemToVideoPlayerControl(): void {
 
         if (elemTwitchLeftCtrl !== undefined && elemTwitchLeftCtrl !== null) {
             elemTwitchLeftCtrl.forEach((item) => {
+                elemTempAnchor.style.setProperty("opacity", "1", "important");
+                elemTempAnchor.style.setProperty("visibility", "visible", "important");
+
                 item.appendChild(elemTempAnchor);
             });
         }
@@ -241,6 +247,15 @@ function injectElemToVideoPlayerControl(): void {
 
             elemBiliBiliLeftCtrl.appendChild(elemTempAnchor);
         }
+    }
+
+    // 因應 Twitch 網站的 CSS 異動使用。
+    if (elemTwitchLeftCtrl !== undefined && elemTwitchLeftCtrl !== null) {
+        const targetCssClasses = document.querySelectorAll(".stream-display-ad__wrapper-hidden");
+
+        targetCssClasses.forEach((elem: Element) => {
+            (elem as HTMLElement).style.opacity = "1";
+        });
     }
 }
 
