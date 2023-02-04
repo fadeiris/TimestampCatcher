@@ -72,6 +72,28 @@
             </li>
         </ul>
     </div>
+    <div id="dExportBlock">
+        <ul>
+            <li>
+                <div>
+                    <select id="selExportType" title="Export type">
+                        <option id="optTimestamp" value="Timestamp" selected="selected"></option>
+                        <option id="optYtComment" value="YtComment"></option>
+                        <option id="optYtTimestampUrls" value="YtTimestampUrls"></option>
+                        <option id="optCustomYTPlayerPlaylist_Timestamps" value="CustomYTPlayerPlaylist_Timestamps">
+                        </option>
+                        <option id="optCustomYTPlayerPlaylist_Seconds" value="CustomYTPlayerPlaylist_Seconds"></option>
+                        <option id="optJsoncPlaylist" value="JsoncPlaylist"></option>
+                        <option id="optCueSheet" value="CueSheet"></option>
+                    </select>&nbsp;
+                    <button type="button" id="btnExport" title="Export"></button>
+                </div>
+            </li>
+            <li>
+                <button type="button" id="btnDownloadLocalVideoPlayer" title="Download local video player"></button>
+            </li>
+        </ul>
+    </div>
     <script src="../js/options.js"></script>
 </body>
 

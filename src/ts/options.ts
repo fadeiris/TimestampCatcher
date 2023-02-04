@@ -1,6 +1,6 @@
 "enable strict";
 
-import { Function } from "./function";
+import { Function, PlaylistType } from "./function";
 
 let elemEnableOutputLog: HTMLInputElement | null = null;
 let elemEnableSoundEffect: HTMLInputElement | null = null;
@@ -11,6 +11,9 @@ let elemEnableLeftSideSpacePadding: HTMLInputElement | null = null;
 let elemEnableAppendingStartEndToken: HTMLInputElement | null = null;
 let elemSelectMIME: HTMLSelectElement | null = null;
 let elemEnableAddAniGamerDanMu: HTMLInputElement | null = null;
+let elemSelExportType: HTMLSelectElement | null = null;
+let elemBtnExport: HTMLButtonElement | null = null;
+let elemBtnDownloadLocalVideoPlayer: HTMLAnchorElement | null = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     document.onreadystatechange = () => {
@@ -45,6 +48,9 @@ function initOptionsGlobalVariables(): void {
     elemEnableAppendingStartEndToken = document.getElementById("enableAppendingStartEndToken") as HTMLInputElement;
     elemSelectMIME = document.getElementById("selectMIME") as HTMLSelectElement;
     elemEnableAddAniGamerDanMu = document.getElementById("enableAddAniGamerDanMu") as HTMLInputElement;
+    elemSelExportType = document.getElementById("selExportType") as HTMLSelectElement;
+    elemBtnExport = document.getElementById("btnExport") as HTMLButtonElement;
+    elemBtnDownloadLocalVideoPlayer = document.getElementById("btnDownloadLocalVideoPlayer") as HTMLAnchorElement;
 }
 
 /**
@@ -105,6 +111,62 @@ function loadOptionsUIi18n(): void {
 
     if (elemEnableAddAniGamerDanMuLabel !== null) {
         elemEnableAddAniGamerDanMuLabel.textContent = chrome.i18n.getMessage("stringEnableAddAniGamerDanMuLabel");
+    }
+
+    if (elemSelExportType !== null) {
+        elemSelExportType.title = chrome.i18n.getMessage("stringSelExportType");
+    }
+
+    const elemOptTimestamp = document.getElementById("optTimestamp");
+
+    if (elemOptTimestamp !== null) {
+        elemOptTimestamp.textContent = chrome.i18n.getMessage("stringOptTimestamp");
+    }
+
+    const elemOptYtComment = document.getElementById("optYtComment");
+
+    if (elemOptYtComment !== null) {
+        elemOptYtComment.textContent = chrome.i18n.getMessage("stringOptYtComment");
+    }
+
+    const elemOptYtTimestampUrls = document.getElementById("optYtTimestampUrls");
+
+    if (elemOptYtTimestampUrls !== null) {
+        elemOptYtTimestampUrls.textContent = chrome.i18n.getMessage("stringOptYtTimestampUrls");
+    }
+
+    const elemOptCustomYTPlayerPlaylist_Timestamps = document.getElementById("optCustomYTPlayerPlaylist_Timestamps");
+
+    if (elemOptCustomYTPlayerPlaylist_Timestamps !== null) {
+        elemOptCustomYTPlayerPlaylist_Timestamps.textContent = chrome.i18n.getMessage("stringOptCustomYTPlayerPlaylist_Timestamps");
+    }
+
+    const elemOptCustomYTPlayerPlaylist_Seconds = document.getElementById("optCustomYTPlayerPlaylist_Seconds");
+
+    if (elemOptCustomYTPlayerPlaylist_Seconds !== null) {
+        elemOptCustomYTPlayerPlaylist_Seconds.textContent = chrome.i18n.getMessage("stringOptCustomYTPlayerPlaylist_Seconds");
+    }
+
+    const elemOptJsoncPlaylist = document.getElementById("optJsoncPlaylist");
+
+    if (elemOptJsoncPlaylist !== null) {
+        elemOptJsoncPlaylist.textContent = chrome.i18n.getMessage("stringOptJsoncPlaylist");
+    }
+
+    const elemOptCueSheet = document.getElementById("optCueSheet");
+
+    if (elemOptCueSheet !== null) {
+        elemOptCueSheet.textContent = chrome.i18n.getMessage("stringOptCueSheet");
+    }
+
+    if (elemBtnExport !== null) {
+        elemBtnExport.textContent = chrome.i18n.getMessage("stringBtnExport");
+        elemBtnExport.title = chrome.i18n.getMessage("stringBtnExport");
+    }
+
+    if (elemBtnDownloadLocalVideoPlayer !== null) {
+        elemBtnDownloadLocalVideoPlayer.textContent = chrome.i18n.getMessage("stringBtnDownloadLocalVideoPlayer");
+        elemBtnDownloadLocalVideoPlayer.title = chrome.i18n.getMessage("stringBtnDownloadLocalVideoPlayer");
     }
 }
 
@@ -274,6 +336,53 @@ function registerOptionsListenEvent(): void {
                 alert(chrome.i18n.getMessage("messageSettingsSaved"));
             }
         });
+    });
+
+    elemBtnExport?.addEventListener("click", () => {
+        const selectedValue = elemSelExportType?.value;
+
+        switch (selectedValue) {
+            case "Timestamp":
+                Function.exportTimestamp();
+                break;
+            case "YtComment":
+                Function.exportYtComment();
+                break;
+            case "YtTimestampUrls":
+                Function.exportYtTimestampUrls();
+                break;
+            case "CustomYTPlayerPlaylist_Timestamps":
+                Function.exportSpeicalFormat(false, PlaylistType.Timestamps);
+                break;
+            case "CustomYTPlayerPlaylist_Seconds":
+                Function.exportSpeicalFormat(false, PlaylistType.Seconds);
+                break;
+            case "JsoncPlaylist":
+                Function.exportSpeicalFormat(true, PlaylistType.Seconds);
+                break;
+            case "CueSheet":
+                Function.exportCueSheet();
+                break;
+            default:
+                Function.exportTimestamp();
+                break;
+        }
+    });
+
+    elemBtnDownloadLocalVideoPlayer?.addEventListener("click", () => {
+        Function.playBeep(0);
+
+        const tempAnchor = document.createElement("a");
+
+        tempAnchor.download = "local_video_player.html";
+        tempAnchor.href = "../html/local_video_player.html";
+        tempAnchor.style.display = "none";
+
+        document.body.appendChild(tempAnchor);
+
+        tempAnchor.click();
+
+        document.body.removeChild(tempAnchor);
     });
 }
 
