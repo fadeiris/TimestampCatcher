@@ -2,9 +2,9 @@
     "name": "__MSG_appName__",
     "description": "__MSG_appDesc__",
     "default_locale": "en",
-    "version": "1.16.2",
-    "manifest_version": 2,
-    "browser_action": {
+    "version": "1.16.3",
+    "manifest_version": 3,
+    "action": {
         "default_popup": "html/popup.html",
         "default_title": "__MSG_popupTitle__",
         "default_icon": {
@@ -18,18 +18,42 @@
         "page": "html/options.html"
     },
     "permissions": [
-        "file:///*",
-        "*://*.youtube.com/*",
-        "*://*.twitch.tv/*",
-        "*://ani.gamer.com.tw/*",
-        "*://*.bilibili.com/*",
         "contextMenus",
         "storage",
         "unlimitedStorage"
     ],
+    "host_permissions": [
+        "file:///*",
+        "*://*.youtube.com/*",
+        "*://*.twitch.tv/*",
+        "*://ani.gamer.com.tw/*",
+        "*://*.bilibili.com/*"
+    ],
     "web_accessible_resources": [
-        "audio/beep1.mp3",
-        "audio/beep2.mp3"
+        {
+            "resources": [
+                "audio/beep1.mp3"
+            ],
+            "matches": [
+                "file:///*",
+                "*://*.youtube.com/*",
+                "*://*.twitch.tv/*",
+                "*://ani.gamer.com.tw/*",
+                "*://*.bilibili.com/*"
+            ]
+        },
+        {
+            "resources": [
+                "audio/beep2.mp3"
+            ],
+            "matches": [
+                "file:///*",
+                "*://*.youtube.com/*",
+                "*://*.twitch.tv/*",
+                "*://ani.gamer.com.tw/*",
+                "*://*.bilibili.com/*"
+            ]
+        }
     ],
     "content_scripts": [
         {
