@@ -1690,4 +1690,20 @@ export class Function {
             alert(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
         }
     }
+
+    /**
+     * 移除網址
+     *
+     * 來源：https://stackoverflow.com/a/23571059
+     *
+     * @param {string} value 輸入的字串。
+     * @returns {string} 字串。
+     */
+    static removeUrl(value: string): string {
+        if (value === undefined || value === null) {
+            return "";
+        }
+
+        return value.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "");
+    }
 }

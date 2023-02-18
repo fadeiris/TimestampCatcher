@@ -534,12 +534,22 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
         unknownNameCount = 1,
         tempNameStr = "";
 
-    const documentFragment = document.getSelection()?.getRangeAt(0).cloneContents();
-    const sourceNodeArray: ChildNode[] = [...documentFragment?.childNodes!];
+    const selection = document.getSelection();
+    const range = selection?.getRangeAt(0);
+    const documentFragment = range?.cloneContents();
 
-    // 手動分類節點的資料。
-    let tempNode2DArray: ChildNode[][] = [],
+    let sourceNodeArray: ChildNode[] = [],
+        // 手動分類節點的資料。
+        tempNode2DArray: ChildNode[][] = [],
         tempNodeArray: ChildNode[] = [];
+
+    const elemContentText = documentFragment?.querySelector("#content-text");
+
+    if (elemContentText !== null) {
+        sourceNodeArray = [...elemContentText?.childNodes!];
+    } else {
+        sourceNodeArray = [...documentFragment?.childNodes!];
+    }
 
     sourceNodeArray.forEach((item, index, array) => {
         const tempElement = item as HTMLElement;
@@ -551,10 +561,17 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
             innerHTML !== "\r") {
             // 排除圖片。
             if (item instanceof HTMLImageElement === false) {
-                tempNodeArray.push(item);
+                // 排除 Hash 標籤的連結。
+                if (item instanceof HTMLAnchorElement === true &&
+                    item?.textContent!.indexOf("#") === -1) {
+                    tempNodeArray.push(item);
+                } else {
+                    tempNodeArray.push(item);
+                }
             }
         } else {
-            if (tempNodeArray.length > 0) {
+            // 理論上 tempNodeArray 的子項目數量應大於 1。
+            if (tempNodeArray.length > 1) {
                 tempNode2DArray.push(tempNodeArray);
 
                 // 重設 tempNodeArray。
@@ -714,7 +731,7 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
         tempDataSet.forEach((item, index) => {
             const data = item.split(Function.Seperator2),
                 videoId = data[0],
-                songName = data[2];
+                songName = Function.removeUrl(data[2]);
 
             let seconds = parseInt(data[1]);
 
