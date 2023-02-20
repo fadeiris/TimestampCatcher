@@ -760,21 +760,33 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
                 // 清空以供下一次使用。
                 tempStr = "";
             } else {
+                let notMatchSeperatorCase = true;
+
+                // 分隔符號案例。
+                const seperatorCase = [
+                    // 空值不是分隔符號。
+                    "",
+                    "-", "- ", " - ", " -",
+                    "~", "~ ", " ~ ", " ~",
+                    "、", "、 ", " 、 ", " 、",
+                    "～", "～ ", " ～ ", " ～",
+                    ",", ", ", " , ", " ,",
+                    "，", "， ", " ， ", " ，"
+                ];
+
+                for (let i = 0; i < seperatorCase.length; i++) {
+                    const seperator = seperatorCase[i];
+
+                    if (songName === seperator) {
+                        notMatchSeperatorCase = false;
+
+                        break;
+                    }
+                }
+
                 // 判斷 songName 是否不為空值、"-" 或是 "~"（以及相關的數種組合）。
                 // 當 songName 為上列值時，則表示留言內是用該值分隔開始與結束時間。
-                if (songName !== "" &&
-                    songName !== "-" &&
-                    songName !== "- " &&
-                    songName !== " - " &&
-                    songName !== " -" &&
-                    songName !== "~" &&
-                    songName !== "~ " &&
-                    songName !== " ~ " &&
-                    songName !== " ~" &&
-                    songName !== "、" &&
-                    songName !== "、 " &&
-                    songName !== " 、" &&
-                    songName !== " 、 ") {
+                if (notMatchSeperatorCase) {
                     // 當不為第一筆資料，也不為最後一筆資料時，且 autoAddEndToken 的值為 true 時。
                     if ((index !== 0 && index <= tempDataSet.length - 1) &&
                         autoAddEndToken === true) {
