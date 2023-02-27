@@ -598,6 +598,12 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
         let pushCount = 0, overValue = -1;
 
         nodeArray.forEach((node, childIndex, array) => {
+            // 判斷 array 的長度是否小於 3，理論上不應該小於 3。
+            if (array.length < 3) {
+                // 不進行任何處理。
+                return;
+            }
+
             if (node instanceof HTMLAnchorElement) {
                 const textContent = node.textContent ?? "";
 
