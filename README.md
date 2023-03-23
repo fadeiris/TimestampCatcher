@@ -4,10 +4,6 @@
 
 ## 建置
 
-### 更新相依性函式庫
-
-> `npm run update`
-
 ### 同步版本號
 
 - 將 package.json 內 version 的值同步至 manifest.json、manifestFx.json
