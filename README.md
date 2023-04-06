@@ -2,14 +2,26 @@
 
 提供取得特定網站的影片時間標記資訊、截圖等功能。
 
-## 建置
+## 開發
+
+### 安裝相依性函式庫
+
+> `npm run ins_dep`
+
+### 更新相依性函式庫
+
+> `npm run update`
+
+### 列出已過時的相依性函式庫
+
+> `npm run outdated`
 
 ### 同步版本號
 
 - 將 package.json 內 version 的值同步至 manifest.json、manifestFx.json
   > `npm run updateVersion`
 
-### 建置方式
+## 建置
 
 - Google Chrome、Microsoft Edge
   > `npm run build`
