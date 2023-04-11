@@ -184,11 +184,23 @@ function injectElemToVideoPlayerControl(): void {
 
         if (elemTwitchLeftCtrl !== undefined && elemTwitchLeftCtrl !== null) {
             elemTwitchLeftCtrl.forEach((item) => {
-                elemTempAnchor.style.setProperty("opacity", "1", "important");
-                elemTempAnchor.style.setProperty("visibility", "visible", "important");
-
                 // 來源：https://stackoverflow.com/a/64410132
-                item.appendChild(elemTempAnchor.cloneNode(true));
+                // 來源：https://pawelgrzybek.com/cloning-dom-nodes-and-handling-attached-events/
+                const elemClonedAnchor: HTMLAnchorElement = elemTempAnchor.cloneNode(true) as HTMLAnchorElement;
+
+                elemClonedAnchor.style.setProperty("opacity", "1", "important");
+                elemClonedAnchor.style.setProperty("visibility", "visible", "important");
+
+                // 重新附加事件。
+                elemClonedAnchor.addEventListener("mouseover", function (this: HTMLElement) {
+                    this.style.setProperty("color", "#FF0000", "important");
+                });
+                elemClonedAnchor.addEventListener("mouseout", function (this: HTMLElement) {
+                    this.style.setProperty("color", "#FFFFFF", "important");
+                });
+                elemClonedAnchor.onclick = elemTempAnchor.onclick;
+
+                item.appendChild(elemClonedAnchor);
             });
         }
 
@@ -223,11 +235,23 @@ function injectElemToVideoPlayerControl(): void {
 
         if (elemTwitchLeftCtrl !== undefined && elemTwitchLeftCtrl !== null) {
             elemTwitchLeftCtrl.forEach((item) => {
-                elemTempAnchor.style.setProperty("opacity", "1", "important");
-                elemTempAnchor.style.setProperty("visibility", "visible", "important");
-
                 // 來源：https://stackoverflow.com/a/64410132
-                item.appendChild(elemTempAnchor.cloneNode(true));
+                // 來源：https://pawelgrzybek.com/cloning-dom-nodes-and-handling-attached-events/
+                const elemClonedAnchor: HTMLAnchorElement = elemTempAnchor.cloneNode(true) as HTMLAnchorElement;
+
+                elemClonedAnchor.style.setProperty("opacity", "1", "important");
+                elemClonedAnchor.style.setProperty("visibility", "visible", "important");
+
+                // 重新附加事件。
+                elemClonedAnchor.addEventListener("mouseover", function (this: HTMLElement) {
+                    this.style.setProperty("color", "#FF0000", "important");
+                });
+                elemClonedAnchor.addEventListener("mouseout", function (this: HTMLElement) {
+                    this.style.setProperty("color", "#FFFFFF", "important");
+                });
+                elemClonedAnchor.onclick = elemTempAnchor.onclick;
+
+                item.appendChild(elemClonedAnchor);
             });
         }
 
@@ -279,12 +303,12 @@ function createAnchor(id: string, i18nStr: string, callbackFunc: any): HTMLAncho
     elemTempAnchor.style.marginRight = "4px";
     elemTempAnchor.style.textShadow = "1px 1px 2px #333333";
     elemTempAnchor.style.setProperty("color", "#FFFFFF", "important");
-    elemTempAnchor.onmouseover = function () {
-        elemTempAnchor.style.setProperty("color", "#FF0000", "important");
-    }
-    elemTempAnchor.onmouseout = function () {
-        elemTempAnchor.style.setProperty("color", "#FFFFFF", "important");
-    };
+    elemTempAnchor.addEventListener("mouseover", function (this: HTMLElement) {
+        this.style.setProperty("color", "#FF0000", "important");
+    });
+    elemTempAnchor.addEventListener("mouseout", function (this: HTMLElement) {
+        this.style.setProperty("color", "#FFFFFF", "important");
+    });
     elemTempAnchor.onclick = callbackFunc;
 
     return elemTempAnchor;
