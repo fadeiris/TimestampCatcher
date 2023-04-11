@@ -187,7 +187,8 @@ function injectElemToVideoPlayerControl(): void {
                 elemTempAnchor.style.setProperty("opacity", "1", "important");
                 elemTempAnchor.style.setProperty("visibility", "visible", "important");
 
-                item.appendChild(elemTempAnchor);
+                // 來源：https://stackoverflow.com/a/64410132
+                item.appendChild(elemTempAnchor.cloneNode(true));
             });
         }
 
@@ -225,7 +226,8 @@ function injectElemToVideoPlayerControl(): void {
                 elemTempAnchor.style.setProperty("opacity", "1", "important");
                 elemTempAnchor.style.setProperty("visibility", "visible", "important");
 
-                item.appendChild(elemTempAnchor);
+                // 來源：https://stackoverflow.com/a/64410132
+                item.appendChild(elemTempAnchor.cloneNode(true));
             });
         }
 
