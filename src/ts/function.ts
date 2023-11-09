@@ -354,7 +354,6 @@ export class Function {
 
     /**
      * 取得已儲存時間標記的資料
-     *
      */
     static getSavedTimestampData(): Promise<string> {
         return new Promise((resolve, reject) => {
