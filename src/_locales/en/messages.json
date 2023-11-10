@@ -211,6 +211,26 @@
         "message": "Enable add danmu in screenshot for site ani.gamer.com.tw.",
         "description": "String: Enable add danmu in screenshot for site ani.gamer.com.tw."
     },
+    "stringCuePerformer": {
+        "message": "{Performer}",
+        "description": "String: PERFORMER in CUE file."
+    },
+    "stringCueSplitTitle": {
+        "message": "<Split>",
+        "description": "String: Split item TITLE in CUE file."
+    },
+    "stringCueGerne": {
+        "message": "{Gerne}",
+        "description": "String: GERNE in CUE file."
+    },
+    "stringCueTitle": {
+        "message": "{Title}",
+        "description": "String: TITLE in CUE file."
+    },
+    "stringCueFile": {
+        "message": "{File name}.{Extension name}",
+        "description": "String: FILE in CUE file."
+    },
     "messageTimestampDataUpdated": {
         "message": "Already update recored timestamp data.",
         "description": "Message: Already update recored timestamp data."

@@ -211,6 +211,26 @@
         "message": "加入动画疯弹幕。",
         "description": "String: Enable add danmu in screenshot for site ani.gamer.com.tw."
     },
+    "stringCuePerformer": {
+        "message": "{表演者}",
+        "description": "String: PERFORMER in CUE file."
+    },
+    "stringCueSplitTitle": {
+        "message": "<间隔>",
+        "description": "String: Split item TITLE in CUE file."
+    },
+    "stringCueGerne": {
+        "message": "{类型}",
+        "description": "String: GERNE in CUE file."
+    },
+    "stringCueTitle": {
+        "message": "{标题}",
+        "description": "String: TITLE in CUE file."
+    },
+    "stringCueFile": {
+        "message": "{文件名称}.{扩展名}",
+        "description": "String: FILE in CUE file."
+    },
     "messageTimestampDataUpdated": {
         "message": "已更新纪录的时间标记信息。",
         "description": "Message: Already update recored timestamp data."

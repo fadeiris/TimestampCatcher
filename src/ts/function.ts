@@ -291,7 +291,7 @@ export class Function {
         let decimalPoint = "";
 
         if (allowDecimalPoint === true) {
-            // TODO: 2022-05-05 不確定是否有問題。
+            // TODO: 2022/5/5 不確定是否有問題。
             // 強制將 ".padStart(3, "0")" 改為 ".padStart(2, "0")"。
             decimalPoint = `:${milliseconds.toString().padStart(2, "0")}`;
         } else {
@@ -1819,8 +1819,6 @@ export class Function {
             let tempOutputData = "";
             let actualIndex = 1;
 
-            // TODO: 2023-02-04 考慮是否要將內容 l10n 化。
-
             filteredDataSet.forEach(function (value, index) {
                 let columns = value.toString().split("^");
 
@@ -1835,7 +1833,7 @@ export class Function {
 
                     tempOutputData += `TRACK ${exportIndex} AUDIO\n`;
                     tempOutputData += `  TITLE \"${escapedName}\"\n`;
-                    tempOutputData += "  PERFORMER \"{表演者}\"\n";
+                    tempOutputData += `  PERFORMER \"${chrome.i18n.getMessage("stringCuePerformer")}\"\n`;
                     tempOutputData += `  INDEX 01 ${startTime}\n`;
 
                     actualIndex++;
@@ -1845,8 +1843,8 @@ export class Function {
                         const exportIndex = actualIndex.toString().padStart(2, "0");
 
                         tempOutputData += `TRACK ${exportIndex} AUDIO\n`;
-                        tempOutputData += `  TITLE \"<間隔>\"\n`;
-                        tempOutputData += "  PERFORMER \"{表演者}\"\n";
+                        tempOutputData += `  TITLE \"${chrome.i18n.getMessage("stringCueSplitTitle")}\"\n`;
+                        tempOutputData += `  PERFORMER \"${chrome.i18n.getMessage("stringCuePerformer")}\"\n`;
                         tempOutputData += `  INDEX 01 ${endTime}\n`;
 
                         actualIndex++;
@@ -1861,11 +1859,11 @@ export class Function {
 
                 const year = new Date().getFullYear();
 
-                outputData += "REM GENRE \"{類型}\"\n";
+                outputData += `REM GENRE \"${chrome.i18n.getMessage("stringCueGerne")}\"\n`;
                 outputData += `REM DATE \"${year}\"\n`;
-                outputData += "PERFORMER \"{表演者}\"\n";
-                outputData += "TITLE \"{標題}\"\n";
-                outputData += "FILE \"{檔案名稱}.{副檔名}\" WAVE\n";
+                outputData += `PERFORMER \"${chrome.i18n.getMessage("stringCuePerformer")}\"\n`;
+                outputData += `TITLE \"${chrome.i18n.getMessage("stringCueTitle")}\"\n`;
+                outputData += `FILE \"${chrome.i18n.getMessage("stringCueFile")}\" WAVE\n`;
                 outputData += tempOutputData;
             }
 

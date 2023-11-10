@@ -549,7 +549,7 @@ async function extractTimestamp(currentUrl: string, autoAddEndToken: boolean = f
  * @param {boolean} autoAddEndToken 布林值，用於判斷是否將下一筆的開始時間當作是上一筆的結束時間，預設值為 false。
  */
 async function doExtractYouTubeComment(key: string, autoAddEndToken: boolean = false): Promise<void> {
-    // TODO: 2022/11/5 未來會需要再調整。
+    // TODO: 2022/11/5 未來可能會需要再調整程式碼。
     let tempDataSet: string[] = [],
         composeStr = "",
         unknownNameCount = 1,
