@@ -116,7 +116,7 @@
         "description": "String: Enable YouTube utawaku mode."
     },
     "stringEnableLegacyKeyListenerLabel": {
-        "message": "使用舊版按鍵監聽模式。\n　　快速鍵說明：\n　　記錄時間標記（Shift + Z）\n　　拍攝截圖（Shift + X）\n　　倒轉（Shift + S）\n　　快轉（Shift + D）\n　　不同步 / 同步時間標記（Shift + A）\n　　※請關閉「打字時直接搜尋頁面文字（隨打即找）」功能。",
+        "message": "使用傳統按鍵監聽模式。\n　　快速鍵說明：\n　　記錄時間標記（Shift + Z）\n　　拍攝截圖（Shift + X）\n　　倒轉（Shift + S）\n　　快轉（Shift + D）\n　　不同步 / 同步時間標記（Shift + A）\n　　※請關閉「打字時直接搜尋頁面文字（隨打即找）」功能。",
         "description": "String: Enable legacy key listener.\n  Shortcut:\n  Record timestamp (Shift + Z)\n  Take screenshot (Shift + X)\n  Rewind (Shift + S)\n  Fast-forward (Shift + D)\n  Sync / pause timestamp (Shift + A)\n  *Please disabled \"Search for text when you start to type\"."
     },
     "stringEnableLeftSideSpacePaddingLabel": {

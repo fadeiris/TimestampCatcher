@@ -1,6 +1,6 @@
 "use strict";
 
-import { Function, PlaylistType } from "./function";
+import { Function, KeyName, PlaylistType } from "./function";
 
 let elemBtnRemoveAll: HTMLButtonElement | null = null;
 let elemBtnReload: HTMLButtonElement | null = null;
@@ -10,9 +10,9 @@ let elemTimestampData: HTMLTextAreaElement | null = null;
 let elemBtnDownloadLocalVideoPlayer: HTMLAnchorElement | null = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.onreadystatechange = () => {
+    document.onreadystatechange = async () => {
         if (document.readyState === "complete") {
-            Function.initExtension();
+            await Function.initExtension();
 
             initPopupGlobalVariable();
 
@@ -20,8 +20,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             registerPopupListenEvent();
 
-            const timer = setTimeout(function () {
-                loadTimestampData();
+            const timer = setTimeout(async () => {
+                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+                const key = KeyName.DefaultTimestampDataKeyName;
+
+                await loadTimestampData(key);
 
                 clearTimeout(timer);
             }, Function.CommonTimeout);
@@ -135,79 +138,76 @@ function loadPopupUIi18n(): void {
  * 註冊監聽事件
  */
 function registerPopupListenEvent(): void {
-    elemBtnRemoveAll?.addEventListener("click", () => {
+    elemBtnRemoveAll?.addEventListener("click", async () => {
         const confirmDelete = confirm(chrome.i18n.getMessage("messageConfirmClearAll"));
 
         if (confirmDelete === true) {
-            chrome.storage.local.set({ "TimestampData": "" }, () => {
-                if (chrome.runtime.lastError?.message) {
-                    Function.writeConsoleLog(chrome.runtime.lastError?.message);
+            // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+            const key = KeyName.DefaultTimestampDataKeyName;
+            const isOkay = await Function.removeSavedDataByKey(key);
 
-                    alert(chrome.runtime.lastError?.message);
-                } else {
-                    Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
+            if (isOkay === true) {
+                Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
+                Function.playBeep(0);
 
-                    Function.playBeep(0);
-
-                    loadTimestampData();
-                }
-            });
+                loadTimestampData(key);
+            }
         }
     });
 
     elemBtnReload?.addEventListener("click", () => {
         Function.playBeep(0);
+        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+        const key = KeyName.DefaultTimestampDataKeyName;
 
-        loadTimestampData();
+        loadTimestampData(key);
     });
 
     elemBtnExport?.addEventListener("click", () => {
+        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+        const key = KeyName.DefaultTimestampDataKeyName;
         const selectedValue = elemSelExportType?.value;
 
         switch (selectedValue) {
             case "Timestamp":
-                Function.exportTimestamp();
+                Function.exportTimestamp(key);
                 break;
             case "YtComment":
-                Function.exportYtComment();
+                Function.exportYtComment(key);
                 break;
             case "YtTimestampUrls":
-                Function.exportYtTimestampUrls();
+                Function.exportYtTimestampUrls(key);
                 break;
             case "CustomYTPlayerPlaylist_Timestamps":
-                Function.exportSpeicalFormat(false, PlaylistType.Timestamps);
+                Function.exportSpeicalFormat(key, false, PlaylistType.Timestamps);
                 break;
             case "CustomYTPlayerPlaylist_Seconds":
-                Function.exportSpeicalFormat(false, PlaylistType.Seconds);
+                Function.exportSpeicalFormat(key, false, PlaylistType.Seconds);
                 break;
             case "JsoncPlaylist":
-                Function.exportSpeicalFormat(true, PlaylistType.Seconds);
+                Function.exportSpeicalFormat(key, true, PlaylistType.Seconds);
                 break;
             case "CueSheet":
-                Function.exportCueSheet();
+                Function.exportCueSheet(key);
                 break;
             default:
-                Function.exportTimestamp();
+                Function.exportTimestamp(key);
                 break;
         }
     });
 
-    elemTimestampData?.addEventListener("change", () => {
+    elemTimestampData?.addEventListener("change", async () => {
+        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+        const key = KeyName.DefaultTimestampDataKeyName;
         const value = elemTimestampData?.value ?? "";
+        const isOkay = await Function.saveTimestampData(key, value);
 
-        chrome.storage.local.set({ "TimestampData": value }, () => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        if (isOkay === true) {
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
+            Function.playBeep(0);
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
-
-                Function.playBeep(0);
-
-                loadTimestampData();
-            }
-        });
+            loadTimestampData(key);
+        }
     });
 
     elemBtnDownloadLocalVideoPlayer?.addEventListener("click", () => {
@@ -229,34 +229,37 @@ function registerPopupListenEvent(): void {
 
 /**
  * 載入時間標記資料
+ *
+ * @param {string} key 字串，鍵值。
  */
-function loadTimestampData(): void {
-    Function.showAnimation();
+async function loadTimestampData(key: string): Promise<void> {
+    try {
+        Function.showAnimation();
 
-    chrome.storage.local.get(["TimestampData", "EnableYTUtaWakuMode"], (items) => {
-        if (chrome.runtime.lastError?.message) {
-            Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        const timestampData = await Function.getSavedTimestampData(key);
+        const enableYTUtaWakuMode = await Function.getSavedDataValueByKey(KeyName.EnableYTUtaWakuMode, false);
 
-            alert(chrome.runtime.lastError?.message);
-        } else {
-            if (elemTimestampData !== null) {
-                let timestampData = "";
+        if (elemTimestampData !== null) {
+            let newTimestampData = "";
 
-                if (items.TimestampData !== undefined) {
-                    timestampData = items.TimestampData;
-                }
-
-                elemTimestampData.value = timestampData;
-                elemTimestampData.scrollTop = elemTimestampData.scrollHeight;
-
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageLoadedTimestampData"));
-
-                if (items.EnableYTUtaWakuMode !== undefined) {
-                    Function.showYTUtaWakuMode(items.EnableYTUtaWakuMode);
-                }
-            } else {
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageCanNotFindTextarea"));
+            if (timestampData !== undefined) {
+                newTimestampData = timestampData;
             }
+
+            elemTimestampData.value = newTimestampData;
+            elemTimestampData.scrollTop = elemTimestampData.scrollHeight;
+
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageLoadedTimestampData"));
+
+            if (enableYTUtaWakuMode !== undefined) {
+                Function.showYTUtaWakuMode(enableYTUtaWakuMode);
+            }
+        } else {
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageCanNotFindTextarea"));
         }
-    });
+    } catch (error) {
+        Function.writeConsoleLog(error);
+
+        alert(`${error}`);
+    }
 }

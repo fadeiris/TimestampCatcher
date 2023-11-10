@@ -1,125 +1,127 @@
 "use strict";
 
-import { Function } from "./function";
+import { CMID, Command, KeyName, Function } from "./function";
 
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.contextMenus.create({
-        title: chrome.i18n.getMessage("stringContextMenuExtractTimestamp"),
-        contexts: ["selection"],
-        documentUrlPatterns: [
-            "*://*.youtube.com/*"
-        ],
-        id: Function.CMID_ExtractTimestamp
-    });
+    try {
+        chrome.contextMenus.create({
+            title: chrome.i18n.getMessage("stringContextMenuExtractTimestamp"),
+            contexts: ["selection"],
+            documentUrlPatterns: [
+                "*://*.youtube.com/*"
+            ],
+            id: CMID.ExtractTimestamp
+        });
 
-    chrome.contextMenus.create({
-        title: chrome.i18n.getMessage("stringContextMenuExtractTimestampAutoAppendEndToken"),
-        contexts: ["selection"],
-        documentUrlPatterns: [
-            "*://*.youtube.com/*"
-        ],
-        id: Function.CMID_ExtractTimestamp_AutoAppendEndToken
-    });
+        chrome.contextMenus.create({
+            title: chrome.i18n.getMessage("stringContextMenuExtractTimestampAutoAppendEndToken"),
+            contexts: ["selection"],
+            documentUrlPatterns: [
+                "*://*.youtube.com/*"
+            ],
+            id: CMID.ExtractTimestamp_AutoAppendEndToken
+        });
 
-    chrome.contextMenus.create({
-        title: chrome.i18n.getMessage("stringContextMenuViewYtThumbnail"),
-        contexts: ["page"],
-        documentUrlPatterns: [
-            "*://*.youtube.com/*"
-        ],
-        id: Function.CMID_ViewYtThumbnail
-    });
+        chrome.contextMenus.create({
+            title: chrome.i18n.getMessage("stringContextMenuViewYtThumbnail"),
+            contexts: ["page"],
+            documentUrlPatterns: [
+                "*://*.youtube.com/*"
+            ],
+            id: CMID.ViewYtThumbnail
+        });
+    } catch (error) {
+        Function.writeConsoleLog(error);
+    }
 });
 
 chrome.contextMenus.onClicked.addListener((
     info: chrome.contextMenus.OnClickData,
     tab?: chrome.tabs.Tab): void => {
-    if (info.menuItemId === Function.CMID_ExtractTimestamp) {
-        Function.sendMsg(Function.CommandExtractTimestamp, true).catch(error => {
-            Function.writeConsoleLog(error);
-        });
-    } else if (info.menuItemId === Function.CMID_ExtractTimestamp_AutoAppendEndToken) {
-        Function.sendMsg(Function.CommandExtractTimestampAutoAppendEndToken, true).catch(error => {
-            Function.writeConsoleLog(error);
-        });
-    } else if (info.menuItemId === Function.CMID_ViewYtThumbnail) {
-        Function.sendMsg(Function.CommandViewYtThumbnail, true).catch(error => {
-            Function.writeConsoleLog(error);
-        });
+    try {
+        if (info.menuItemId === CMID.ExtractTimestamp) {
+            Function.sendMsg(Command.ExtractTimestamp, true).catch(error => {
+                Function.writeConsoleLog(error);
+            });
+        } else if (info.menuItemId === CMID.ExtractTimestamp_AutoAppendEndToken) {
+            Function.sendMsg(Command.ExtractTimestampAutoAppendEndToken, true).catch(error => {
+                Function.writeConsoleLog(error);
+            });
+        } else if (info.menuItemId === CMID.ViewYtThumbnail) {
+            Function.sendMsg(Command.ViewYtThumbnail, true).catch(error => {
+                Function.writeConsoleLog(error);
+            });
+        }
+    } catch (error) {
+        Function.writeConsoleLog(error);
     }
 });
 
 chrome.commands.onCommand.addListener((command) => {
-    if (command === Function.CommandRecordTimestamp) {
-        Function.sendMsg(command, false).catch(error => {
-            Function.writeConsoleLog(error);
-        });
-    } else if (command === Function.CommandTakeScreenshot) {
-        Function.sendMsg(command, false).catch(error => {
-            Function.writeConsoleLog(error);
-        });
-    } else if (command === Function.CommandRewind) {
-        Function.sendMsg(command, false).catch(error => {
-            Function.writeConsoleLog(error);
-        });
-    } else if (command === Function.CommandFastForward) {
-        Function.sendMsg(command, false).catch(error => {
-            Function.writeConsoleLog(error);
-        });
-    } else if (command === Function.CommandPauseSync) {
-        Function.sendMsg(command, false).catch(error => {
-            Function.writeConsoleLog(error);
-        });
+    try {
+        if (command === Command.RecordTimestamp) {
+            Function.sendMsg(command, false).catch(error => {
+                Function.writeConsoleLog(error);
+            });
+        } else if (command === Command.TakeScreenshot) {
+            Function.sendMsg(command, false).catch(error => {
+                Function.writeConsoleLog(error);
+            });
+        } else if (command === Command.Rewind) {
+            Function.sendMsg(command, false).catch(error => {
+                Function.writeConsoleLog(error);
+            });
+        } else if (command === Command.FastForward) {
+            Function.sendMsg(command, false).catch(error => {
+                Function.writeConsoleLog(error);
+            });
+        } else if (command === Command.PauseSync) {
+            Function.sendMsg(command, false).catch(error => {
+                Function.writeConsoleLog(error);
+            });
+        }
+    } catch (error) {
+        Function.writeConsoleLog(error);
     }
 });
 
-chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
-    if (message === Function.MessageWakeUp) {
-        updateExtensionApperance();
-    } else {
-        Function.writeConsoleLog(message);
+chrome.runtime.onMessage.addListener(async (message, _sender, _sendResponse) => {
+    try {
+        if (message === Function.MessageWakeUp) {
+            await updateExtensionApperance();
+        } else {
+            Function.writeConsoleLog(message);
+        }
+    } catch (error) {
+        Function.writeConsoleLog(error);
     }
 });
 
 /**
  * 更新擴充功能的外觀
  */
-function updateExtensionApperance() {
-    // 設定徽章。
-    chrome.storage.sync.get(["EnableYTUtaWakuMode"], (items) => {
-        if (chrome.runtime.lastError?.message) {
-            Function.writeConsoleLog(chrome.runtime.lastError?.message);
+async function updateExtensionApperance(): Promise<void> {
+    try {
+        // 設定徽章。
+        const enableYTUtaWakuMode = await Function.getSavedDataValueByKey(
+            KeyName.EnableYTUtaWakuMode,
+            false);
 
-            alert(chrome.runtime.lastError?.message);
-        }
+        Function.showYTUtaWakuMode(enableYTUtaWakuMode);
 
-        Function.showYTUtaWakuMode(items.EnableYTUtaWakuMode);
-    });
+        // 更新 contextMenus 的標題。
+        Function.updateContextMenusTitle(
+            CMID.ExtractTimestamp,
+            chrome.i18n.getMessage("stringContextMenuExtractTimestamp"));
 
-    // 更新 contextMenus 的 title。
-    chrome.contextMenus.update(Function.CMID_ExtractTimestamp, {
-        title: chrome.i18n.getMessage("stringContextMenuExtractTimestamp"),
-    }, () => {
-        if (chrome.runtime.lastError?.message) {
-            Function.writeConsoleLog(chrome.runtime.lastError?.message);
-        }
-    });
+        Function.updateContextMenusTitle(
+            CMID.ExtractTimestamp_AutoAppendEndToken,
+            chrome.i18n.getMessage("stringContextMenuExtractTimestampAutoAppendEndToken"));
 
-    // 更新 contextMenus 的 title。
-    chrome.contextMenus.update(Function.CMID_ExtractTimestamp_AutoAppendEndToken, {
-        title: chrome.i18n.getMessage("stringContextMenuExtractTimestampAutoAppendEndToken"),
-    }, () => {
-        if (chrome.runtime.lastError?.message) {
-            Function.writeConsoleLog(chrome.runtime.lastError?.message);
-        }
-    });
-
-    // 更新 contextMenus 的 title。
-    chrome.contextMenus.update(Function.CMID_ViewYtThumbnail, {
-        title: chrome.i18n.getMessage("stringContextMenuViewYtThumbnail"),
-    }, () => {
-        if (chrome.runtime.lastError?.message) {
-            Function.writeConsoleLog(chrome.runtime.lastError?.message);
-        }
-    });
+        Function.updateContextMenusTitle(
+            CMID.ViewYtThumbnail,
+            chrome.i18n.getMessage("stringContextMenuViewYtThumbnail"));
+    } catch (error) {
+        Function.writeConsoleLog(error);
+    }
 }

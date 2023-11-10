@@ -12,82 +12,140 @@ export const enum PlaylistType {
     Seconds = 2
 }
 
-export class Function {
-    /**
-     * 訊息：醒來
-     */
-    static MessageWakeUp = "wakeUp";
-
-    /**
-     * 指令：紀錄時間標記
-     */
-    static CommandRecordTimestamp = "recordTimestamp";
-
-    /**
-     * 指令：拍攝截圖
-     */
-    static CommandTakeScreenshot = "takeScreenshot";
-
-    /**
-     * 指令：解析時間標記
-     */
-    static CommandExtractTimestamp = "extractTimestamp";
-
-    /**
-     * 指令：解析時間標記（自動附加結束標記）
-     */
-    static CommandExtractTimestampAutoAppendEndToken = "extractTimestampAutoAddEndToken";
-
-    /**
-     * 指令：檢視此 YouTube 影片的預覽圖
-     */
-    static CommandViewYtThumbnail = "viewYtThumbnail";
-
-    /**
-     * 指令：倒轉
-     */
-    static CommandRewind = "rewind";
-
-    /**
-     * 指令：快轉
-     */
-    static CommandFastForward = "fastForward";
-
-    /**
-     * 指令：不同步 / 同步時間標記
-     */
-    static CommandPauseSync = "pauseSync";
-
+/**
+ * 類別：CMID
+ */
+export class CMID {
     /**
      * 共用的 ContextMenu 選項「解析時間標記」的 ID 值
      */
-    static CMID_ExtractTimestamp = "CMID_ExtractTimestamp";
+    static ExtractTimestamp = "CMID_ExtractTimestamp";
 
     /**
      * 共用的 ContextMenu 選項「解析時間標記（自動附加結束標記）」的 ID 值
      */
-    static CMID_ExtractTimestamp_AutoAppendEndToken = "CMID_ExtractTimestamp_AutoAppendEndToken";
+    static ExtractTimestamp_AutoAppendEndToken = "CMID_ExtractTimestamp_AutoAppendEndToken";
 
     /**
-      * 共用的 ContextMenu 選項「檢視此 YouTube 影片的預覽圖」的 ID 值
-      */
-    static CMID_ViewYtThumbnail = "CMID_ViewYtThumbnail";
-
-    /**
-     * 通用逾時毫秒數
+     * 共用的 ContextMenu 選項「檢視此 YouTube 影片的預覽圖」的 ID 值
      */
-    static CommonTimeout: number = 300;
+    static ViewYtThumbnail = "CMID_ViewYtThumbnail";
+}
+
+/**
+ * 類別：指令
+ */
+export class Command {
+    /**
+     * 指令：紀錄時間標記
+     */
+    static RecordTimestamp = "recordTimestamp";
 
     /**
-     * 通用秒數 (倒轉、快轉)
+     * 指令：拍攝截圖
      */
-    static CommonSeconds: number = 2;
+    static TakeScreenshot = "takeScreenshot";
 
     /**
-     * 註解符號 "#"
+     * 指令：解析時間標記
      */
-    static CommentToken = "#";
+    static ExtractTimestamp = "extractTimestamp";
 
+    /**
+     * 指令：解析時間標記（自動附加結束標記）
+     */
+    static ExtractTimestampAutoAppendEndToken = "extractTimestampAutoAddEndToken";
+
+    /**
+     * 指令：檢視此 YouTube 影片的預覽圖
+     */
+    static ViewYtThumbnail = "viewYtThumbnail";
+
+    /**
+     * 指令：倒轉
+     */
+    static Rewind = "rewind";
+
+    /**
+     * 指令：快轉
+     */
+    static FastForward = "fastForward";
+
+    /**
+     * 指令：不同步 / 同步時間標記
+     */
+    static PauseSync = "pauseSync";
+}
+
+/**
+ * 類別：鍵值名稱
+ */
+export class KeyName {
+    /**
+     * 已初始化
+     */
+    static Initiated = "Initiated";
+
+    /**
+     * 啟用紀錄輸出
+     */
+    static EnableOutputLog = "EnableOutputLog";
+
+    /**
+     * 啟用聲音效果
+     */
+    static EnableSoundEffect = "EnableSoundEffect";
+
+    /**
+     * 啟用輸出格式化的 YouTube 時間標記
+     */
+    static EnableFormattedYTTimestamp = "EnableFormattedYTTimestamp";
+
+    /**
+     * 啟用 YouTube 歌回模式
+     */
+    static EnableYTUtaWakuMode = "EnableYTUtaWakuMode";
+
+    /**
+     * 啟用傳統按鍵監聽模式
+     */
+    static EnableLegacyKeyListener = "EnableLegacyKeyListener";
+
+    /**
+     * 否啟用左側填補空白（預設是在右側填補空白）
+     */
+    static EnableLeftSideSpacePadding = "EnableLeftSideSpacePadding";
+
+    /**
+     * 啟用自動在註解列的尾端補上"（開始）"、"（結束）"標記
+     */
+    static EnableAppendingStartEndToken = "EnableAppendingStartEndToken";
+
+    /**
+     * MIME
+     */
+    static MIME = "MIME";
+
+    /**
+     * 啟用加入動畫瘋彈幕
+     */
+    static EnableAddAniGamerDanMu = "EnableAddAniGamerDanMu";
+
+    /**
+     * 附加秒數（Function.DefaultAppendSeconds）
+     */
+    static AppendSeconds = "AppendSeconds";
+
+    /**
+     * 預設時間標記資料鍵值名稱
+     */
+    static DefaultTimestampDataKeyName = "TimestampData";
+}
+
+/**
+ * 類別：分隔符號
+ */
+export class Seperators {
     /**
      * 分隔符號 1 "｜"
      */
@@ -107,50 +165,78 @@ export class Function {
      * 分隔符號 4 "-------"
      */
     static Seperator4 = "-------";
+}
+
+/**
+ * 函式
+ */
+export class Function {
+    /**
+     * 訊息：醒來
+     */
+    static MessageWakeUp = "wakeUp";
+
+    /**
+     * 通用逾時毫秒數
+     */
+    static CommonTimeout: number = 300;
+
+    /**
+     * 通用秒數 (倒轉、快轉)
+     */
+    static CommonSeconds: number = 2;
+
+    /**
+     * 暫停同步用秒數
+     */
+    static PauseSyncSeconds: number = -1;
+
+    /**
+     * 註解符號 "#"
+     */
+    static CommentToken = "#";
+
+    /**
+     * 預設附加秒數（300 秒）
+     */
+    static DefaultAppendSeconds: number = 300;
 
     /**
      * 初始化擴充功能
      */
-    static initExtension(): void {
-        chrome.storage.sync.get(["Initiated"], (items) => {
-            if (chrome.runtime.lastError?.message) {
-                console.log(chrome.runtime.lastError?.message);
+    static async initExtension(): Promise<void> {
+        try {
+            const initiated = await this.getSavedDataValueByKey(KeyName.Initiated, false);
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                if (items.Initiated === undefined) {
-                    chrome.storage.sync.set({
-                        "Initiated": true,
-                        "EnableOutputLog": false,
-                        "EnableSoundEffect": true,
-                        "EnableFormattedYTTimestamp": false,
-                        "EnableYTUtaWakuMode": false,
-                        "EnableLegacyKeyListener": false,
-                        "EnableLeftSideSpacePadding": false,
-                        "EnableAppendingStartEndToken": true,
-                        "MIME": "image/png",
-                        "EnableAddAniGamerDanMu": false
-                    }, () => {
-                        if (chrome.runtime.lastError?.message) {
-                            console.log(chrome.runtime.lastError?.message);
+            if (initiated === undefined) {
+                chrome.storage.sync.set({
+                    [KeyName.Initiated]: true,
+                    [KeyName.EnableOutputLog]: false,
+                    [KeyName.EnableSoundEffect]: true,
+                    [KeyName.EnableFormattedYTTimestamp]: false,
+                    [KeyName.EnableYTUtaWakuMode]: false,
+                    [KeyName.EnableLegacyKeyListener]: false,
+                    [KeyName.EnableLeftSideSpacePadding]: false,
+                    [KeyName.EnableAppendingStartEndToken]: true,
+                    [KeyName.MIME]: "image/png",
+                    [KeyName.EnableAddAniGamerDanMu]: false,
+                    [KeyName.AppendSeconds]: this.DefaultAppendSeconds
+                }, () => {
+                    if (chrome.runtime.lastError?.message) {
+                        console.log(chrome.runtime.lastError?.message);
 
-                            alert(chrome.runtime.lastError?.message);
-                        }
-                    });
+                        alert(chrome.runtime.lastError?.message);
+                    }
+                });
 
-                    // 針對 "TimestampData" 只使用 local。
-                    chrome.storage.local.set({
-                        "TimestampData": ""
-                    }, () => {
-                        if (chrome.runtime.lastError?.message) {
-                            console.log(chrome.runtime.lastError?.message);
-
-                            alert(chrome.runtime.lastError?.message);
-                        }
-                    });
-                }
+                // 設定 DefaultTimestampDataKeyName 的值。
+                await this.saveTimestampData(KeyName.DefaultTimestampDataKeyName, "");
             }
-        });
+        } catch (error) {
+            console.log(error);
+
+            alert(`${error}`);
+        }
     }
 
     /**
@@ -336,39 +422,263 @@ export class Function {
     }
 
     /**
-     * 儲存時間標記的資料
+     * 透過特定鍵值來儲存時間標記的資料
      *
+     * @param {string} key 字串，鍵值。
      * @param {string} value 字串，值。
+     * @returns {Promise<boolean>} 布林值，儲存的結果，當值為 true 則表示儲存成功，若值為 false 則是儲存失敗。
      */
-    static saveTimestampData(value: string): void {
-        chrome.storage.local.set({ "TimestampData": value }, () => {
-            if (chrome.runtime.lastError?.message) {
-                this.writeConsoleLog(chrome.runtime.lastError?.message);
+    static async saveTimestampData(key: string, value: string): Promise<boolean> {
+        return await this.saveTimestampDataByKey(key, value);
+    }
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                this.writeConsoleLog(`${chrome.i18n.getMessage("stringRecordedTimestamp")}\n# \n${value}`);
-            }
+    /**
+     * 透過特定鍵值來儲存時間標記的資料
+     *
+     * @param {string} key 字串，鍵值。
+     * @param {string} value 字串，值。
+     * @returns {Promise<boolean>} 布林值，儲存的結果，當值為 true 則表示儲存成功，若值為 false 則是儲存失敗。
+     */
+    static saveTimestampDataByKey(key: string, value: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            chrome.storage.local.set({ [key]: value }, () => {
+                if (chrome.runtime.lastError?.message) {
+                    this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+                    alert(chrome.runtime.lastError?.message);
+
+                    reject(false);
+                } else {
+                    this.writeConsoleLog(`${chrome.i18n.getMessage("stringRecordedTimestamp")}\n# \n${value}`);
+
+                    resolve(true);
+                }
+            });
         });
     }
 
     /**
-     * 取得已儲存時間標記的資料
+     * 透過特定鍵值來取得已儲存時間標記的資料
+     *
+     * @param {string} key 字串，鍵值。
+     * @returns {Promise<string>} 字串，已儲存時間標記的資料。
      */
-    static getSavedTimestampData(): Promise<string> {
+    static async getSavedTimestampData(key: string): Promise<string> {
+        return await this.getSavedTimestampDataByKey(key);
+    }
+
+    /**
+     * 透過特定鍵值來取得已儲存時間標記的資料
+     *
+     * @param {string} key 字串，鍵值。
+     * @returns {Promise<string>} 字串，已儲存時間標記的資料。
+     */
+    static async getSavedTimestampDataByKey(key: string): Promise<string> {
         return new Promise((resolve, reject) => {
             try {
-                chrome.storage.local.get(["TimestampData"], (items) => {
+                chrome.storage.local.get(key, (items) => {
                     if (chrome.runtime.lastError?.message) {
                         this.writeConsoleLog(chrome.runtime.lastError?.message);
 
                         alert(chrome.runtime.lastError?.message);
                     }
 
-                    resolve(items.TimestampData);
+                    resolve(items[key]);
                 });
             } catch (ex) {
                 reject(ex);
+            }
+        });
+    }
+
+    /**
+     * 透過特定鍵值來儲存資料
+     *
+     * @param {string} key 字串，鍵值。
+     * @param {any} value 字串，值。
+     * @param {boolean} useLocal 布林值，是否使用 local，預設值為 true，若是值為 false 則是使用 sync。
+     * @returns {Promise<boolean>} 布林值，儲存的結果，當值為 true 則表示儲存成功，若值為 false 則是儲存失敗。
+     */
+    static saveDataValueByKey(key: string, value: any, useLocal: boolean = true): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            if (useLocal === true) {
+                chrome.storage.local.set({ [key]: value }, () => {
+                    if (chrome.runtime.lastError?.message) {
+                        this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+                        alert(chrome.runtime.lastError?.message);
+
+                        reject(false);
+                    } else {
+                        this.writeConsoleLog(`${value}`);
+
+                        resolve(true);
+                    }
+                });
+            } else {
+                chrome.storage.sync.set({ [key]: value }, () => {
+                    if (chrome.runtime.lastError?.message) {
+                        this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+                        alert(chrome.runtime.lastError?.message);
+
+                        reject(false);
+                    } else {
+                        this.writeConsoleLog(`${value}`);
+
+                        resolve(true);
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * 取得所有已儲存資料的鍵值
+     *
+     * @param {boolean} useLocal 布林值，是否使用 local，預設值為 true，若是值為 false 則是使用 sync。
+     * @returns {Promise<string[]>} 字串陣列，已儲存資料的鍵值。
+     */
+    static async getSavedDataKeys(useLocal: boolean = true): Promise<string[]> {
+        return new Promise((resolve, reject) => {
+            try {
+                if (useLocal === true) {
+                    chrome.storage.local.get(null, (items) => {
+                        if (chrome.runtime.lastError?.message) {
+                            this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+                            alert(chrome.runtime.lastError?.message);
+                        }
+
+                        resolve(Object.keys(items));
+                    });
+                } else {
+                    chrome.storage.sync.get(null, (items) => {
+                        if (chrome.runtime.lastError?.message) {
+                            this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+                            alert(chrome.runtime.lastError?.message);
+                        }
+
+                        resolve(Object.keys(items));
+                    });
+                }
+            } catch (ex) {
+                reject(ex);
+            }
+        });
+    }
+
+    /**
+     * 透過特定鍵值來取得已儲存資料的值
+     *
+     * @param {string} key 字串，鍵值。
+     * @param {boolean} useLocal 布林值，是否使用 local，預設值為 true，若是值為 false 則是使用 sync。
+     * @returns {Promise<any>} any，已儲存資料的值。
+     */
+    static async getSavedDataValueByKey(key: string, useLocal: boolean = true): Promise<any> {
+        return new Promise((resolve, reject) => {
+            try {
+                if (useLocal === true) {
+                    chrome.storage.local.get([key], (items) => {
+                        if (chrome.runtime.lastError?.message) {
+                            this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+                            alert(chrome.runtime.lastError?.message);
+                        }
+
+                        resolve(items[key]);
+                    });
+                } else {
+                    chrome.storage.sync.get([key], (items) => {
+                        if (chrome.runtime.lastError?.message) {
+                            this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+                            alert(chrome.runtime.lastError?.message);
+                        }
+
+                        resolve(items[key]);
+                    });
+                }
+            } catch (ex) {
+                reject(ex);
+            }
+        });
+    }
+
+    /**
+     * 透過特定鍵值組來取得已儲存資料的值
+     *
+     * @param {string[]} keys 字串陣列，鍵值組。
+     * @param {boolean} useLocal 布林值，是否使用 local，預設值為 true，若是值為 false 則是使用 sync。
+     * @returns {Promise<any>} any，已儲存資料的值。
+     */
+    static async getSavedDataValueByKeys(keys: string[], useLocal: boolean = true): Promise<any> {
+        return new Promise((resolve, reject) => {
+            try {
+                if (useLocal === true) {
+                    chrome.storage.local.get(keys, (items) => {
+                        if (chrome.runtime.lastError?.message) {
+                            this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+                            alert(chrome.runtime.lastError?.message);
+                        }
+
+                        resolve(items);
+                    });
+                } else {
+                    chrome.storage.sync.get(keys, (items) => {
+                        if (chrome.runtime.lastError?.message) {
+                            this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+                            alert(chrome.runtime.lastError?.message);
+                        }
+
+                        resolve(items);
+                    });
+                }
+            } catch (ex) {
+                reject(ex);
+            }
+        });
+    }
+
+    /**
+     *  透過特定鍵值來刪除已儲存的資料
+     *
+     * @param {string} key 字串，鍵值。
+     * @returns {Promise<boolean>} 布林值，儲存的結果，當值為 true 則表示儲存成功，若值為 false 則是儲存失敗。
+     */
+    static removeSavedDataByKey(key: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            chrome.storage.local.remove(key, () => {
+                if (chrome.runtime.lastError?.message) {
+                    this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+                    alert(chrome.runtime.lastError?.message);
+
+                    reject(false)
+                } else {
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    /**
+     * 更新 contextMenus 的標題
+     *
+     * @param {string} key 字串，鍵值。
+     * @param {string} title 字串，標題。
+     */
+    static updateContextMenusTitle(key: string, title: string) {
+        chrome.contextMenus.update(key, {
+            title: title,
+        }, () => {
+            if (chrome.runtime.lastError?.message) {
+                this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+                alert(chrome.runtime.lastError?.message);
             }
         });
     }
@@ -379,21 +689,7 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkCanOutput(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            try {
-                chrome.storage.sync.get(["EnableOutputLog"], (items) => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                        alert(chrome.runtime.lastError?.message);
-                    }
-
-                    resolve(items.EnableOutputLog);
-                })
-            } catch (ex) {
-                reject(ex);
-            }
-        });
+        return await this.getSavedDataValueByKey(KeyName.EnableOutputLog, false);
     }
 
     /**
@@ -402,45 +698,16 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkCanPlay(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            try {
-                chrome.storage.sync.get(["EnableSoundEffect"], (items) => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                        alert(chrome.runtime.lastError?.message);
-                    }
-
-                    resolve(items.EnableSoundEffect);
-                })
-            }
-            catch (ex) {
-                reject(ex);
-            }
-        });
+        return await this.getSavedDataValueByKey(KeyName.EnableSoundEffect, false);
     }
 
     /**
-     * 檢查是否輸出格式化的 YouTube 時間標記
+     * 檢查是否啟用輸出格式化的 YouTube 時間標記
      *
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableFormattedYTTimestamp(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            try {
-                chrome.storage.sync.get(["EnableFormattedYTTimestamp"], (items) => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                        alert(chrome.runtime.lastError?.message);
-                    }
-
-                    resolve(items.EnableFormattedYTTimestamp);
-                })
-            } catch (ex) {
-                reject(ex);
-            }
-        });
+        return await this.getSavedDataValueByKey(KeyName.EnableFormattedYTTimestamp, false);
     }
 
     /**
@@ -449,44 +716,16 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableYTUtaWakuMode(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            try {
-                chrome.storage.sync.get(["EnableYTUtaWakuMode"], (items) => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                        alert(chrome.runtime.lastError?.message);
-                    }
-
-                    resolve(items.EnableYTUtaWakuMode);
-                })
-            } catch (ex) {
-                reject(ex);
-            }
-        });
+        return await this.getSavedDataValueByKey(KeyName.EnableYTUtaWakuMode, false);
     }
 
     /**
-     * 檢查是否使用使用舊版按鍵監聽模式
+     * 檢查是否啟用傳統按鍵監聽模式
      *
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableLegacyKeyListener(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            try {
-                chrome.storage.sync.get(["EnableLegacyKeyListener"], (items) => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                        alert(chrome.runtime.lastError?.message);
-                    }
-
-                    resolve(items.EnableLegacyKeyListener);
-                })
-            } catch (ex) {
-                reject(ex);
-            }
-        });
+        return await this.getSavedDataValueByKey(KeyName.EnableLegacyKeyListener, false);
     }
 
     /**
@@ -495,21 +734,7 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableLeftSideSpacePadding(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            try {
-                chrome.storage.sync.get(["EnableLeftSideSpacePadding"], (items) => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                        alert(chrome.runtime.lastError?.message);
-                    }
-
-                    resolve(items.EnableLeftSideSpacePadding);
-                })
-            } catch (ex) {
-                reject(ex);
-            }
-        });
+        return await this.getSavedDataValueByKey(KeyName.EnableLeftSideSpacePadding, false);
     }
 
     /**
@@ -518,21 +743,7 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableAppendingStartEndToken(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            try {
-                chrome.storage.sync.get(["EnableAppendingStartEndToken"], (items) => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                        alert(chrome.runtime.lastError?.message);
-                    }
-
-                    resolve(items.EnableAppendingStartEndToken);
-                })
-            } catch (ex) {
-                reject(ex);
-            }
-        });
+        return await this.getSavedDataValueByKey(KeyName.EnableAppendingStartEndToken, false);
     }
 
     /**
@@ -541,44 +752,31 @@ export class Function {
      * @returns {Promise<string>} 字串，MIME。
      */
     static async getMIME(): Promise<string> {
-        return new Promise((resolve, reject) => {
-            try {
-                chrome.storage.sync.get(["MIME"], (items) => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                        alert(chrome.runtime.lastError?.message);
-                    }
-
-                    resolve(items.MIME);
-                })
-            } catch (ex) {
-                reject(ex);
-            }
-        });
+        return await this.getSavedDataValueByKey(KeyName.MIME, false);
     }
 
     /**
      * 檢查是否啟用加入動畫瘋彈幕
      *
-     * @returns {Promise<boolean>} 布林值，
+     * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableAddAniGamerDanMu(): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            try {
-                chrome.storage.sync.get(["EnableAddAniGamerDanMu"], (items) => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
+        return await this.getSavedDataValueByKey(KeyName.EnableAddAniGamerDanMu, false);
+    }
 
-                        alert(chrome.runtime.lastError?.message);
-                    }
+    /**
+     * 取得附加秒數
+     *
+     * @returns {Promise<number>} 數值，值。
+     */
+    static async getAppendSeconds(): Promise<number> {
+        let appendSeconds = await this.getSavedDataValueByKey(KeyName.AppendSeconds, false);
 
-                    resolve(items.EnableAddAniGamerDanMu);
-                })
-            } catch (ex) {
-                reject(ex);
-            }
-        });
+        if (appendSeconds === undefined) {
+            appendSeconds = Function.DefaultAppendSeconds;
+        }
+
+        return appendSeconds;
     }
 
     /**
@@ -693,9 +891,9 @@ export class Function {
             return;
         }
 
-        const useLegacyKeyListener = await Function.checkEnableLegacyKeyListener();
+        const useLegacyKeyListener = await this.checkEnableLegacyKeyListener();
 
-        // 判斷是否啟用「使用舊版按鍵監聽模式」，
+        // 判斷是否啟用「使用傳統按鍵監聽模式」，
         // 當啟用時不再傳送訊息至 core.js。
         if (useLegacyKeyListener !== true) {
             chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -766,18 +964,18 @@ export class Function {
                     videoId !== null &&
                     videoId !== "" &&
                     tempOutputData === null) {
-                    tempOutputData = `${videoId}${Function.Seperator2}`;
+                    tempOutputData = `${videoId}${Seperators.Seperator2}`;
                 }
 
                 // 分隔用行。
-                if (line === Function.Seperator4) {
+                if (line === Seperators.Seperator4) {
                     return;
                 }
 
                 if (line.indexOf(i18nUrl) !== -1) {
-                    videoId = Function.getYouTubeId(line.replace(i18nUrl, ""));
+                    videoId = this.getYouTubeId(line.replace(i18nUrl, ""));
 
-                    tempOutputData = `${videoId}${Function.Seperator2}`;
+                    tempOutputData = `${videoId}${Seperators.Seperator2}`;
 
                     return;
                 }
@@ -793,14 +991,14 @@ export class Function {
                     line !== null &&
                     line !== "") {
                     // 判斷是否為備註列。
-                    if (line.indexOf(Function.CommentToken) !== -1) {
+                    if (line.indexOf(this.CommentToken) !== -1) {
                         let clipName = "";
 
                         // 判斷是否為開始的點。
                         if (line.indexOf(i18nStart) !== -1) {
-                            let separatorCount = [...tempOutputData!].filter(l => l === Function.Seperator2).length;
+                            let separatorCount = [...tempOutputData!].filter(l => l === Seperators.Seperator2).length;
 
-                            clipName = line.replace(Function.CommentToken, "").replace(i18nStart, "").trimStart();
+                            clipName = line.replace(this.CommentToken, "").replace(i18nStart, "").trimStart();
 
                             if (clipName === "") {
                                 clipName = " ";
@@ -809,7 +1007,7 @@ export class Function {
                             if (clipName !== undefined && clipName !== null && clipName !== "") {
                                 // 針對連續的（開始）補上結束時間。
                                 if (separatorCount === 1) {
-                                    tempOutputData += `${songIdx}${Function.Seperator2}${clipName}${Function.Seperator2}`;
+                                    tempOutputData += `${songIdx}${Seperators.Seperator2}${clipName}${Seperators.Seperator2}`;
                                 } else {
                                     tempOutputData += "0";
 
@@ -817,14 +1015,14 @@ export class Function {
 
                                     outputData.push(tempOutputData!);
 
-                                    tempOutputData = `${videoId}${Function.Seperator2}${songIdx}${Function.Seperator2}${clipName}${Function.Seperator2}`;
+                                    tempOutputData = `${videoId}${Seperators.Seperator2}${songIdx}${Seperators.Seperator2}${clipName}${Seperators.Seperator2}`;
                                 }
 
                                 songIdx++;
                             }
                         }
                     } else {
-                        const timestampSet = line.split(Function.Seperator1);
+                        const timestampSet = line.split(Seperators.Seperator1);
 
                         if (timestampSet.length > 0 &&
                             timestampSet[0] !== undefined &&
@@ -836,9 +1034,9 @@ export class Function {
                                 // timestampCount 為 0 時。
                                 if (timestampCount === 0) {
                                     if (seconds === true) {
-                                        tempOutputData += `${timestampSet[2]}${Function.Seperator2}`;
+                                        tempOutputData += `${timestampSet[2]}${Seperators.Seperator2}`;
                                     } else {
-                                        tempOutputData += `${timestampSet[1]}${Function.Seperator2}`;
+                                        tempOutputData += `${timestampSet[1]}${Seperators.Seperator2}`;
                                     }
 
                                     timestampCount++;
@@ -861,7 +1059,7 @@ export class Function {
                                 if (index >= (allLines.length - 2) && tempOutputData !== null) {
                                     const lastChar = tempOutputData.charAt(tempOutputData.length - 1);
 
-                                    if (lastChar === Function.Seperator2) {
+                                    if (lastChar === Seperators.Seperator2) {
                                         if (seconds === true) {
                                             tempOutputData += "0";
                                         } else {
@@ -946,20 +1144,20 @@ export class Function {
      * 取得時間標記
      *
      * @param {number} seconds 數值，秒數。
-     * @returns {string} 字串，時間標記。
+     * @returns {Promise<string>} 字串，時間標記。
      */
     static async getTimestamp(seconds: number): Promise<string> {
         let timestamp = "";
 
-        const enableFormatted = await Function.checkEnableFormattedYTTimestamp();
-        const enableYTUtaWakuMode = await Function.checkEnableYTUtaWakuMode();
-        const enableLeftSideSpacePadding = await Function.checkEnableLeftSideSpacePadding();
+        const enableFormatted = await this.checkEnableFormattedYTTimestamp();
+        const enableYTUtaWakuMode = await this.checkEnableYTUtaWakuMode();
+        const enableLeftSideSpacePadding = await this.checkEnableLeftSideSpacePadding();
 
         // 判斷是否啟用 YouTube 歌回模式。
         if (enableYTUtaWakuMode === true) {
             let processedTimestamp = "";
 
-            const rawTimestamp = Function.convertToYTTimestamp(seconds, enableFormatted);
+            const rawTimestamp = this.convertToYTTimestamp(seconds, enableFormatted);
 
             // 自動補空白對齊。
             if (rawTimestamp.length !== 8) {
@@ -984,10 +1182,10 @@ export class Function {
 
             timestamp = `${processedTimestamp} `;
         } else {
-            timestamp = `${Function.convertToTimestamp(seconds)}${Function.Seperator1}` +
-                `${Function.convertToYTTimestamp(seconds, enableFormatted)}${Function.Seperator1}` +
-                `${Math.round(seconds)}${Function.Seperator1}` +
-                `${Function.convertToTwitchTimestamp(seconds)}`;
+            timestamp = `${this.convertToTimestamp(seconds)}${Seperators.Seperator1}` +
+                `${this.convertToYTTimestamp(seconds, enableFormatted)}${Seperators.Seperator1}` +
+                `${Math.round(seconds)}${Seperators.Seperator1}` +
+                `${this.convertToTwitchTimestamp(seconds)}`;
         }
 
         return timestamp;
@@ -1053,10 +1251,10 @@ export class Function {
             // 當 lastLine 不為空白時，即有找到有值的最後一行。
             if (lastLine !== "") {
                 // 排除註解行。
-                if (lastLine.indexOf(Function.CommentToken) !== 0 ||
-                    lastLine.indexOf(Function.CommentToken) === -1) {
+                if (lastLine.indexOf(this.CommentToken) !== 0 ||
+                    lastLine.indexOf(this.CommentToken) === -1) {
                     // 當找到 "," 時，移除 ","。
-                    if (lastLine.indexOf(Function.Seperator3) !== -1) {
+                    if (lastLine.indexOf(Seperators.Seperator3) !== -1) {
                         resultValue = `${keepLines.join("\n")}\n`;
                         // 來源：https://thewebdev.info/2021/06/20/how-to-replace-the-last-occurrence-of-a-character-in-a-string-in-javascript/
                         resultValue += `${lastLine.replace(/,([^,]*)$/, "$1")}\n`;
@@ -1072,7 +1270,7 @@ export class Function {
      * 取得圖檔的寬、高資訊
      *
      * @param {string} url 字串，圖檔的網址。
-     * @returns {Promise<{ width: number, height: number }} Promise，影像的寬、高的數值。
+     * @returns {Promise<{ width: number, height: number }>} 影像的寬、高的數值。
      */
     static getImageDimensions = (url: string): Promise<{ width: number, height: number }> => {
         // 參考來源：https://stackoverflow.com/a/70544176
@@ -1096,7 +1294,7 @@ export class Function {
      * 檢查圖檔的寬、高資訊
      *
      * @param {string} url 字串，圖檔的網址。
-     * @returns {Promise<boolean>} Promise，布林值，檢查結果。
+     * @returns {Promise<boolean>} 布林值，檢查結果。
      */
     static async checkImageDimensions(url: string): Promise<boolean> {
         let isOkay = true;
@@ -1222,17 +1420,19 @@ export class Function {
 
     /**
     * 匯出時間標記
+    *
+    * @param {string} key 字串，鍵值。
     */
-    static async exportTimestamp(): Promise<void> {
-        let timestampData = await Function.getSavedTimestampData();
+    static async exportTimestamp(key: string): Promise<void> {
+        let timestampData = await this.getSavedTimestampData(key);
 
         if (timestampData !== "") {
-            Function.playBeep(0);
+            this.playBeep(0);
 
             let value = timestampData ?? "";
 
             // 移除不同步標記。
-            value = Function.removeLastSeperator(value);
+            value = this.removeLastSeperator(value);
 
             const blob = new Blob([value], { type: "text/plain;charset=utf8" });
 
@@ -1249,7 +1449,7 @@ export class Function {
 
             document.body.removeChild(tempAnchor);
         } else {
-            Function.writeConsoleLog(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
+            this.writeConsoleLog(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
 
             alert(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
         }
@@ -1257,24 +1457,26 @@ export class Function {
 
     /**
      * 匯出 YouTube 留言
+     *
+     * @param {string} key 字串，鍵值。
      */
-    static async exportYtComment(): Promise<void> {
-        let timestampData = await Function.getSavedTimestampData();
+    static async exportYtComment(key: string): Promise<void> {
+        let timestampData = await this.getSavedTimestampData(key);
 
         if (timestampData !== "") {
-            Function.playBeep(0);
+            this.playBeep(0);
 
             let value = timestampData ?? "";
 
             // 移除不同步標記。
-            value = Function.removeLastSeperator(value);
+            value = this.removeLastSeperator(value);
 
             // 儲存移除不同步標記的結果。
-            Function.saveTimestampData(value);
+            await this.saveTimestampData(key, value);
 
             let outputYtCommentData = "";
 
-            const dataSet = Function.parseTimestamp(value, false);
+            const dataSet = this.parseTimestamp(value, false);
 
             // 排除無效的時間標記資料。
             const filteredDataSet = dataSet.filter(item => {
@@ -1330,12 +1532,12 @@ export class Function {
 
                 document.body.removeChild(tempAnchor);
             } else {
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageNoCommentDataToExport"));
+                this.writeConsoleLog(chrome.i18n.getMessage("messageNoCommentDataToExport"));
 
                 alert(chrome.i18n.getMessage("messageNoCommentDataToExport"));
             }
         } else {
-            Function.writeConsoleLog(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
+            this.writeConsoleLog(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
 
             alert(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
         }
@@ -1343,24 +1545,26 @@ export class Function {
 
     /**
      * 匯出 YouTube 影片時間網址
+     *
+     * @param {string} key 字串，鍵值。
      */
-    static async exportYtTimestampUrls(): Promise<void> {
-        let timestampData = await Function.getSavedTimestampData();
+    static async exportYtTimestampUrls(key: string): Promise<void> {
+        let timestampData = await this.getSavedTimestampData(key);
 
         if (timestampData !== "") {
-            Function.playBeep(0);
+            this.playBeep(0);
 
             let value = timestampData ?? "";
 
             // 移除不同步標記。
-            value = Function.removeLastSeperator(value);
+            value = this.removeLastSeperator(value);
 
             // 儲存移除不同步標記的結果。
-            Function.saveTimestampData(value);
+            await this.saveTimestampData(key, value);
 
             let outputUrlData = "";
 
-            const dataSet = Function.parseTimestamp(value, true);
+            const dataSet = this.parseTimestamp(value, true);
 
             // 排除無效的時間標記資料。
             const filteredDataSet = dataSet.filter(item => {
@@ -1439,12 +1643,12 @@ export class Function {
 
                 document.body.removeChild(tempAnchor);
             } else {
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageNoUrlDataToExport"));
+                this.writeConsoleLog(chrome.i18n.getMessage("messageNoUrlDataToExport"));
 
                 alert(chrome.i18n.getMessage("messageNoUrlDataToExport"));
             }
         } else {
-            Function.writeConsoleLog(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
+            this.writeConsoleLog(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
 
             alert(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
         }
@@ -1453,28 +1657,30 @@ export class Function {
     /**
      * 匯出特殊格式
      *
+     * @param {string} key 字串，鍵值。
      * @param {boolean} isJsonc 布林值，判斷是否匯出 *.jsonc，預設值為 false。
      * @param {PlaylistType} type 列舉 PlaylistType，播放清單的類型，預設值為 Playlist.Timestamps。
      */
     static async exportSpeicalFormat(
+        key: string,
         isJsonc: boolean = false,
         type: PlaylistType = PlaylistType.Timestamps): Promise<void> {
-        let timestampData = await Function.getSavedTimestampData();
+        let timestampData = await this.getSavedTimestampData(key);
 
         if (timestampData !== "") {
-            Function.playBeep(0);
+            this.playBeep(0);
 
             let value = timestampData ?? "";
 
             // 移除不同步標記。
-            value = Function.removeLastSeperator(value);
+            value = this.removeLastSeperator(value);
 
             // 儲存移除不同步標記的結果。
-            Function.saveTimestampData(value);
+            await this.saveTimestampData(key, value);
 
             let outputData = "";
 
-            const dataSet = Function.parseTimestamp(value, true);
+            const dataSet = this.parseTimestamp(value, true);
 
             // 排除無效的時間標記資料。
             const filteredDataSet = dataSet.filter(item => {
@@ -1570,12 +1776,12 @@ export class Function {
 
                 document.body.removeChild(tempAnchor);
             } else {
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageNoUrlDataToExport"));
+                this.writeConsoleLog(chrome.i18n.getMessage("messageNoUrlDataToExport"));
 
                 alert(chrome.i18n.getMessage("messageNoUrlDataToExport"));
             }
         } else {
-            Function.writeConsoleLog(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
+            this.writeConsoleLog(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
 
             alert(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
         }
@@ -1583,24 +1789,26 @@ export class Function {
 
     /**
      * 匯出 CUE 指令碼
+     *
+     * @param {string} key 字串，鍵值。
      */
-    static async exportCueSheet(): Promise<void> {
-        let timestampData = await Function.getSavedTimestampData();
+    static async exportCueSheet(key: string): Promise<void> {
+        let timestampData = await this.getSavedTimestampData(key);
 
         if (timestampData !== "") {
-            Function.playBeep(0);
+            this.playBeep(0);
 
             let value = timestampData ?? "";
 
             // 移除不同步標記。
-            value = Function.removeLastSeperator(value);
+            value = this.removeLastSeperator(value);
 
             // 儲存移除不同步標記的結果。
-            Function.saveTimestampData(value);
+            await this.saveTimestampData(key, value);
 
             let outputData = "";
 
-            const dataSet = Function.parseTimestamp(value, true);
+            const dataSet = this.parseTimestamp(value, true);
 
             // 排除無效的時間標記資料。
             const filteredDataSet = dataSet.filter(item => {
@@ -1679,12 +1887,12 @@ export class Function {
 
                 document.body.removeChild(tempAnchor);
             } else {
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageNoCueSheetDataToExport"));
+                this.writeConsoleLog(chrome.i18n.getMessage("messageNoCueSheetDataToExport"));
 
                 alert(chrome.i18n.getMessage("messageNoCueSheetDataToExport"));
             }
         } else {
-            Function.writeConsoleLog(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
+            this.writeConsoleLog(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
 
             alert(chrome.i18n.getMessage("messageNoTimestampDataToExport"));
         }

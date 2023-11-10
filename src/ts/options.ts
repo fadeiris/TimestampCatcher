@@ -1,6 +1,6 @@
 "enable strict";
 
-import { Function, PlaylistType } from "./function";
+import { Function, KeyName, PlaylistType } from "./function";
 
 let elemEnableOutputLog: HTMLInputElement | null = null;
 let elemEnableSoundEffect: HTMLInputElement | null = null;
@@ -16,9 +16,9 @@ let elemBtnExport: HTMLButtonElement | null = null;
 let elemBtnDownloadLocalVideoPlayer: HTMLAnchorElement | null = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.onreadystatechange = () => {
+    document.onreadystatechange = async () => {
         if (document.readyState === "complete") {
-            Function.initExtension();
+            await Function.initExtension();
 
             initOptionsGlobalVariables();
 
@@ -26,8 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             registerOptionsListenEvent();
 
-            const timer = setTimeout(function () {
-                loadOptionsData();
+            const timer = setTimeout(async () => {
+                await loadOptionsData();
 
                 clearTimeout(timer);
             }, Function.CommonTimeout);
@@ -174,197 +174,172 @@ function loadOptionsUIi18n(): void {
  * 註冊監聽事件
  */
 function registerOptionsListenEvent(): void {
-    elemEnableOutputLog?.addEventListener("change", (event) => {
+    elemEnableOutputLog?.addEventListener("change", async (event) => {
         const elem = event.currentTarget as HTMLInputElement;
+        const isOkay = await Function.saveDataValueByKey(
+            KeyName.EnableOutputLog,
+            elem.checked,
+            false);
 
-        chrome.storage.sync.set({ "EnableOutputLog": elem.checked }, () => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        if (isOkay === true) {
+            Function.playBeep(0);
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                Function.playBeep(0);
-
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
-
-                alert(chrome.i18n.getMessage("messageSettingsSaved"));
-            }
-        });
+            alert(chrome.i18n.getMessage("messageSettingsSaved"));
+        }
     });
 
-    elemEnableSoundEffect?.addEventListener("change", (event) => {
+    elemEnableSoundEffect?.addEventListener("change", async (event) => {
         const elem = event.currentTarget as HTMLInputElement;
+        const isOkay = await Function.saveDataValueByKey(
+            KeyName.EnableSoundEffect,
+            elem.checked,
+            false);
 
-        chrome.storage.sync.set({ "EnableSoundEffect": elem.checked }, () => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        if (isOkay === true) {
+            Function.playBeep(0);
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                Function.playBeep(0);
-
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
-
-                alert(chrome.i18n.getMessage("messageSettingsSaved"));
-            }
-        });
+            alert(chrome.i18n.getMessage("messageSettingsSaved"));
+        }
     });
 
-    elemEnableFormattedYTTimestamp?.addEventListener("change", (event) => {
+    elemEnableFormattedYTTimestamp?.addEventListener("change", async (event) => {
         const elem = event.currentTarget as HTMLInputElement;
+        const isOkay = await Function.saveDataValueByKey(
+            KeyName.EnableFormattedYTTimestamp,
+            elem.checked,
+            false);
 
-        chrome.storage.sync.set({ "EnableFormattedYTTimestamp": elem.checked }, () => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        if (isOkay === true) {
+            Function.playBeep(0);
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                Function.playBeep(0);
-
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
-
-                alert(chrome.i18n.getMessage("messageSettingsSaved"));
-            }
-        });
+            alert(chrome.i18n.getMessage("messageSettingsSaved"));
+        }
     });
 
-    elemEnableYTUtaWakuMode?.addEventListener("change", (event) => {
+    elemEnableYTUtaWakuMode?.addEventListener("change", async (event) => {
         const elem = event.currentTarget as HTMLInputElement;
+        const isOkay = await Function.saveDataValueByKey(
+            KeyName.EnableYTUtaWakuMode,
+            elem.checked,
+            false);
 
-        chrome.storage.sync.set({ "EnableYTUtaWakuMode": elem.checked }, () => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        if (isOkay === true) {
+            Function.playBeep(0);
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                Function.playBeep(0);
-
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
-
-                alert(chrome.i18n.getMessage("messageSettingsSaved"));
-            }
-        });
+            alert(chrome.i18n.getMessage("messageSettingsSaved"));
+        }
 
         Function.showYTUtaWakuMode(elem.checked);
     });
 
-    elemEnableLegacyKeyListener?.addEventListener("change", (event) => {
+    elemEnableLegacyKeyListener?.addEventListener("change", async (event) => {
         const elem = event.currentTarget as HTMLInputElement;
+        const isOkay = await Function.saveDataValueByKey(
+            KeyName.EnableLegacyKeyListener,
+            elem.checked,
+            false);
 
-        chrome.storage.sync.set({ "EnableLegacyKeyListener": elem.checked }, () => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        if (isOkay === true) {
+            Function.playBeep(0);
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                Function.playBeep(0);
-
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
-
-                alert(chrome.i18n.getMessage("messageSettingsSaved"));
-            }
-        });
+            alert(chrome.i18n.getMessage("messageSettingsSaved"));
+        }
     });
 
-    elemEnableLeftSideSpacePadding?.addEventListener("change", (event) => {
+    elemEnableLeftSideSpacePadding?.addEventListener("change", async (event) => {
         const elem = event.currentTarget as HTMLInputElement;
+        const isOkay = await Function.saveDataValueByKey(
+            KeyName.EnableLeftSideSpacePadding,
+            elem.checked,
+            false);
 
-        chrome.storage.sync.set({ "EnableLeftSideSpacePadding": elem.checked }, () => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        if (isOkay === true) {
+            Function.playBeep(0);
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                Function.playBeep(0);
-
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
-
-                alert(chrome.i18n.getMessage("messageSettingsSaved"));
-            }
-        });
+            alert(chrome.i18n.getMessage("messageSettingsSaved"));
+        }
     });
 
-    elemEnableAppendingStartEndToken?.addEventListener("change", (event) => {
+    elemEnableAppendingStartEndToken?.addEventListener("change", async (event) => {
         const elem = event.currentTarget as HTMLInputElement;
+        const isOkay = await Function.saveDataValueByKey(
+            KeyName.EnableAppendingStartEndToken,
+            elem.checked,
+            false);
 
-        chrome.storage.sync.set({ "EnableAppendingStartEndToken": elem.checked }, () => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        if (isOkay === true) {
+            Function.playBeep(0);
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                Function.playBeep(0);
-
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
-
-                alert(chrome.i18n.getMessage("messageSettingsSaved"));
-            }
-        });
+            alert(chrome.i18n.getMessage("messageSettingsSaved"));
+        }
     });
 
-    elemSelectMIME?.addEventListener("change", (event) => {
+    elemSelectMIME?.addEventListener("change", async (event) => {
         const elem = event.currentTarget as HTMLOptionElement;
+        const isOkay = await Function.saveDataValueByKey(
+            KeyName.MIME,
+            elem.value,
+            false);
 
-        chrome.storage.sync.set({ "MIME": elem.value }, () => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        if (isOkay === true) {
+            Function.playBeep(1);
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                Function.playBeep(1);
-
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
-
-                alert(chrome.i18n.getMessage("messageSettingsSaved"));
-            }
-        });
+            alert(chrome.i18n.getMessage("messageSettingsSaved"));
+        }
     });
 
-    elemEnableAddAniGamerDanMu?.addEventListener("change", (event) => {
+    elemEnableAddAniGamerDanMu?.addEventListener("change", async (event) => {
         const elem = event.currentTarget as HTMLInputElement;
+        const isOkay = await Function.saveDataValueByKey(
+            KeyName.EnableAddAniGamerDanMu,
+            elem.checked,
+            false);
 
-        chrome.storage.sync.set({ "EnableAddAniGamerDanMu": elem.checked }, () => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        if (isOkay === true) {
+            Function.playBeep(0);
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                Function.playBeep(0);
-
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageSettingsSaved"));
-
-                alert(chrome.i18n.getMessage("messageSettingsSaved"));
-            }
-        });
+            alert(chrome.i18n.getMessage("messageSettingsSaved"));
+        }
     });
 
     elemBtnExport?.addEventListener("click", () => {
+        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+        const key = KeyName.DefaultTimestampDataKeyName;
         const selectedValue = elemSelExportType?.value;
 
         switch (selectedValue) {
             case "Timestamp":
-                Function.exportTimestamp();
+                Function.exportTimestamp(key);
                 break;
             case "YtComment":
-                Function.exportYtComment();
+                Function.exportYtComment(key);
                 break;
             case "YtTimestampUrls":
-                Function.exportYtTimestampUrls();
+                Function.exportYtTimestampUrls(key);
                 break;
             case "CustomYTPlayerPlaylist_Timestamps":
-                Function.exportSpeicalFormat(false, PlaylistType.Timestamps);
+                Function.exportSpeicalFormat(key, false, PlaylistType.Timestamps);
                 break;
             case "CustomYTPlayerPlaylist_Seconds":
-                Function.exportSpeicalFormat(false, PlaylistType.Seconds);
+                Function.exportSpeicalFormat(key, false, PlaylistType.Seconds);
                 break;
             case "JsoncPlaylist":
-                Function.exportSpeicalFormat(true, PlaylistType.Seconds);
+                Function.exportSpeicalFormat(key, true, PlaylistType.Seconds);
                 break;
             case "CueSheet":
-                Function.exportCueSheet();
+                Function.exportCueSheet(key);
                 break;
             default:
-                Function.exportTimestamp();
+                Function.exportTimestamp(key);
                 break;
         }
     });
@@ -389,58 +364,57 @@ function registerOptionsListenEvent(): void {
 /**
  * 載入設定資料
  */
-function loadOptionsData(): void {
-    chrome.storage.sync.get([
-        "EnableOutputLog",
-        "EnableSoundEffect",
-        "EnableFormattedYTTimestamp",
-        "EnableYTUtaWakuMode",
-        "EnableLegacyKeyListener",
-        "EnableLeftSideSpacePadding",
-        "EnableAppendingStartEndToken",
-        "MIME",
-        "EnableAddAniGamerDanMu"
-    ], (items) => {
-        if (chrome.runtime.lastError?.message) {
-            Function.writeConsoleLog(chrome.runtime.lastError?.message);
+async function loadOptionsData(): Promise<void> {
+    const optionsData = await Function.getSavedDataValueByKeys(
+        [
+            KeyName.EnableOutputLog,
+            KeyName.EnableSoundEffect,
+            KeyName.EnableFormattedYTTimestamp,
+            KeyName.EnableYTUtaWakuMode,
+            KeyName.EnableLegacyKeyListener,
+            KeyName.EnableLeftSideSpacePadding,
+            KeyName.EnableAppendingStartEndToken,
+            KeyName.MIME,
+            KeyName.EnableAddAniGamerDanMu,
+            KeyName.AppendSeconds
+        ],
+        false);
 
-            alert(chrome.runtime.lastError?.message);
-        } else {
-            if (elemEnableOutputLog !== null) {
-                elemEnableOutputLog.checked = items.EnableOutputLog;
-            }
-
-            if (elemEnableSoundEffect !== null) {
-                elemEnableSoundEffect.checked = items.EnableSoundEffect;
-            }
-
-            if (elemEnableFormattedYTTimestamp !== null) {
-                elemEnableFormattedYTTimestamp.checked = items.EnableFormattedYTTimestamp;
-            }
-
-            if (elemEnableYTUtaWakuMode !== null) {
-                elemEnableYTUtaWakuMode.checked = items.EnableYTUtaWakuMode;
-            }
-
-            if (elemEnableLegacyKeyListener !== null) {
-                elemEnableLegacyKeyListener.checked = items.EnableLegacyKeyListener;
-            }
-
-            if (elemEnableLeftSideSpacePadding !== null) {
-                elemEnableLeftSideSpacePadding.checked = items.EnableLeftSideSpacePadding;
-            }
-
-            if (elemEnableAppendingStartEndToken !== null) {
-                elemEnableAppendingStartEndToken.checked = items.EnableAppendingStartEndToken;
-            }
-
-            if (elemSelectMIME !== null) {
-                elemSelectMIME.value = items.MIME;
-            }
-
-            if (elemEnableAddAniGamerDanMu !== null) {
-                elemEnableAddAniGamerDanMu.checked = items.EnableAddAniGamerDanMu;
-            }
+    if (optionsData !== undefined) {
+        if (elemEnableOutputLog !== null) {
+            elemEnableOutputLog.checked = optionsData[KeyName.EnableOutputLog];
         }
-    });
+
+        if (elemEnableSoundEffect !== null) {
+            elemEnableSoundEffect.checked = optionsData[KeyName.EnableSoundEffect];
+        }
+
+        if (elemEnableFormattedYTTimestamp !== null) {
+            elemEnableFormattedYTTimestamp.checked = optionsData[KeyName.EnableFormattedYTTimestamp];
+        }
+
+        if (elemEnableYTUtaWakuMode !== null) {
+            elemEnableYTUtaWakuMode.checked = optionsData[KeyName.EnableYTUtaWakuMode];
+        }
+
+        if (elemEnableLegacyKeyListener !== null) {
+            elemEnableLegacyKeyListener.checked = optionsData[KeyName.EnableLegacyKeyListener];
+        }
+
+        if (elemEnableLeftSideSpacePadding !== null) {
+            elemEnableLeftSideSpacePadding.checked = optionsData[KeyName.EnableLeftSideSpacePadding];
+        }
+
+        if (elemEnableAppendingStartEndToken !== null) {
+            elemEnableAppendingStartEndToken.checked = optionsData[KeyName.EnableAppendingStartEndToken];
+        }
+
+        if (elemSelectMIME !== null) {
+            elemSelectMIME.value = optionsData[KeyName.MIME];
+        }
+
+        if (elemEnableAddAniGamerDanMu !== null) {
+            elemEnableAddAniGamerDanMu.checked = optionsData[KeyName.EnableAddAniGamerDanMu];
+        }
+    }
 }

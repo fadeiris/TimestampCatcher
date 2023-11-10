@@ -1,11 +1,11 @@
 "use strict";
 
-import { Function } from "./function";
+import { Command, Function, KeyName, Seperators } from "./function";
 
 document.addEventListener("DOMContentLoaded", () => {
     document.onreadystatechange = async () => {
         if (document.readyState === "complete") {
-            Function.initExtension();
+            await Function.initExtension();
 
             // 傳送訊息至 Background.js
             chrome.runtime.sendMessage(Function.MessageWakeUp);
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // 延後執行注入 HTML 元素。
-            const timer = setTimeout(function () {
+            const timer = setTimeout(() => {
                 injectElemToVideoPlayerControl();
                 injectWebUIForYouTube();
 
@@ -54,6 +54,8 @@ function registerEventListener(): void {
         const isGamerAniVideo = currentUrl.indexOf("ani.gamer.com.tw/animeVideo.php?sn=") !== -1;
         const isBilibiliVideo = currentUrl.indexOf("bilibili.com/video/") !== -1;
         const isLocalHostVideo = currentUrl.indexOf("file:///") !== -1;
+        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+        const key = KeyName.DefaultTimestampDataKeyName;
 
         if (event.shiftKey && event.code === "KeyZ" &&
             (isYouTubeVideo || isTwitchVideo || isBilibiliVideo || isLocalHostVideo)) {
@@ -66,15 +68,15 @@ function registerEventListener(): void {
         } else if (event.shiftKey && event.code === "KeyS" &&
             (isYouTubeVideo || isTwitchVideo || isBilibiliVideo || isGamerAniVideo || isLocalHostVideo)) {
             // 判斷目前所在頁面的網址及按下的按鍵是否為 Shift + S 鍵。
-            doVideoRewind(false, Function.CommonSeconds);
+            doVideoRewind(key, false, Function.CommonSeconds);
         } else if (event.shiftKey && event.code === "KeyD" &&
             (isYouTubeVideo || isTwitchVideo || isBilibiliVideo || isGamerAniVideo || isLocalHostVideo)) {
             // 判斷目前所在頁面的網址及按下的按鍵是否為 Shift + D 鍵。
-            doVideoRewind(true, Function.CommonSeconds);
+            doVideoRewind(key, true, Function.CommonSeconds);
         } else if (event.shiftKey && event.code === "KeyA" &&
             (isYouTubeVideo || isTwitchVideo || isBilibiliVideo || isLocalHostVideo)) {
             // 判斷目前所在頁面的網址及按下的按鍵是否為 Shift + A 鍵。
-            syncTimestamp(-1, true);
+            syncTimestamp(key, Function.PauseSyncSeconds, true);
         } else {
             // 不進行任何的操作。
         }
@@ -85,24 +87,26 @@ function registerEventListener(): void {
  * 接收來自 background.js 的訊息
  */
 chrome.runtime.onMessage.addListener((response, _sender, _sendResponse) => {
+    // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+    const key = KeyName.DefaultTimestampDataKeyName;
     const currentUrl = window.location.href;
 
-    if (response === Function.CommandRecordTimestamp) {
+    if (response === Command.RecordTimestamp) {
         recordTimestamp(currentUrl);
-    } else if (response === Function.CommandTakeScreenshot) {
+    } else if (response === Command.TakeScreenshot) {
         takeScreenshot(currentUrl);
-    } else if (response === Function.CommandExtractTimestamp) {
+    } else if (response === Command.ExtractTimestamp) {
         extractTimestamp(currentUrl, false);
-    } else if (response === Function.CommandExtractTimestampAutoAppendEndToken) {
+    } else if (response === Command.ExtractTimestampAutoAppendEndToken) {
         extractTimestamp(currentUrl, true);
-    } else if (response === Function.CommandViewYtThumbnail) {
+    } else if (response === Command.ViewYtThumbnail) {
         viewYtThumbnail(currentUrl);
-    } else if (response === Function.CommandRewind) {
-        doVideoRewind(false, Function.CommonSeconds);
-    } else if (response === Function.CommandFastForward) {
-        doVideoRewind(true, Function.CommonSeconds);
-    } else if (response === Function.CommandPauseSync) {
-        syncTimestamp(-1, true);
+    } else if (response === Command.Rewind) {
+        doVideoRewind(key, false, Function.CommonSeconds);
+    } else if (response === Command.FastForward) {
+        doVideoRewind(key, true, Function.CommonSeconds);
+    } else if (response === Command.PauseSync) {
+        syncTimestamp(key, Function.PauseSyncSeconds, true);
     } else {
         // 不進行任何的操作。
     }
@@ -315,9 +319,9 @@ function createAnchor(id: string, i18nStr: string, callbackFunc: any): HTMLAncho
 }
 
 /**
- * 紀錄時間標記
+ * 記錄時間標記
  *
- * @param {string} currentUrl 目前的頁籤的網址。
+ * @param {string} currentUrl 字串，目前的頁籤的網址。
  */
 async function recordTimestamp(currentUrl: string): Promise<void> {
     // 當網址未包含 "file:///" 時才撥放音效，以避免發出 net::ERR_BLOCKED_BY_CLIENT。
@@ -326,6 +330,7 @@ async function recordTimestamp(currentUrl: string): Promise<void> {
     }
 
     const video = document.querySelector("video");
+
     let seconds = video?.currentTime ?? 0.0;
 
     // 2022-11-16 目前找不到方法取得 Bilibili 網站直播的目前時間。
@@ -353,75 +358,69 @@ async function recordTimestamp(currentUrl: string): Promise<void> {
         }
     }
 
+    // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+    const key = KeyName.DefaultTimestampDataKeyName;
     const enableYTUtaWakuMode = await Function.checkEnableYTUtaWakuMode();
     const enableAppendingStartEndToken = await Function.checkEnableAppendingStartEndToken();
+    const timestamp = await Function.getTimestamp(seconds);
+
+    // 取得目前已儲存的時間標記資料。
+    let savedValue = await Function.getSavedTimestampData(key);
+
+    // 當鍵值對應的時間標記資料不存在時，先建立空資料，以利後續流程可以正常執行。。
+    if (savedValue === undefined) {
+        await Function.saveTimestampData(key, "");
+
+        // 在空資料建立後再重新取值一次。
+        savedValue = await Function.getSavedTimestampData(key);
+    }
+
+    // 移除不同步標記。
+    let oldValue = Function.removeLastSeperator(savedValue);
 
     // 判斷是否啟用 YouTube 歌回模式。
     if (enableYTUtaWakuMode === true) {
-        const timestamp = await Function.getTimestamp(seconds);
-
-        chrome.storage.local.get(["TimestampData"], (items) => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                // 移除不同步標記。
-                let oldValue = Function.removeLastSeperator(items.TimestampData);
-
-                if (oldValue === "") {
-                    oldValue = `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
-                        `\n` +
-                        `${chrome.i18n.getMessage("stringSongTimestamp")}\n`;
-                } else {
-                    if (oldValue.indexOf(currentUrl) === -1) {
-                        oldValue = `${oldValue}\n\n` +
-                            `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
-                            `\n` +
-                            `${chrome.i18n.getMessage("stringSongTimestamp")}\n`;
-                    }
-                }
-
-                Function.saveTimestampData(`${oldValue}${timestamp}\n`);
+        if (oldValue === "") {
+            oldValue = `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
+                `\n` +
+                `${chrome.i18n.getMessage("stringSongTimestamp")}\n`;
+        } else {
+            if (oldValue.indexOf(currentUrl) === -1) {
+                oldValue = `${oldValue}\n\n` +
+                    `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
+                    `\n` +
+                    `${chrome.i18n.getMessage("stringSongTimestamp")}\n`;
             }
-        });
+        }
+
+        await Function.saveTimestampData(key, `${oldValue}${timestamp}\n`);
     } else {
-        const timestamp = await Function.getTimestamp(seconds);
-
-        chrome.storage.local.get(["TimestampData"], (items) => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                // 移除不同步標記。
-                let oldValue = Function.removeLastSeperator(items.TimestampData);
-
-                if (oldValue === "") {
-                    oldValue = `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
-                        `${chrome.i18n.getMessage("stringFormatDescription")}\n` +
-                        `${chrome.i18n.getMessage("stringTimestamp")}\n`;
-                } else {
-                    if (oldValue.indexOf(currentUrl) === -1) {
-                        oldValue = `${oldValue}\n\n` +
-                            `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
-                            `${chrome.i18n.getMessage("stringFormatDescription")}\n` +
-                            `${chrome.i18n.getMessage("stringTimestamp")}\n`;
-                    }
-                }
-
-                const startToken = enableAppendingStartEndToken === true ?
-                    chrome.i18n.getMessage("stringTimestampStart") :
-                    "";
-
-                Function.saveTimestampData(`${oldValue}${Function.CommentToken} ${startToken}\n${timestamp}\n`);
+        if (oldValue === "") {
+            oldValue = `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
+                `${chrome.i18n.getMessage("stringFormatDescription")}\n` +
+                `${chrome.i18n.getMessage("stringTimestamp")}\n`;
+        } else {
+            if (oldValue.indexOf(currentUrl) === -1) {
+                oldValue = `${oldValue}\n\n` +
+                    `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
+                    `${chrome.i18n.getMessage("stringFormatDescription")}\n` +
+                    `${chrome.i18n.getMessage("stringTimestamp")}\n`;
             }
-        });
+        }
+
+        const startToken = enableAppendingStartEndToken === true ?
+            chrome.i18n.getMessage("stringTimestampStart") :
+            "";
+
+        await Function.saveTimestampData(key, `${oldValue}${Function.CommentToken} ${startToken}\n${timestamp}\n`);
     }
 
     // 讓網頁 UI 重新載入時間標記資料。
     const timer = setTimeout(function () {
-        loadTimestampForWebUI();
+        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+        const key = KeyName.DefaultTimestampDataKeyName;
+
+        loadTimestampForWebUI(key);
 
         clearTimeout(timer);
     }, Function.CommonTimeout);
@@ -520,27 +519,22 @@ async function extractTimestamp(currentUrl: string, autoAddEndToken: boolean = f
             Function.playBeep(1);
         }
 
-        chrome.storage.local.get(["TimestampData"], (items) => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+        const key = KeyName.DefaultTimestampDataKeyName;
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                let oldValue = items.TimestampData;
+        let oldValue = await Function.getSavedTimestampData(key);
 
-                // 判斷 oldValue 是否為空白。
-                if (oldValue !== "") {
-                    // 先詢問。
-                    const confirmResult = confirm(chrome.i18n.getMessage("messageDoYouWantToOverwriteTimestamp"));
+        // 判斷 oldValue 是否為空白。
+        if (oldValue !== "") {
+            // 先詢問。
+            const confirmResult = confirm(chrome.i18n.getMessage("messageDoYouWantToOverwriteTimestamp"));
 
-                    if (confirmResult === true) {
-                        doExtractYouTubeComment(autoAddEndToken);
-                    }
-                } else {
-                    doExtractYouTubeComment(autoAddEndToken);
-                }
+            if (confirmResult === true) {
+                doExtractYouTubeComment(key, autoAddEndToken);
             }
-        });
+        } else {
+            doExtractYouTubeComment(key, autoAddEndToken);
+        }
     } catch (error) {
         Function.writeConsoleLog(error);
 
@@ -551,10 +545,11 @@ async function extractTimestamp(currentUrl: string, autoAddEndToken: boolean = f
 /**
  * 執行解析 YouTube 的評論內容
  *
+ * @param {string} key 字串，鍵值。
  * @param {boolean} autoAddEndToken 布林值，用於判斷是否將下一筆的開始時間當作是上一筆的結束時間，預設值為 false。
  */
-async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promise<void> {
-    // TODO: 2022-11-05 未來會需要再調整。
+async function doExtractYouTubeComment(key: string, autoAddEndToken: boolean = false): Promise<void> {
+    // TODO: 2022/11/5 未來會需要再調整。
     let tempDataSet: string[] = [],
         composeStr = "",
         unknownNameCount = 1,
@@ -632,7 +627,7 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
                     textContent.indexOf("http") === -1) {
                     const youTubeData = Function.getYouTubeIdAndStartSec(node.href);
 
-                    composeStr += `${youTubeData[0]}${Function.Seperator2}${youTubeData[1]}${Function.Seperator2}`;
+                    composeStr += `${youTubeData[0]}${Seperators.Seperator2}${youTubeData[1]}${Seperators.Seperator2}`;
 
                     if (tempNameStr !== "") {
                         composeStr += tempNameStr;
@@ -700,7 +695,7 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
                         tempNameStr += trimedTextContent;
                     } else {
                         // 判斷 composeStr 是否沒內容。
-                        if (composeStr.indexOf(Function.Seperator2) !== -1) {
+                        if (composeStr.indexOf(Seperators.Seperator2) !== -1) {
                             composeStr += trimedTextContent;
 
                             tempDataSet.push(composeStr);
@@ -775,8 +770,8 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
             tempStr = "",
             previousSongName = "";
 
-        tempDataSet.forEach((item, index) => {
-            const data = item.split(Function.Seperator2),
+        tempDataSet.forEach(async (item, index) => {
+            const data = item.split(Seperators.Seperator2),
                 videoId = data[0],
                 songName = Function.removeUrl(data[2]);
 
@@ -792,9 +787,9 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
             }
 
             // 組成時間標記字串。
-            let timestamp = `${Function.convertToTimestamp(seconds)}${Function.Seperator1}` +
-                `${Function.convertToYTTimestamp(seconds, enableFormatted)}${Function.Seperator1}` +
-                `${Math.round(seconds)}${Function.Seperator1}` +
+            let timestamp = `${Function.convertToTimestamp(seconds)}${Seperators.Seperator1}` +
+                `${Function.convertToYTTimestamp(seconds, enableFormatted)}${Seperators.Seperator1}` +
+                `${Math.round(seconds)}${Seperators.Seperator1}` +
                 `${Function.convertToTwitchTimestamp(seconds)}`;
 
             // 當 tempStr 不為空值時，在補全 tempStr 後，清空 tempStr。
@@ -855,14 +850,14 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
                     if (index === tempDataSet.length - 1) {
                         // 當 autoAddEndToken 的值為 true 時，幫最後一個開始補上結束時間點。
                         if (autoAddEndToken === true) {
-                            // TODO: 2022-10-03 待看是否要改為可以讓使用者自行設定。
-                            // 自動 +300 秒（5 分鐘）當作結束時間。
-                            seconds += 300;
+                            // TODO: 2022/10/3 待看是否要改為可以讓使用者自行設定。
+                            // 自動附加秒數當作結束時間。
+                            seconds += await Function.getAppendSeconds();
 
                             // 產生結束的時間標記字串。
-                            timestamp = `${Function.convertToTimestamp(seconds)}${Function.Seperator1}` +
-                                `${Function.convertToYTTimestamp(seconds, enableFormatted)}${Function.Seperator1}` +
-                                `${Math.round(seconds)}${Function.Seperator1}` +
+                            timestamp = `${Function.convertToTimestamp(seconds)}${Seperators.Seperator1}` +
+                                `${Function.convertToYTTimestamp(seconds, enableFormatted)}${Seperators.Seperator1}` +
+                                `${Math.round(seconds)}${Seperators.Seperator1}` +
                                 `${Function.convertToTwitchTimestamp(seconds)}`;
 
                             outputStr += `${Function.CommentToken} ${songName}` +
@@ -892,11 +887,11 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
             // 移除最尾端的換含字元。
             outputStr = outputStr.replace(/[\n\r]$/g, "");
 
-            Function.saveTimestampData(`${outputStr}`);
+            await Function.saveTimestampData(key, `${outputStr}`);
 
             // 讓網頁 UI 重新載入時間標記資料。
-            const timer = setTimeout(function () {
-                loadTimestampForWebUI();
+            const timer = setTimeout(async () => {
+                await loadTimestampForWebUI(key);
 
                 clearTimeout(timer);
             }, Function.CommonTimeout);
@@ -919,10 +914,12 @@ async function doExtractYouTubeComment(autoAddEndToken: boolean = false): Promis
 /**
  * 執行影片倒轉
  *
+ * @param {string} key 字串，鍵值。
  * @param {boolean} fastForward 布林值，是否快轉，預設值為 false。
  * @param {number} seconds 數值，秒數，預設值來自 Function.CommonSeconds。
  */
 async function doVideoRewind(
+    key: string,
     fastForward: boolean = false,
     seconds: number = Function.CommonSeconds): Promise<void> {
     const video = document.querySelector("video");
@@ -944,7 +941,7 @@ async function doVideoRewind(
 
         video.currentTime = newSeconds;
 
-        syncTimestamp(newSeconds);
+        syncTimestamp(key, newSeconds, false);
     }
 }
 
@@ -1057,23 +1054,20 @@ function injectWebUIForYouTube(): void {
             elemBtnRemoveAll.textContent = chrome.i18n.getMessage("stringWebUIBtnRemoveAll");
             elemBtnRemoveAll.title = chrome.i18n.getMessage("stringBtnRemoveAll");
             elemBtnRemoveAll.className = btnClassName;
-            elemBtnRemoveAll.addEventListener("click", () => {
+            elemBtnRemoveAll.addEventListener("click", async () => {
                 const confirmDelete = confirm(chrome.i18n.getMessage("messageConfirmClearAll"));
 
                 if (confirmDelete === true) {
-                    chrome.storage.local.set({ "TimestampData": "" }, () => {
-                        if (chrome.runtime.lastError?.message) {
-                            Function.writeConsoleLog(chrome.runtime.lastError?.message);
+                    // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+                    const key = KeyName.DefaultTimestampDataKeyName;
+                    const isOkay = await Function.removeSavedDataByKey(key);
 
-                            alert(chrome.runtime.lastError?.message);
-                        } else {
-                            Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
+                    if (isOkay === true) {
+                        Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
+                        Function.playBeep(0);
 
-                            Function.playBeep(0);
-
-                            loadTimestampForWebUI();
-                        }
-                    });
+                        loadTimestampForWebUI(key);
+                    }
                 }
             });
 
@@ -1086,9 +1080,12 @@ function injectWebUIForYouTube(): void {
             elemBtnReload.title = chrome.i18n.getMessage("stringBtnReload");
             elemBtnReload.className = btnClassName;
             elemBtnReload.addEventListener("click", () => {
+                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+                const key = KeyName.DefaultTimestampDataKeyName;
+
                 Function.playBeep(0);
 
-                loadTimestampForWebUI();
+                loadTimestampForWebUI(key);
             });
 
             elemBtnGroup.appendChild(elemBtnReload);
@@ -1100,7 +1097,10 @@ function injectWebUIForYouTube(): void {
             elemBtnRewind.title = chrome.i18n.getMessage("stringBtnRewind");
             elemBtnRewind.className = btnClassName;
             elemBtnRewind.addEventListener("click", () => {
-                doVideoRewind(false, Function.CommonSeconds);
+                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+                const key = KeyName.DefaultTimestampDataKeyName;
+
+                doVideoRewind(key, false, Function.CommonSeconds);
             });
 
             elemBtnGroup.appendChild(elemBtnRewind);
@@ -1112,7 +1112,10 @@ function injectWebUIForYouTube(): void {
             elemBtnFastForward.title = chrome.i18n.getMessage("stringBtnFastForward");
             elemBtnFastForward.className = btnClassName;
             elemBtnFastForward.addEventListener("click", () => {
-                doVideoRewind(true, Function.CommonSeconds);
+                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+                const key = KeyName.DefaultTimestampDataKeyName;
+
+                doVideoRewind(key, true, Function.CommonSeconds);
             });
 
             elemBtnGroup.appendChild(elemBtnFastForward);
@@ -1124,7 +1127,10 @@ function injectWebUIForYouTube(): void {
             elemBtnPauseSync.title = chrome.i18n.getMessage("stringBtnPauseSync");
             elemBtnPauseSync.className = btnClassName;
             elemBtnPauseSync.addEventListener("click", () => {
-                syncTimestamp(-1, true);
+                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+                const key = KeyName.DefaultTimestampDataKeyName;
+
+                syncTimestamp(key, Function.PauseSyncSeconds, true);
             });
 
             elemBtnGroup.appendChild(elemBtnPauseSync);
@@ -1172,22 +1178,18 @@ function injectWebUIForYouTube(): void {
             elemWebUITextarea.style.marginBottom = "4px";
             elemWebUITextarea.style.borderRadius = "4px";
             elemWebUITextarea.style.width = "99%";
-            elemWebUITextarea.addEventListener("change", () => {
+            elemWebUITextarea.addEventListener("change", async () => {
+                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+                const key = KeyName.DefaultTimestampDataKeyName;
                 const value = elemWebUITextarea?.value ?? "";
+                const isOkay = await Function.saveTimestampData(key, value);
 
-                chrome.storage.local.set({ "TimestampData": value }, () => {
-                    if (chrome.runtime.lastError?.message) {
-                        Function.writeConsoleLog(chrome.runtime.lastError?.message);
+                if (isOkay === true) {
+                    Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
+                    Function.playBeep(0);
 
-                        alert(chrome.runtime.lastError?.message);
-                    } else {
-                        Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
-
-                        Function.playBeep(0);
-
-                        loadTimestampForWebUI();
-                    }
-                });
+                    loadTimestampForWebUI(key);
+                }
             });
 
             elemNewWebUIFrame.appendChild(elemWebUITextarea);
@@ -1197,7 +1199,10 @@ function injectWebUIForYouTube(): void {
 
             // 第一次載入。
             const timer = setTimeout(function () {
-                loadTimestampForWebUI();
+                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
+                const key = KeyName.DefaultTimestampDataKeyName;
+
+                loadTimestampForWebUI(key);
 
                 clearTimeout(timer);
             }, Function.CommonTimeout);
@@ -1207,8 +1212,10 @@ function injectWebUIForYouTube(): void {
 
 /**
  * 網頁 UI 載入時間標記資料
+ *
+ * @param {string} key 字串，鍵值。
  */
-function loadTimestampForWebUI(): void {
+async function loadTimestampForWebUI(key: string): Promise<void> {
     const textarea = document.getElementById("tWebUITextarea") as HTMLTextAreaElement;
 
     if (textarea !== undefined && textarea !== null) {
@@ -1217,38 +1224,36 @@ function loadTimestampForWebUI(): void {
             Function.showAnimation();
         }
 
-        chrome.storage.local.get(["TimestampData"], (items) => {
-            if (chrome.runtime.lastError?.message) {
-                Function.writeConsoleLog(chrome.runtime.lastError?.message);
+        const timestampData = await Function.getSavedTimestampData(key);
 
-                alert(chrome.runtime.lastError?.message);
-            } else {
-                if (textarea !== null) {
-                    let timestampData = "";
+        if (textarea !== null) {
+            let newTimestampData = "";
 
-                    if (items.TimestampData !== undefined) {
-                        timestampData = items.TimestampData;
-                    }
-
-                    textarea.value = timestampData;
-                    textarea.scrollTop = textarea.scrollHeight;
-
-                    Function.writeConsoleLog(chrome.i18n.getMessage("messageLoadedTimestampData"));
-                } else {
-                    Function.writeConsoleLog(chrome.i18n.getMessage("messageCanNotFindTextarea"));
-                }
+            if (timestampData !== undefined) {
+                newTimestampData = timestampData;
             }
-        });
+
+            textarea.value = newTimestampData;
+            textarea.scrollTop = textarea.scrollHeight;
+
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageLoadedTimestampData"));
+        } else {
+            Function.writeConsoleLog(chrome.i18n.getMessage("messageCanNotFindTextarea"));
+        }
     }
 }
 
 /**
  * 同步時間標記
  *
+ * @param {string} key 字串，鍵值。
  * @param {number} newSeconds 數值，欲同步的秒數。
  * @param {boolean} pasueSyncMode 布林值，判斷是否要進入暫停同步模式，預設值為 false。
  */
-async function syncTimestamp(newSeconds: number, pasueSyncMode: boolean = false): Promise<void> {
+async function syncTimestamp(
+    key: string,
+    newSeconds: number,
+    pasueSyncMode: boolean = false): Promise<void> {
     const textarea = document.getElementById("tWebUITextarea") as HTMLTextAreaElement;
 
     if (textarea !== undefined && textarea !== null) {
@@ -1305,7 +1310,7 @@ async function syncTimestamp(newSeconds: number, pasueSyncMode: boolean = false)
             // 當 lastLine 不為空白時，即有找到有值的最後一行。
             if (lastLine !== "") {
                 // 若 lastLine 內含有 "," 則不進行處裡。
-                if (lastLine.indexOf(Function.Seperator3) === -1) {
+                if (lastLine.indexOf(Seperators.Seperator3) === -1) {
                     // 排除註解行。
                     if (lastLine.indexOf(Function.CommentToken) !== 0 ||
                         lastLine.indexOf(Function.CommentToken) === -1) {
@@ -1314,8 +1319,8 @@ async function syncTimestamp(newSeconds: number, pasueSyncMode: boolean = false)
                         // 當 pasueSyncMode 為 true 時。
                         if (pasueSyncMode === true) {
                             // 當沒有 "," 時才補上。
-                            if (lastLine.indexOf(Function.Seperator3) === -1) {
-                                textarea.value += `${lastLine}${Function.Seperator3}\n`;
+                            if (lastLine.indexOf(Seperators.Seperator3) === -1) {
+                                textarea.value += `${lastLine}${Seperators.Seperator3}\n`;
                             }
                         } else {
                             // 取得新的時間標記資訊。
@@ -1325,19 +1330,19 @@ async function syncTimestamp(newSeconds: number, pasueSyncMode: boolean = false)
                         }
 
                         // 回存時間標記。
-                        Function.saveTimestampData(textarea.value);
+                        await Function.saveTimestampData(key, textarea.value);
                     }
                 } else {
                     // 當 pasueSyncMode 為 true 時。
                     if (pasueSyncMode === true) {
                         // 當有 "," 時移除 ","。
-                        if (lastLine.indexOf(Function.Seperator3) !== -1) {
+                        if (lastLine.indexOf(Seperators.Seperator3) !== -1) {
                             textarea.value = `${keepLines.join("\n")}\n`;
                             // 來源：https://thewebdev.info/2021/06/20/how-to-replace-the-last-occurrence-of-a-character-in-a-string-in-javascript/
                             textarea.value += `${lastLine.replace(/,([^,]*)$/, "$1")}\n`;
 
                             // 回存時間標記。
-                            Function.saveTimestampData(textarea.value);
+                            await Function.saveTimestampData(key, textarea.value);
                         }
                     }
                 }
@@ -1361,7 +1366,6 @@ async function viewYtThumbnail(currentUrl: string): Promise<void> {
             for (let i = 0; i < qualities.length; i++) {
                 const quality = qualities[i];
                 const url = `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
-
                 // 檢查此畫質是否有效，沒有則繼續往下一個畫質檢查。
                 const isOkay = await Function.checkImageDimensions(url);
 
