@@ -54,8 +54,7 @@ function registerEventListener(): void {
         const isGamerAniVideo = currentUrl.indexOf("ani.gamer.com.tw/animeVideo.php?sn=") !== -1;
         const isBilibiliVideo = currentUrl.indexOf("bilibili.com/video/") !== -1;
         const isLocalHostVideo = currentUrl.indexOf("file:///") !== -1;
-        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-        const key = KeyName.DefaultTimestampDataKeyName;
+        const key = Function.getKey();
 
         if (event.shiftKey && event.code === "KeyZ" &&
             (isYouTubeVideo || isTwitchVideo || isBilibiliVideo || isLocalHostVideo)) {
@@ -87,8 +86,7 @@ function registerEventListener(): void {
  * 接收來自 background.js 的訊息
  */
 chrome.runtime.onMessage.addListener((response, _sender, _sendResponse) => {
-    // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-    const key = KeyName.DefaultTimestampDataKeyName;
+    const key = Function.getKey();
     const currentUrl = window.location.href;
 
     if (response === Command.RecordTimestamp) {
@@ -358,8 +356,7 @@ async function recordTimestamp(currentUrl: string): Promise<void> {
         }
     }
 
-    // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-    const key = KeyName.DefaultTimestampDataKeyName;
+    const key = Function.getKey();
     const enableYTUtaWakuMode = await Function.checkEnableYTUtaWakuMode();
     const enableAppendingStartEndToken = await Function.checkEnableAppendingStartEndToken();
     const timestamp = await Function.getTimestamp(seconds);
@@ -417,8 +414,7 @@ async function recordTimestamp(currentUrl: string): Promise<void> {
 
     // 讓網頁 UI 重新載入時間標記資料。
     const timer = setTimeout(function () {
-        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-        const key = KeyName.DefaultTimestampDataKeyName;
+        const key = Function.getKey();
 
         loadTimestampForWebUI(key);
 
@@ -519,8 +515,7 @@ async function extractTimestamp(currentUrl: string, autoAddEndToken: boolean = f
             Function.playBeep(1);
         }
 
-        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-        const key = KeyName.DefaultTimestampDataKeyName;
+        const key = Function.getKey();
 
         let oldValue = await Function.getSavedTimestampData(key);
 
@@ -1029,7 +1024,7 @@ function injectWebUIForYouTube(): void {
             const elemBtnHideToogle = document.createElement("button") as HTMLButtonElement;
 
             elemBtnHideToogle.id = "btnHideToogle";
-            elemBtnHideToogle.textContent = chrome.i18n.getMessage("stringWebUIBtnHideToogle");;
+            elemBtnHideToogle.textContent = chrome.i18n.getMessage("stringWebUIBtnHideToogle");
             elemBtnHideToogle.title = chrome.i18n.getMessage("stringBtnHideToggle");
             elemBtnHideToogle.className = btnClassName;
             elemBtnHideToogle.addEventListener("click", () => {
@@ -1058,8 +1053,7 @@ function injectWebUIForYouTube(): void {
                 const confirmDelete = confirm(chrome.i18n.getMessage("messageConfirmClearAll"));
 
                 if (confirmDelete === true) {
-                    // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-                    const key = KeyName.DefaultTimestampDataKeyName;
+                    const key = Function.getKey();
                     const isOkay = await Function.removeSavedDataByKey(key);
 
                     if (isOkay === true) {
@@ -1080,8 +1074,7 @@ function injectWebUIForYouTube(): void {
             elemBtnReload.title = chrome.i18n.getMessage("stringBtnReload");
             elemBtnReload.className = btnClassName;
             elemBtnReload.addEventListener("click", () => {
-                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-                const key = KeyName.DefaultTimestampDataKeyName;
+                const key = Function.getKey();
 
                 Function.playBeep(0);
 
@@ -1097,8 +1090,7 @@ function injectWebUIForYouTube(): void {
             elemBtnRewind.title = chrome.i18n.getMessage("stringBtnRewind");
             elemBtnRewind.className = btnClassName;
             elemBtnRewind.addEventListener("click", () => {
-                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-                const key = KeyName.DefaultTimestampDataKeyName;
+                const key = Function.getKey();
 
                 doVideoRewind(key, false, Function.CommonSeconds);
             });
@@ -1112,8 +1104,7 @@ function injectWebUIForYouTube(): void {
             elemBtnFastForward.title = chrome.i18n.getMessage("stringBtnFastForward");
             elemBtnFastForward.className = btnClassName;
             elemBtnFastForward.addEventListener("click", () => {
-                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-                const key = KeyName.DefaultTimestampDataKeyName;
+                const key = Function.getKey();
 
                 doVideoRewind(key, true, Function.CommonSeconds);
             });
@@ -1127,8 +1118,7 @@ function injectWebUIForYouTube(): void {
             elemBtnPauseSync.title = chrome.i18n.getMessage("stringBtnPauseSync");
             elemBtnPauseSync.className = btnClassName;
             elemBtnPauseSync.addEventListener("click", () => {
-                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-                const key = KeyName.DefaultTimestampDataKeyName;
+                const key = Function.getKey();
 
                 syncTimestamp(key, Function.PauseSyncSeconds, true);
             });
@@ -1179,8 +1169,7 @@ function injectWebUIForYouTube(): void {
             elemWebUITextarea.style.borderRadius = "4px";
             elemWebUITextarea.style.width = "99%";
             elemWebUITextarea.addEventListener("change", async () => {
-                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-                const key = KeyName.DefaultTimestampDataKeyName;
+                const key = Function.getKey();
                 const value = elemWebUITextarea?.value ?? "";
                 const isOkay = await Function.saveTimestampData(key, value);
 
@@ -1199,8 +1188,7 @@ function injectWebUIForYouTube(): void {
 
             // 第一次載入。
             const timer = setTimeout(function () {
-                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-                const key = KeyName.DefaultTimestampDataKeyName;
+                const key = Function.getKey();
 
                 loadTimestampForWebUI(key);
 

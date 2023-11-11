@@ -21,8 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
             registerPopupListenEvent();
 
             const timer = setTimeout(async () => {
-                // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-                const key = KeyName.DefaultTimestampDataKeyName;
+                const key = Function.getKey();
 
                 await loadTimestampData(key);
 
@@ -142,8 +141,7 @@ function registerPopupListenEvent(): void {
         const confirmDelete = confirm(chrome.i18n.getMessage("messageConfirmClearAll"));
 
         if (confirmDelete === true) {
-            // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-            const key = KeyName.DefaultTimestampDataKeyName;
+            const key = Function.getKey();
             const isOkay = await Function.removeSavedDataByKey(key);
 
             if (isOkay === true) {
@@ -157,15 +155,14 @@ function registerPopupListenEvent(): void {
 
     elemBtnReload?.addEventListener("click", () => {
         Function.playBeep(0);
-        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-        const key = KeyName.DefaultTimestampDataKeyName;
+
+        const key = Function.getKey();
 
         loadTimestampData(key);
     });
 
     elemBtnExport?.addEventListener("click", () => {
-        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-        const key = KeyName.DefaultTimestampDataKeyName;
+        const key = Function.getKey();
         const selectedValue = elemSelExportType?.value;
 
         switch (selectedValue) {
@@ -197,8 +194,7 @@ function registerPopupListenEvent(): void {
     });
 
     elemTimestampData?.addEventListener("change", async () => {
-        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-        const key = KeyName.DefaultTimestampDataKeyName;
+        const key = Function.getKey();
         const value = elemTimestampData?.value ?? "";
         const isOkay = await Function.saveTimestampData(key, value);
 

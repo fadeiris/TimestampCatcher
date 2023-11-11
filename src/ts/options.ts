@@ -312,8 +312,7 @@ function registerOptionsListenEvent(): void {
     });
 
     elemBtnExport?.addEventListener("click", () => {
-        // TODO: 2023/11/10 從影片網址取得影片 ID 來當作鍵值。
-        const key = KeyName.DefaultTimestampDataKeyName;
+        const key = Function.getKey();
         const selectedValue = elemSelExportType?.value;
 
         switch (selectedValue) {

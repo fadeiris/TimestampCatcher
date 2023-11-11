@@ -1911,4 +1911,18 @@ export class Function {
 
         return value.replace(/(?:https?|ftp):\/\/[\n\S]+/g, "");
     }
+
+    /**
+     * 取得鍵值
+     *
+     * @param {boolean} useDefaultKey 布林值，是否使用預設鍵值，預設值為 false。
+     */
+    static getKey(useDefaultKey: boolean = false): string {
+        // TODO: 2023/11/11 需要再次調整鍵值內容。
+        if (useDefaultKey === true) {
+            return KeyName.DefaultTimestampDataKeyName;
+        } else {
+            return `${window.location.href}`;
+        }
+    }
 }
