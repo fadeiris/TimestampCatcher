@@ -75,6 +75,11 @@ export class Command {
      * 指令：不同步 / 同步時間標記
      */
     static PauseSync = "pauseSync";
+
+    /**
+     * 指令：取得目前分頁的網址
+     */
+    static GetCurrentTabUrl = "getCurrentTabUrl";
 }
 
 /**
@@ -168,6 +173,51 @@ export class Seperators {
 }
 
 /**
+ * 類別：鍵組
+ */
+export class KeySet {
+    /**
+     * 網址
+     */
+    url: string = "";
+
+    /**
+     * 鍵值
+     */
+    key: string = "";
+
+    /**
+     * 是否為 YouTube 影片
+     */
+    isYouTubeVideo: boolean = false;
+
+    /**
+     * 是否為 Twitch 影片
+     */
+    isTwitchVideo: boolean = false;
+
+    /**
+     * 是否為動畫瘋影片
+     */
+    isGamerAniVideo: boolean = false;
+
+    /**
+     * 是否為 Bilibili 影片
+     */
+    isBilibiliVideo: boolean = false;
+
+    /**
+     * 是否為本機影片
+     */
+    isLocalHostVideo: boolean = false;
+
+    /**
+     * 是否為擴充功能影片
+     */
+    isExtensionPage: boolean = false;
+}
+
+/**
  * 函式
  */
 export class Function {
@@ -205,37 +255,27 @@ export class Function {
      * 初始化擴充功能
      */
     static async initExtension(): Promise<void> {
-        try {
-            const initiated = await this.getSavedDataValueByKey(KeyName.Initiated, false);
+        const initiated = await this.getSavedDataValueByKey(KeyName.Initiated, false);
 
-            if (initiated === undefined) {
-                chrome.storage.sync.set({
-                    [KeyName.Initiated]: true,
-                    [KeyName.EnableOutputLog]: false,
-                    [KeyName.EnableSoundEffect]: true,
-                    [KeyName.EnableFormattedYTTimestamp]: false,
-                    [KeyName.EnableYTUtaWakuMode]: false,
-                    [KeyName.EnableLegacyKeyListener]: false,
-                    [KeyName.EnableLeftSideSpacePadding]: false,
-                    [KeyName.EnableAppendingStartEndToken]: true,
-                    [KeyName.MIME]: "image/png",
-                    [KeyName.EnableAddAniGamerDanMu]: false,
-                    [KeyName.AppendSeconds]: this.DefaultAppendSeconds
-                }, () => {
-                    if (chrome.runtime.lastError?.message) {
-                        console.log(chrome.runtime.lastError?.message);
+        if (initiated === undefined) {
+            chrome.storage.sync.set({
+                [KeyName.Initiated]: true,
+                [KeyName.EnableOutputLog]: false,
+                [KeyName.EnableSoundEffect]: true,
+                [KeyName.EnableFormattedYTTimestamp]: false,
+                [KeyName.EnableYTUtaWakuMode]: false,
+                [KeyName.EnableLegacyKeyListener]: false,
+                [KeyName.EnableLeftSideSpacePadding]: false,
+                [KeyName.EnableAppendingStartEndToken]: true,
+                [KeyName.MIME]: "image/png",
+                [KeyName.EnableAddAniGamerDanMu]: false,
+                [KeyName.AppendSeconds]: this.DefaultAppendSeconds
+            }, () => {
+                this.processLastError();
+            });
 
-                        alert(chrome.runtime.lastError?.message);
-                    }
-                });
-
-                // 設定 DefaultTimestampDataKeyName 的值。
-                await this.saveTimestampData(KeyName.DefaultTimestampDataKeyName, "");
-            }
-        } catch (error) {
-            console.log(error);
-
-            alert(`${error}`);
+            // 設定 DefaultTimestampDataKeyName 的值。
+            await this.saveTimestampData(KeyName.DefaultTimestampDataKeyName, "");
         }
     }
 
@@ -412,7 +452,7 @@ export class Function {
 
         elemIndicator?.style.removeProperty("display");
 
-        const timer = setTimeout(function () {
+        const timer = setTimeout(() => {
             if (elemIndicator !== undefined && elemIndicator !== null) {
                 elemIndicator.style.display = "none";
             }
@@ -442,17 +482,13 @@ export class Function {
     static saveTimestampDataByKey(key: string, value: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             chrome.storage.local.set({ [key]: value }, () => {
-                if (chrome.runtime.lastError?.message) {
-                    this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                    alert(chrome.runtime.lastError?.message);
-
+                this.processLastError(() => {
                     reject(false);
-                } else {
-                    this.writeConsoleLog(`${chrome.i18n.getMessage("stringRecordedTimestamp")}\n# \n${value}`);
+                });
 
-                    resolve(true);
-                }
+                this.writeConsoleLog(`${chrome.i18n.getMessage("stringRecordedTimestamp")}\n# \n${value}`);
+
+                resolve(true);
             });
         });
     }
@@ -475,19 +511,13 @@ export class Function {
      */
     static async getSavedTimestampDataByKey(key: string): Promise<string> {
         return new Promise((resolve, reject) => {
-            try {
-                chrome.storage.local.get(key, (items) => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                        alert(chrome.runtime.lastError?.message);
-                    }
-
-                    resolve(items[key]);
+            chrome.storage.local.get(key, (items) => {
+                this.processLastError(() => {
+                    reject("");
                 });
-            } catch (ex) {
-                reject(ex);
-            }
+
+                resolve(items[key]);
+            });
         });
     }
 
@@ -503,31 +533,23 @@ export class Function {
         return new Promise((resolve, reject) => {
             if (useLocal === true) {
                 chrome.storage.local.set({ [key]: value }, () => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                        alert(chrome.runtime.lastError?.message);
-
+                    this.processLastError(() => {
                         reject(false);
-                    } else {
-                        this.writeConsoleLog(`${value}`);
+                    });
 
-                        resolve(true);
-                    }
+                    this.writeConsoleLog(`${value}`);
+
+                    resolve(true);
                 });
             } else {
                 chrome.storage.sync.set({ [key]: value }, () => {
-                    if (chrome.runtime.lastError?.message) {
-                        this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                        alert(chrome.runtime.lastError?.message);
-
+                    this.processLastError(() => {
                         reject(false);
-                    } else {
-                        this.writeConsoleLog(`${value}`);
+                    });
 
-                        resolve(true);
-                    }
+                    this.writeConsoleLog(`${value}`);
+
+                    resolve(true);
                 });
             }
         });
@@ -537,34 +559,26 @@ export class Function {
      * 取得所有已儲存資料的鍵值
      *
      * @param {boolean} useLocal 布林值，是否使用 local，預設值為 true，若是值為 false 則是使用 sync。
-     * @returns {Promise<string[]>} 字串陣列，已儲存資料的鍵值。
+     * @returns {Promise<string[] | undefined>} 字串陣列或是 undefined，已儲存資料的鍵值。
      */
-    static async getSavedDataKeys(useLocal: boolean = true): Promise<string[]> {
+    static async getSavedDataKeys(useLocal: boolean = true): Promise<string[] | undefined> {
         return new Promise((resolve, reject) => {
-            try {
-                if (useLocal === true) {
-                    chrome.storage.local.get(null, (items) => {
-                        if (chrome.runtime.lastError?.message) {
-                            this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                            alert(chrome.runtime.lastError?.message);
-                        }
-
-                        resolve(Object.keys(items));
+            if (useLocal === true) {
+                chrome.storage.local.get(null, (items) => {
+                    this.processLastError(() => {
+                        reject(undefined);
                     });
-                } else {
-                    chrome.storage.sync.get(null, (items) => {
-                        if (chrome.runtime.lastError?.message) {
-                            this.writeConsoleLog(chrome.runtime.lastError?.message);
 
-                            alert(chrome.runtime.lastError?.message);
-                        }
-
-                        resolve(Object.keys(items));
+                    resolve(Object.keys(items));
+                });
+            } else {
+                chrome.storage.sync.get(null, (items) => {
+                    this.processLastError(() => {
+                        reject(undefined);
                     });
-                }
-            } catch (ex) {
-                reject(ex);
+
+                    resolve(Object.keys(items));
+                });
             }
         });
     }
@@ -578,30 +592,22 @@ export class Function {
      */
     static async getSavedDataValueByKey(key: string, useLocal: boolean = true): Promise<any> {
         return new Promise((resolve, reject) => {
-            try {
-                if (useLocal === true) {
-                    chrome.storage.local.get([key], (items) => {
-                        if (chrome.runtime.lastError?.message) {
-                            this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                            alert(chrome.runtime.lastError?.message);
-                        }
-
-                        resolve(items[key]);
+            if (useLocal === true) {
+                chrome.storage.local.get([key], (items) => {
+                    this.processLastError(() => {
+                        reject(undefined);
                     });
-                } else {
-                    chrome.storage.sync.get([key], (items) => {
-                        if (chrome.runtime.lastError?.message) {
-                            this.writeConsoleLog(chrome.runtime.lastError?.message);
 
-                            alert(chrome.runtime.lastError?.message);
-                        }
-
-                        resolve(items[key]);
+                    resolve(items[key]);
+                });
+            } else {
+                chrome.storage.sync.get([key], (items) => {
+                    this.processLastError(() => {
+                        reject(undefined);
                     });
-                }
-            } catch (ex) {
-                reject(ex);
+
+                    resolve(items[key]);
+                });
             }
         });
     }
@@ -615,30 +621,22 @@ export class Function {
      */
     static async getSavedDataValueByKeys(keys: string[], useLocal: boolean = true): Promise<any> {
         return new Promise((resolve, reject) => {
-            try {
-                if (useLocal === true) {
-                    chrome.storage.local.get(keys, (items) => {
-                        if (chrome.runtime.lastError?.message) {
-                            this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                            alert(chrome.runtime.lastError?.message);
-                        }
-
-                        resolve(items);
+            if (useLocal === true) {
+                chrome.storage.local.get(keys, (items) => {
+                    this.processLastError(() => {
+                        reject(undefined);
                     });
-                } else {
-                    chrome.storage.sync.get(keys, (items) => {
-                        if (chrome.runtime.lastError?.message) {
-                            this.writeConsoleLog(chrome.runtime.lastError?.message);
 
-                            alert(chrome.runtime.lastError?.message);
-                        }
-
-                        resolve(items);
+                    resolve(items);
+                });
+            } else {
+                chrome.storage.sync.get(keys, (items) => {
+                    this.processLastError(() => {
+                        reject(undefined);
                     });
-                }
-            } catch (ex) {
-                reject(ex);
+
+                    resolve(items);
+                });
             }
         });
     }
@@ -652,15 +650,11 @@ export class Function {
     static removeSavedDataByKey(key: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             chrome.storage.local.remove(key, () => {
-                if (chrome.runtime.lastError?.message) {
-                    this.writeConsoleLog(chrome.runtime.lastError?.message);
+                this.processLastError(() => {
+                    reject(false);
+                });
 
-                    alert(chrome.runtime.lastError?.message);
-
-                    reject(false)
-                } else {
-                    resolve(true);
-                }
+                resolve(true);
             });
         });
     }
@@ -675,11 +669,7 @@ export class Function {
         chrome.contextMenus.update(key, {
             title: title,
         }, () => {
-            if (chrome.runtime.lastError?.message) {
-                this.writeConsoleLog(chrome.runtime.lastError?.message);
-
-                alert(chrome.runtime.lastError?.message);
-            }
+            this.processLastError();
         });
     }
 
@@ -822,7 +812,7 @@ export class Function {
 
                 customAudio.src = chrome.runtime.getURL(array[value]);
 
-                customAudio.addEventListener("ended", function () {
+                customAudio.addEventListener("ended", () => {
                     customAudio.remove();
                 });
 
@@ -866,51 +856,60 @@ export class Function {
     }
 
     /**
+     * 取得目前的分頁
+     *
+     * 來源：https://developer.chrome.com/docs/extensions/reference/tabs/
+     *
+     * @returns {Promise<chrome.tabs.Tab | undefined>} chrome.tabs.Tab 或是 undefined。
+     */
+    static async getCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
+        return new Promise(async (resolve, reject) => {
+            const queryOptions = { active: true, currentWindow: true };
+
+            // `tab` will either be a `tabs.Tab` instance or `undefined`.
+            let [tab] = await chrome.tabs.query(queryOptions);
+
+            this.processLastError(() => {
+                reject(undefined);
+            });
+
+            resolve(tab);
+        });
+    }
+
+    /**
      * 傳送訊息
      *
      * @param {string} command 字串，指令。
      * @param {string} isContextMenu 布林值，是否為右鍵選單，預設值為 false。
      */
-    static async sendMsg(command: string, isContextMenu: boolean = false): Promise<void> {
-        // 來自右側選單的訊息必須傳送。
-        if (isContextMenu === true) {
-            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-                if (tabs.length > 0) {
-                    const tabId = tabs[0].id;
+    static async sendMessage(command: string, isContextMenu: boolean = false): Promise<void> {
+        const tab = await this.getCurrentTab();
 
-                    if (tabId !== undefined) {
-                        chrome.tabs.sendMessage(tabId, command);
-                    } else {
-                        console.error(chrome.i18n.getMessage("messageTabIdIsUndefined"));
-                    }
-                } else {
-                    console.error(chrome.i18n.getMessage("messageTabsIsEmpty"));
-                }
-            });
+        if (tab === undefined) {
+            this.writeConsoleLog(chrome.i18n.getMessage("messageTabsIsEmpty"));
+
+            return;
+        }
+
+        const tabId = tab.id;
+
+        if (tabId === undefined) {
+            this.writeConsoleLog(chrome.i18n.getMessage("messageTabIdIsUndefined"));
 
             return;
         }
 
         const useLegacyKeyListener = await this.checkEnableLegacyKeyListener();
 
+        // 來自右側選單的訊息必須傳送。
+        //
         // 判斷是否啟用「使用傳統按鍵監聽模式」，
         // 當啟用時不再傳送訊息至 core.js。
-        if (useLegacyKeyListener !== true) {
-            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-                if (tabs.length > 0) {
-                    const tabId = tabs[0].id;
-
-                    if (tabId !== undefined) {
-                        chrome.tabs.sendMessage(tabId, command);
-                    } else {
-                        console.error(chrome.i18n.getMessage("messageTabIdIsUndefined"));
-                    }
-                } else {
-                    console.error(chrome.i18n.getMessage("messageTabsIsEmpty"));
-                }
+        if (isContextMenu === true || useLegacyKeyListener !== true) {
+            chrome.tabs.sendMessage(tabId, command, (_response) => {
+                this.processLastError();
             });
-
-            return;
         }
     }
 
@@ -921,18 +920,59 @@ export class Function {
      * @param {string} data 字串，資料。
      */
     static async sendData(command: string, data: string): Promise<void> {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            if (tabs.length > 0) {
-                const tabId = tabs[0].id;
+        const tab = await this.getCurrentTab();
 
-                if (tabId !== undefined) {
-                    chrome.tabs.sendMessage(tabId, { "command": command, "data": data });
-                } else {
-                    console.error(chrome.i18n.getMessage("messageTabIdIsUndefined"));
-                }
-            } else {
-                console.error(chrome.i18n.getMessage("messageTabsIsEmpty"));
+        if (tab === undefined) {
+            this.writeConsoleLog(chrome.i18n.getMessage("messageTabsIsEmpty"));
+
+            return;
+        }
+
+        const tabId = tab.id;
+
+        if (tabId === undefined) {
+            this.writeConsoleLog(chrome.i18n.getMessage("messageTabIdIsUndefined"));
+
+            return;
+        }
+
+        chrome.tabs.sendMessage(tabId, { "command": command, "data": data }, (_response) => {
+            this.processLastError();
+        });
+    }
+
+    /**
+     * 傳送訊息並取得回應
+     *
+     * @param {string} command 字串，指令。
+     * @returns {Promise<any>} any，回傳的物件。
+     */
+    static async sendMessageAndGetResponse(command: string): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            const tab = await this.getCurrentTab();
+
+            if (tab === undefined) {
+                this.writeConsoleLog(chrome.i18n.getMessage("messageTabsIsEmpty"));
+
+                reject(undefined);
             }
+
+            const tabId = tab?.id;
+
+            if (tabId === undefined) {
+                this.writeConsoleLog(chrome.i18n.getMessage("messageTabIdIsUndefined"));
+
+                reject(undefined);
+            }
+
+            chrome.tabs.sendMessage(tabId!, command, (response) => {
+                // 2023/11/13 因使用情境之關係，故不以 alert() 顯示錯誤訊息內容。
+                this.processLastError(() => {
+                    reject(undefined);
+                }, false);
+
+                resolve(response);
+            });
         });
     }
 
@@ -1488,7 +1528,7 @@ export class Function {
 
             let tempYtCommentData = `${i18nCommentStart}\n`;
 
-            filteredDataSet.forEach(function (value) {
+            filteredDataSet.forEach((value) => {
                 let columns = value.toString().split("^");
 
                 // 當遇到連續的（開始）時，在 split() 後，會產生長度為 7 的字串陣列，
@@ -1576,7 +1616,7 @@ export class Function {
                 tempEmbedUrlData = "",
                 tempDiscordUrlData = "";
 
-            filteredDataSet.forEach(function (value) {
+            filteredDataSet.forEach((value) => {
                 let columns = value.toString().split("^");
 
                 // 當遇到連續的（開始）時，在 split() 後，會產生長度為 7 的字串陣列，
@@ -1690,7 +1730,7 @@ export class Function {
 
             let tempOutputData = "";
 
-            filteredDataSet.forEach(function (value, index) {
+            filteredDataSet.forEach((value, index) => {
                 let columns = value.toString().split("^");
 
                 // 當有（開始）跟（結束）時，在 split() 後，會產生長度為 5 的字串陣列。
@@ -1819,7 +1859,7 @@ export class Function {
             let tempOutputData = "";
             let actualIndex = 1;
 
-            filteredDataSet.forEach(function (value, index) {
+            filteredDataSet.forEach((value, index) => {
                 let columns = value.toString().split("^");
 
                 // 當有（開始）跟（結束）時，在 split() 後，會產生長度為 5 的字串陣列。
@@ -1913,16 +1953,60 @@ export class Function {
     }
 
     /**
-     * 取得鍵值
+     * 取得鍵組
      *
      * @param {boolean} useDefaultKey 布林值，是否使用預設鍵值，預設值為 false。
+     * @returns {Promise<KeySet>} KeySet
      */
-    static getKey(useDefaultKey: boolean = false): string {
-        // TODO: 2023/11/11 需要再次調整鍵值內容。
-        if (useDefaultKey === true) {
-            return KeyName.DefaultTimestampDataKeyName;
+    static async getKeySet(useDefaultKey: boolean = false): Promise<KeySet> {
+        const keySet = new KeySet();
+
+        let currentUrl = await this.sendMessageAndGetResponse(Command.GetCurrentTabUrl);
+
+        if (currentUrl === undefined) {
+            currentUrl = window.location.href;
+        }
+
+        keySet.url = currentUrl;
+        // 非嚴謹判斷目前的網頁的網址。
+        keySet.isYouTubeVideo = currentUrl.indexOf("watch?v=") !== -1;
+        keySet.isTwitchVideo = currentUrl.indexOf("twitch.tv/") !== -1;
+        keySet.isGamerAniVideo = currentUrl.indexOf("ani.gamer.com.tw/animeVideo.php?sn=") !== -1;
+        keySet.isBilibiliVideo = currentUrl.indexOf("bilibili.com/video/") !== -1;
+        keySet.isLocalHostVideo = currentUrl.indexOf("file:///") !== -1;
+        keySet.isExtensionPage = currentUrl.indexOf("extension://") !== -1;
+
+        // 判斷是否使用預設鍵值、是否為動畫瘋網站的網址或是否為本機網址。
+        if (useDefaultKey === true || keySet.isGamerAniVideo || keySet.isLocalHostVideo) {
+            keySet.key = KeyName.DefaultTimestampDataKeyName;
+        } else if (keySet.isYouTubeVideo || keySet.isTwitchVideo || keySet.isBilibiliVideo) {
+            // 判斷是否為 YouTube 網站的網址、是否為 Twitch 網站的網址、是否為 Bilibili 網站的網址。
+            keySet.key = `${currentUrl}`;
+        } else if (keySet.isExtensionPage) {
+            // TODO: 2023/11/13 測試用待移除。
+            keySet.key = `${currentUrl}`;
         } else {
-            return `${window.location.href}`;
+            keySet.key = KeyName.DefaultTimestampDataKeyName;
+        }
+
+        return keySet;
+    }
+
+    /**
+     * 處理 chrome.runtime.lastError
+     *
+     * @param {Function} callback 回呼函式，預設值是 undefined。
+     * @param {boolean} useAlert 布林值，是否使用 alert()，預設值為 true。
+     */
+    static processLastError(callback?: Function, useAlert: boolean = true): void {
+        if (chrome.runtime.lastError) {
+            this.writeConsoleLog(chrome.runtime.lastError?.message);
+
+            if (useAlert === true) {
+                alert(chrome.runtime.lastError?.message);
+            }
+
+            callback;
         }
     }
 }

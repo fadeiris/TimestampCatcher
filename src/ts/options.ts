@@ -311,39 +311,42 @@ function registerOptionsListenEvent(): void {
         }
     });
 
-    elemBtnExport?.addEventListener("click", () => {
-        const key = Function.getKey();
+    elemBtnExport?.addEventListener("click", async () => {
+        // TODO: 2023/11/13 需要改成將 key 用選擇的。
+        const keySet = await Function.getKeySet();
         const selectedValue = elemSelExportType?.value;
 
         switch (selectedValue) {
             case "Timestamp":
-                Function.exportTimestamp(key);
+                Function.exportTimestamp(keySet.key);
                 break;
             case "YtComment":
-                Function.exportYtComment(key);
+                Function.exportYtComment(keySet.key);
                 break;
             case "YtTimestampUrls":
-                Function.exportYtTimestampUrls(key);
+                Function.exportYtTimestampUrls(keySet.key);
                 break;
             case "CustomYTPlayerPlaylist_Timestamps":
-                Function.exportSpeicalFormat(key, false, PlaylistType.Timestamps);
+                Function.exportSpeicalFormat(keySet.key, false, PlaylistType.Timestamps);
                 break;
             case "CustomYTPlayerPlaylist_Seconds":
-                Function.exportSpeicalFormat(key, false, PlaylistType.Seconds);
+                Function.exportSpeicalFormat(keySet.key, false, PlaylistType.Seconds);
                 break;
             case "JsoncPlaylist":
-                Function.exportSpeicalFormat(key, true, PlaylistType.Seconds);
+                Function.exportSpeicalFormat(keySet.key, true, PlaylistType.Seconds);
                 break;
             case "CueSheet":
-                Function.exportCueSheet(key);
+                Function.exportCueSheet(keySet.key);
                 break;
             default:
-                Function.exportTimestamp(key);
+                Function.exportTimestamp(keySet.key);
                 break;
         }
     });
 
     elemBtnDownloadLocalVideoPlayer?.addEventListener("click", () => {
+        // TODO: 2023/11/13 新功能測試中。
+        /*
         Function.playBeep(0);
 
         const tempAnchor = document.createElement("a");
@@ -357,6 +360,9 @@ function registerOptionsListenEvent(): void {
         tempAnchor.click();
 
         document.body.removeChild(tempAnchor);
+        */
+
+        Test();
     });
 }
 
@@ -416,4 +422,44 @@ async function loadOptionsData(): Promise<void> {
             elemEnableAddAniGamerDanMu.checked = optionsData[KeyName.EnableAddAniGamerDanMu];
         }
     }
+}
+
+/**
+ * 測試
+ */
+async function Test(): Promise<void> {
+    // 需要排除的鍵值。
+    const excludedKeys =
+        [
+            KeyName.EnableOutputLog,
+            KeyName.EnableSoundEffect,
+            KeyName.EnableFormattedYTTimestamp,
+            KeyName.EnableYTUtaWakuMode,
+            KeyName.EnableLegacyKeyListener,
+            KeyName.EnableLeftSideSpacePadding,
+            KeyName.EnableAppendingStartEndToken,
+            KeyName.MIME,
+            KeyName.EnableAddAniGamerDanMu,
+            KeyName.AppendSeconds
+        ];
+
+    let keys = await Function.getSavedDataKeys();
+
+    if (keys === undefined) {
+        return;
+    }
+
+    keys = keys.filter((item) => {
+        if (excludedKeys.indexOf(item) === -1) {
+            return item;
+        }
+    });
+
+    // 輸出鍵值。
+    console.log(keys);
+
+    const dataSet = await Function.getSavedDataValueByKeys(keys, true);
+
+    // 取出儲存的時間標記資料。
+    console.log(dataSet);
 }

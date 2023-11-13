@@ -36,7 +36,7 @@
             videoPlayer = document.getElementById("videoPlayer");
 
             if (fileUpload !== undefined && fileUpload !== null) {
-                fileUpload.onchange = function (event) {
+                fileUpload.onchange = (event) => {
                     const file = event.target.files[0];
 
                     // 將頁面標題替換成檔案名稱，供截圖功能使用。
