@@ -1,14 +1,14 @@
 "use strict";
 
-import { Command, Function, KeyName, Seperators } from "./function";
+import { Command, Function, KeySet, Message, Seperators } from "./function";
 
 document.addEventListener("DOMContentLoaded", () => {
     document.onreadystatechange = async () => {
         if (document.readyState === "complete") {
             await Function.initExtension();
 
-            // 傳送訊息至 Background.js
-            chrome.runtime.sendMessage(Function.MessageWakeUp);
+            // 傳送訊息至 background.js
+            chrome.runtime.sendMessage(Message.WakeUp);
 
             // 用來應對 Vivaldi 網頁瀏覽器，還不支援擴充功能自定義快速鍵的狀況。
             const enableLegacyKeyListener = await Function.checkEnableLegacyKeyListener();
@@ -30,8 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 針對 YouTube 的事件加入監聽器。
 document.addEventListener("yt-navigate-finish", () => {
-    // 傳送訊息至 Background.js
-    chrome.runtime.sendMessage(Function.MessageWakeUp);
+    // 傳送訊息至 background.js
+    chrome.runtime.sendMessage(Message.WakeUp);
 
     // 延後執行注入 HTML 元素。
     const timer = setTimeout(() => {
@@ -52,23 +52,28 @@ function registerEventListener(): void {
         if (event.shiftKey && event.code === "KeyZ" &&
             (keySet.isYouTubeVideo || keySet.isTwitchVideo || keySet.isBilibiliVideo || keySet.isLocalHostVideo)) {
             // 判斷目前所在頁面的網址及按下的按鍵是否為 Shift + Z 鍵。
-            recordTimestamp(keySet.url);
+
+            recordTimestamp(keySet);
         } else if (event.shiftKey && event.code === "KeyX" &&
             (keySet.isYouTubeVideo || keySet.isTwitchVideo || keySet.isBilibiliVideo || keySet.isGamerAniVideo || keySet.isLocalHostVideo)) {
             // 判斷目前所在頁面的網址及按下的按鍵是否為 Shift + X 鍵。
-            takeScreenshot(keySet.url);
+
+            takeScreenshot(keySet);
         } else if (event.shiftKey && event.code === "KeyS" &&
             (keySet.isYouTubeVideo || keySet.isTwitchVideo || keySet.isBilibiliVideo || keySet.isGamerAniVideo || keySet.isLocalHostVideo)) {
             // 判斷目前所在頁面的網址及按下的按鍵是否為 Shift + S 鍵。
-            doVideoRewind(keySet.key, false, Function.CommonSeconds);
+
+            doVideoRewind(keySet, false, Function.CommonSeconds);
         } else if (event.shiftKey && event.code === "KeyD" &&
             (keySet.isYouTubeVideo || keySet.isTwitchVideo || keySet.isBilibiliVideo || keySet.isGamerAniVideo || keySet.isLocalHostVideo)) {
             // 判斷目前所在頁面的網址及按下的按鍵是否為 Shift + D 鍵。
-            doVideoRewind(keySet.key, true, Function.CommonSeconds);
+
+            doVideoRewind(keySet, true, Function.CommonSeconds);
         } else if (event.shiftKey && event.code === "KeyA" &&
             (keySet.isYouTubeVideo || keySet.isTwitchVideo || keySet.isBilibiliVideo || keySet.isLocalHostVideo)) {
             // 判斷目前所在頁面的網址及按下的按鍵是否為 Shift + A 鍵。
-            syncTimestamp(keySet.key, Function.PauseSyncSeconds, true);
+
+            syncTimestamp(keySet, Function.PauseSyncSeconds, true);
         } else {
             // 不進行任何的操作。
         }
@@ -76,28 +81,28 @@ function registerEventListener(): void {
 }
 
 /**
- * 接收來自 popuo.js 或 background.js 的訊息
+ * 接收來自 popup.js 或 background.js 的訊息
  */
 chrome.runtime.onMessage.addListener(async (message, _sender, sendResponse) => {
     const keySet = await Function.getKeySet();
 
     if (message === Command.RecordTimestamp) {
-        recordTimestamp(keySet.url);
+        recordTimestamp(keySet);
     } else if (message === Command.TakeScreenshot) {
-        takeScreenshot(keySet.url);
+        takeScreenshot(keySet);
     } else if (message === Command.ExtractTimestamp) {
-        extractTimestamp(keySet.url, false);
+        extractTimestamp(keySet, false);
     } else if (message === Command.ExtractTimestampAutoAppendEndToken) {
-        extractTimestamp(keySet.url, true);
+        extractTimestamp(keySet, true);
     } else if (message === Command.ViewYtThumbnail) {
-        viewYtThumbnail(keySet.url);
+        viewYtThumbnail(keySet);
     } else if (message === Command.Rewind) {
-        doVideoRewind(keySet.key, false, Function.CommonSeconds);
+        doVideoRewind(keySet, false, Function.CommonSeconds);
     } else if (message === Command.FastForward) {
-        doVideoRewind(keySet.key, true, Function.CommonSeconds);
+        doVideoRewind(keySet, true, Function.CommonSeconds);
     } else if (message === Command.PauseSync) {
-        syncTimestamp(keySet.key, Function.PauseSyncSeconds, true);
-    } else if (message === Command.GetCurrentTabUrl) {
+        syncTimestamp(keySet, Function.PauseSyncSeconds, true);
+    } else if (message === Command.GetCurrentTab) {
         // 回傳鍵值。
         sendResponse(keySet.key);
     } else {
@@ -169,10 +174,8 @@ function injectElemToVideoPlayerControl(): void {
         const elemTempAnchor = createAnchor(
             "btnRecordTimestamp",
             "stringRecordTimestamp",
-            () => {
-                const currentUrl = window.location.href;
-
-                recordTimestamp(currentUrl);
+            async () => {
+                recordTimestamp(await Function.getKeySet());
             });
 
         if (elemYTLeftCtrl !== undefined && elemYTLeftCtrl !== null) {
@@ -220,10 +223,8 @@ function injectElemToVideoPlayerControl(): void {
         const elemTempAnchor = createAnchor(
             "btnTakeScreenshot",
             "stringTakeScreenshot",
-            () => {
-                const currentUrl = window.location.href;
-
-                takeScreenshot(currentUrl);
+            async () => {
+                takeScreenshot(await Function.getKeySet());
             });
 
         if (elemYTLeftCtrl !== undefined && elemYTLeftCtrl !== null) {
@@ -314,11 +315,11 @@ function createAnchor(id: string, i18nStr: string, callbackFunc: any): HTMLAncho
 /**
  * 記錄時間標記
  *
- * @param {string} currentUrl 字串，目前的頁籤的網址。
+ * @param {KeySet} keySet KeySet，鍵組。
  */
-async function recordTimestamp(currentUrl: string): Promise<void> {
+async function recordTimestamp(keySet: KeySet): Promise<void> {
     // 當網址未包含 "file:///" 時才撥放音效，以避免發出 net::ERR_BLOCKED_BY_CLIENT。
-    if (currentUrl.indexOf("file:///") === -1) {
+    if (keySet.isLocalHostVideo === false) {
         Function.playBeep(0);
     }
 
@@ -329,7 +330,7 @@ async function recordTimestamp(currentUrl: string): Promise<void> {
     // 2022-11-16 目前找不到方法取得 Bilibili 網站直播的目前時間。
 
     // 判斷是否為 Twitch 的頁面。
-    if (currentUrl.indexOf("twitch.tv/") !== -1) {
+    if (keySet.isTwitchVideo) {
         // 取得 Twitch 頁面上目前已直播的時間。
         const liveTimeText = document.querySelector(".live-time")?.textContent;
 
@@ -351,7 +352,6 @@ async function recordTimestamp(currentUrl: string): Promise<void> {
         }
     }
 
-    const keySet = await Function.getKeySet();
     const enableYTUtaWakuMode = await Function.checkEnableYTUtaWakuMode();
     const enableAppendingStartEndToken = await Function.checkEnableAppendingStartEndToken();
     const timestamp = await Function.getTimestamp(seconds);
@@ -373,13 +373,13 @@ async function recordTimestamp(currentUrl: string): Promise<void> {
     // 判斷是否啟用 YouTube 歌回模式。
     if (enableYTUtaWakuMode === true) {
         if (oldValue === "") {
-            oldValue = `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
+            oldValue = `${chrome.i18n.getMessage("stringUrl")}${keySet.url}\n` +
                 `\n` +
                 `${chrome.i18n.getMessage("stringSongTimestamp")}\n`;
         } else {
-            if (oldValue.indexOf(currentUrl) === -1) {
+            if (oldValue.indexOf(keySet.url) === -1) {
                 oldValue = `${oldValue}\n\n` +
-                    `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
+                    `${chrome.i18n.getMessage("stringUrl")}${keySet.url}\n` +
                     `\n` +
                     `${chrome.i18n.getMessage("stringSongTimestamp")}\n`;
             }
@@ -388,13 +388,13 @@ async function recordTimestamp(currentUrl: string): Promise<void> {
         await Function.saveTimestampData(keySet.key, `${oldValue}${timestamp}\n`);
     } else {
         if (oldValue === "") {
-            oldValue = `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
+            oldValue = `${chrome.i18n.getMessage("stringUrl")}${keySet.url}\n` +
                 `${chrome.i18n.getMessage("stringFormatDescription")}\n` +
                 `${chrome.i18n.getMessage("stringTimestamp")}\n`;
         } else {
-            if (oldValue.indexOf(currentUrl) === -1) {
+            if (oldValue.indexOf(keySet.url) === -1) {
                 oldValue = `${oldValue}\n\n` +
-                    `${chrome.i18n.getMessage("stringUrl")}${currentUrl}\n` +
+                    `${chrome.i18n.getMessage("stringUrl")}${keySet.url}\n` +
                     `${chrome.i18n.getMessage("stringFormatDescription")}\n` +
                     `${chrome.i18n.getMessage("stringTimestamp")}\n`;
             }
@@ -411,9 +411,7 @@ async function recordTimestamp(currentUrl: string): Promise<void> {
 
     // 讓網頁 UI 重新載入時間標記資料。
     const timer = setTimeout(async () => {
-        const keySet = await Function.getKeySet();
-
-        loadTimestampForWebUI(keySet.key);
+        loadTimestampForWebUI(await Function.getKeySet());
 
         clearTimeout(timer);
     }, Function.CommonTimeout);
@@ -422,12 +420,12 @@ async function recordTimestamp(currentUrl: string): Promise<void> {
 /**
  * 拍攝截圖
  *
- * @param {string} currentUrl 目前的頁籤的網址。
+ * @param {KeySet} keySet KeySet，鍵組。
  */
-async function takeScreenshot(currentUrl: string): Promise<void> {
+async function takeScreenshot(keySet: KeySet): Promise<void> {
     try {
         // 當網址未包含 "file:///" 時才撥放音效，以避免發出 net::ERR_BLOCKED_BY_CLIENT。
-        if (currentUrl.indexOf("file:///") === -1) {
+        if (keySet.isLocalHostVideo === false) {
             Function.playBeep(1);
         }
 
@@ -461,7 +459,7 @@ async function takeScreenshot(currentUrl: string): Promise<void> {
             const enableAddAniGamerDanMu = await Function.checkEnableAddAniGamerDanMu();
 
             // 僅在動畫瘋的網址下生效。
-            if (currentUrl.indexOf("ani.gamer.com.tw") !== -1 &&
+            if (keySet.isGamerAniVideo &&
                 enableAddAniGamerDanMu === true) {
                 Function.addAniGamerDanMuToCanvas(context, canvas.width, canvas.height);
             }
@@ -502,17 +500,15 @@ async function takeScreenshot(currentUrl: string): Promise<void> {
 /**
  * 解析時間標記
  *
- * @param {string} currentUrl 目前的頁籤的網址。
+ * @param {KeySet} keySet KeySet，鍵組。
  * @param {boolean} autoAddEndToken 布林值，用於判斷是否將下一筆的開始時間當作是上一筆的結束時間，預設值為 false。
  */
-async function extractTimestamp(currentUrl: string, autoAddEndToken: boolean = false): Promise<void> {
+async function extractTimestamp(keySet: KeySet, autoAddEndToken: boolean = false): Promise<void> {
     try {
         // 當網址未包含 "file:///" 時才撥放音效，以避免發出 net::ERR_BLOCKED_BY_CLIENT。
-        if (currentUrl.indexOf("file:///") === -1) {
+        if (keySet.isLocalHostVideo === false) {
             Function.playBeep(1);
         }
-
-        const keySet = await Function.getKeySet();
 
         let oldValue = await Function.getSavedTimestampData(keySet.key);
 
@@ -522,10 +518,10 @@ async function extractTimestamp(currentUrl: string, autoAddEndToken: boolean = f
             const confirmResult = confirm(chrome.i18n.getMessage("messageDoYouWantToOverwriteTimestamp"));
 
             if (confirmResult === true) {
-                doExtractYouTubeComment(keySet.key, autoAddEndToken);
+                doExtractYouTubeComment(keySet, autoAddEndToken);
             }
         } else {
-            doExtractYouTubeComment(keySet.key, autoAddEndToken);
+            doExtractYouTubeComment(keySet, autoAddEndToken);
         }
     } catch (error) {
         Function.writeConsoleLog(error);
@@ -537,10 +533,10 @@ async function extractTimestamp(currentUrl: string, autoAddEndToken: boolean = f
 /**
  * 執行解析 YouTube 的評論內容
  *
- * @param {string} key 字串，鍵值。
+ * @param {KeySet} keySet KeySet，鍵組。
  * @param {boolean} autoAddEndToken 布林值，用於判斷是否將下一筆的開始時間當作是上一筆的結束時間，預設值為 false。
  */
-async function doExtractYouTubeComment(key: string, autoAddEndToken: boolean = false): Promise<void> {
+async function doExtractYouTubeComment(keySet: KeySet, autoAddEndToken: boolean = false): Promise<void> {
     // TODO: 2022/11/5 未來可能會需要再調整程式碼。
     let tempDataSet: string[] = [],
         composeStr = "",
@@ -879,11 +875,11 @@ async function doExtractYouTubeComment(key: string, autoAddEndToken: boolean = f
             // 移除最尾端的換含字元。
             outputStr = outputStr.replace(/[\n\r]$/g, "");
 
-            await Function.saveTimestampData(key, `${outputStr}`);
+            await Function.saveTimestampData(keySet.key, `${outputStr}`);
 
             // 讓網頁 UI 重新載入時間標記資料。
             const timer = setTimeout(async () => {
-                await loadTimestampForWebUI(key);
+                await loadTimestampForWebUI(keySet);
 
                 clearTimeout(timer);
             }, Function.CommonTimeout);
@@ -906,12 +902,12 @@ async function doExtractYouTubeComment(key: string, autoAddEndToken: boolean = f
 /**
  * 執行影片倒轉
  *
- * @param {string} key 字串，鍵值。
+ * @param {KeySet} keySet KeySet，鍵組。
  * @param {boolean} fastForward 布林值，是否快轉，預設值為 false。
  * @param {number} seconds 數值，秒數，預設值來自 Function.CommonSeconds。
  */
 async function doVideoRewind(
-    key: string,
+    keySet: KeySet,
     fastForward: boolean = false,
     seconds: number = Function.CommonSeconds): Promise<void> {
     const video = document.querySelector("video");
@@ -933,7 +929,7 @@ async function doVideoRewind(
 
         video.currentTime = newSeconds;
 
-        syncTimestamp(key, newSeconds, false);
+        syncTimestamp(keySet, newSeconds, false);
     }
 }
 
@@ -1054,10 +1050,10 @@ function injectWebUIForYouTube(): void {
                     const isOkay = await Function.removeSavedDataByKey(keySet.key);
 
                     if (isOkay === true) {
-                        Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
                         Function.playBeep(0);
+                        Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
 
-                        loadTimestampForWebUI(keySet.key);
+                        loadTimestampForWebUI(keySet);
                     }
                 }
             });
@@ -1071,11 +1067,9 @@ function injectWebUIForYouTube(): void {
             elemBtnReload.title = chrome.i18n.getMessage("stringBtnReload");
             elemBtnReload.className = btnClassName;
             elemBtnReload.addEventListener("click", async () => {
-                const keySet = await Function.getKeySet();
-
                 Function.playBeep(0);
 
-                loadTimestampForWebUI(keySet.key);
+                loadTimestampForWebUI(await Function.getKeySet());
             });
 
             elemBtnGroup.appendChild(elemBtnReload);
@@ -1087,9 +1081,7 @@ function injectWebUIForYouTube(): void {
             elemBtnRewind.title = chrome.i18n.getMessage("stringBtnRewind");
             elemBtnRewind.className = btnClassName;
             elemBtnRewind.addEventListener("click", async () => {
-                const keySet = await Function.getKeySet();
-
-                doVideoRewind(keySet.key, false, Function.CommonSeconds);
+                doVideoRewind(await Function.getKeySet(), false, Function.CommonSeconds);
             });
 
             elemBtnGroup.appendChild(elemBtnRewind);
@@ -1101,9 +1093,7 @@ function injectWebUIForYouTube(): void {
             elemBtnFastForward.title = chrome.i18n.getMessage("stringBtnFastForward");
             elemBtnFastForward.className = btnClassName;
             elemBtnFastForward.addEventListener("click", async () => {
-                const keySet = await Function.getKeySet();
-
-                doVideoRewind(keySet.key, true, Function.CommonSeconds);
+                doVideoRewind(await Function.getKeySet(), true, Function.CommonSeconds);
             });
 
             elemBtnGroup.appendChild(elemBtnFastForward);
@@ -1115,9 +1105,7 @@ function injectWebUIForYouTube(): void {
             elemBtnPauseSync.title = chrome.i18n.getMessage("stringBtnPauseSync");
             elemBtnPauseSync.className = btnClassName;
             elemBtnPauseSync.addEventListener("click", async () => {
-                const keySet = await Function.getKeySet();
-
-                syncTimestamp(keySet.key, Function.PauseSyncSeconds, true);
+                syncTimestamp(await Function.getKeySet(), Function.PauseSyncSeconds, true);
             });
 
             elemBtnGroup.appendChild(elemBtnPauseSync);
@@ -1128,10 +1116,8 @@ function injectWebUIForYouTube(): void {
             elemBtnRecordTimestamp.textContent = chrome.i18n.getMessage("stringWebUIBtnRecordTimestamp");
             elemBtnRecordTimestamp.title = chrome.i18n.getMessage("stringRecordTimestamp");
             elemBtnRecordTimestamp.className = btnClassName;
-            elemBtnRecordTimestamp.addEventListener("click", () => {
-                const currentUrl = window.location.href;
-
-                recordTimestamp(currentUrl);
+            elemBtnRecordTimestamp.addEventListener("click", async () => {
+                recordTimestamp(await Function.getKeySet());
             });
 
             elemBtnGroup.appendChild(elemBtnRecordTimestamp);
@@ -1171,10 +1157,10 @@ function injectWebUIForYouTube(): void {
                 const isOkay = await Function.saveTimestampData(keySet.key, value);
 
                 if (isOkay === true) {
-                    Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
                     Function.playBeep(0);
+                    Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
 
-                    loadTimestampForWebUI(keySet.key);
+                    loadTimestampForWebUI(keySet);
                 }
             });
 
@@ -1185,9 +1171,7 @@ function injectWebUIForYouTube(): void {
 
             // 第一次載入。
             const timer = setTimeout(async () => {
-                const keySet = await Function.getKeySet();
-
-                loadTimestampForWebUI(keySet.key);
+                loadTimestampForWebUI(await Function.getKeySet());
 
                 clearTimeout(timer);
             }, Function.CommonTimeout);
@@ -1198,9 +1182,9 @@ function injectWebUIForYouTube(): void {
 /**
  * 網頁 UI 載入時間標記資料
  *
- * @param {string} key 字串，鍵值。
+ * @param {KeySet} keySet KeySet，鍵組。
  */
-async function loadTimestampForWebUI(key: string): Promise<void> {
+async function loadTimestampForWebUI(keySet: KeySet): Promise<void> {
     const textarea = document.getElementById("tWebUITextarea") as HTMLTextAreaElement;
 
     if (textarea !== undefined && textarea !== null) {
@@ -1209,7 +1193,7 @@ async function loadTimestampForWebUI(key: string): Promise<void> {
             Function.showAnimation();
         }
 
-        const timestampData = await Function.getSavedTimestampData(key);
+        const timestampData = await Function.getSavedTimestampData(keySet.key);
 
         if (textarea !== null) {
             let newTimestampData = "";
@@ -1231,12 +1215,12 @@ async function loadTimestampForWebUI(key: string): Promise<void> {
 /**
  * 同步時間標記
  *
- * @param {string} key 字串，鍵值。
+ * @param {KeySet} keySet KeySet，鍵組。
  * @param {number} newSeconds 數值，欲同步的秒數。
  * @param {boolean} pasueSyncMode 布林值，判斷是否要進入暫停同步模式，預設值為 false。
  */
 async function syncTimestamp(
-    key: string,
+    keySet: KeySet,
     newSeconds: number,
     pasueSyncMode: boolean = false): Promise<void> {
     const textarea = document.getElementById("tWebUITextarea") as HTMLTextAreaElement;
@@ -1315,7 +1299,7 @@ async function syncTimestamp(
                         }
 
                         // 回存時間標記。
-                        await Function.saveTimestampData(key, textarea.value);
+                        await Function.saveTimestampData(keySet.key, textarea.value);
                     }
                 } else {
                     // 當 pasueSyncMode 為 true 時。
@@ -1327,7 +1311,7 @@ async function syncTimestamp(
                             textarea.value += `${lastLine.replace(/,([^,]*)$/, "$1")}\n`;
 
                             // 回存時間標記。
-                            await Function.saveTimestampData(key, textarea.value);
+                            await Function.saveTimestampData(keySet.key, textarea.value);
                         }
                     }
                 }
@@ -1339,12 +1323,12 @@ async function syncTimestamp(
 /**
  * 檢視預覽圖
  *
- * @param {string} currentUrl 目前的頁籤的網址。
+ * @param {KeySet} keySet KeySet，鍵組。
  */
-async function viewYtThumbnail(currentUrl: string): Promise<void> {
+async function viewYtThumbnail(keySet: KeySet): Promise<void> {
     try {
-        if (currentUrl.indexOf("watch?v=") !== -1) {
-            const videoId = Function.getYouTubeId(currentUrl);
+        if (keySet.isYouTubeVideo) {
+            const videoId = Function.getYouTubeId(keySet.url);
             const qualities = ["maxresdefault", "hqdefault", "mqdefault", "sddefault"];
             let imageUrl = "";
 

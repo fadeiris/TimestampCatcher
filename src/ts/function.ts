@@ -77,9 +77,9 @@ export class Command {
     static PauseSync = "pauseSync";
 
     /**
-     * 指令：取得目前分頁的網址
+     * 指令：取得目前的分頁
      */
-    static GetCurrentTabUrl = "getCurrentTabUrl";
+    static GetCurrentTab = "getCurrentTab";
 }
 
 /**
@@ -218,14 +218,24 @@ export class KeySet {
 }
 
 /**
- * 函式
+ * 訊息
  */
-export class Function {
+export class Message {
     /**
      * 訊息：醒來
      */
-    static MessageWakeUp = "wakeUp";
+    static WakeUp = "wakeUp";
 
+    /**
+     * 訊息：查詢目前的分頁
+     */
+    static QueryCurrentTab = "queryCurrentTab";
+}
+
+/**
+ * 函式
+ */
+export class Function {
     /**
      * 通用逾時毫秒數
      */
@@ -856,35 +866,32 @@ export class Function {
     }
 
     /**
-     * 取得目前的分頁
+     * 查詢目前的分頁
      *
      * 來源：https://developer.chrome.com/docs/extensions/reference/tabs/
      *
-     * @returns {Promise<chrome.tabs.Tab | undefined>} chrome.tabs.Tab 或是 undefined。
+     * @returns {Promise<chrome.tabs.Tab>} chrome.tabs.Tab。
      */
-    static async getCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
-        return new Promise(async (resolve, reject) => {
-            const queryOptions = { active: true, currentWindow: true };
+    static async queryCurrentTab(): Promise<chrome.tabs.Tab> {
+        const queryInfo: chrome.tabs.QueryInfo = {
+            active: true,
+            currentWindow: true
+        };
 
-            // `tab` will either be a `tabs.Tab` instance or `undefined`.
-            let [tab] = await chrome.tabs.query(queryOptions);
+        // `tab` will either be a `tabs.Tab` instance or `undefined`.
+        let [tab] = await chrome.tabs.query(queryInfo);
 
-            this.processLastError(() => {
-                reject(undefined);
-            });
-
-            resolve(tab);
-        });
+        return tab;
     }
 
     /**
-     * 傳送訊息
+     * 傳送訊息到分頁
      *
      * @param {string} command 字串，指令。
      * @param {string} isContextMenu 布林值，是否為右鍵選單，預設值為 false。
      */
-    static async sendMessage(command: string, isContextMenu: boolean = false): Promise<void> {
-        const tab = await this.getCurrentTab();
+    static async sendMessageToTab(command: string, isContextMenu: boolean = false): Promise<void> {
+        const tab = await this.queryCurrentTab();
 
         if (tab === undefined) {
             this.writeConsoleLog(chrome.i18n.getMessage("messageTabsIsEmpty"));
@@ -914,13 +921,13 @@ export class Function {
     }
 
     /**
-     * 傳送資料
+     * 傳送資料到分頁
      *
      * @param {string} command 字串，指令。
      * @param {string} data 字串，資料。
      */
-    static async sendData(command: string, data: string): Promise<void> {
-        const tab = await this.getCurrentTab();
+    static async sendDataToTab(command: string, data: string): Promise<void> {
+        const tab = await this.queryCurrentTab();
 
         if (tab === undefined) {
             this.writeConsoleLog(chrome.i18n.getMessage("messageTabsIsEmpty"));
@@ -942,36 +949,47 @@ export class Function {
     }
 
     /**
-     * 傳送訊息並取得回應
+     * 取得目前的分頁網址
      *
-     * @param {string} command 字串，指令。
-     * @returns {Promise<any>} any，回傳的物件。
+     * @param {string} message 字串，訊息。
+     * @returns {Promise<string | undefined>} 字串或是 undefined，分頁的網址。
      */
-    static async sendMessageAndGetResponse(command: string): Promise<any> {
-        return new Promise(async (resolve, reject) => {
-            const tab = await this.getCurrentTab();
+    static async getCurrentTabUrl(message: string): Promise<string | undefined> {
+        // TODO: 2023/11/14 待處理無法正確取得目前分頁網址的問題。
+        return new Promise((resolve, reject) => {
+            let tab: chrome.tabs.Tab | undefined;
 
-            if (tab === undefined) {
-                this.writeConsoleLog(chrome.i18n.getMessage("messageTabsIsEmpty"));
+            // 傳送訊息至 background.js
+            // 查詢並取得分頁。
+            chrome.runtime.sendMessage(message, (response) => {
+                console.log("response");
+                console.log(response);
 
-                reject(undefined);
-            }
-
-            const tabId = tab?.id;
-
-            if (tabId === undefined) {
-                this.writeConsoleLog(chrome.i18n.getMessage("messageTabIdIsUndefined"));
-
-                reject(undefined);
-            }
-
-            chrome.tabs.sendMessage(tabId!, command, (response) => {
-                // 2023/11/13 因使用情境之關係，故不以 alert() 顯示錯誤訊息內容。
                 this.processLastError(() => {
                     reject(undefined);
-                }, false);
+                });
 
-                resolve(response);
+                if (response === undefined) {
+                    this.writeConsoleLog(chrome.i18n.getMessage("messageTabsIsEmpty"));
+
+                    reject(undefined);
+                }
+
+                tab = response;
+
+                console.log("tab");
+                console.log(tab);
+
+                const tabId: number | undefined = tab?.id;
+
+                if (tabId === undefined) {
+                    this.writeConsoleLog(chrome.i18n.getMessage("messageTabIdIsUndefined"));
+                }
+
+                console.log(`tabId: ${tabId}`);
+                console.log(`tab?.url: ${tab?.url}`);
+
+                resolve(tab?.url ?? undefined);
             });
         });
     }
@@ -1958,12 +1976,15 @@ export class Function {
      * @param {boolean} useDefaultKey 布林值，是否使用預設鍵值，預設值為 false。
      * @returns {Promise<KeySet>} KeySet
      */
-    static async getKeySet(useDefaultKey: boolean = false): Promise<KeySet> {
+    static async getKeySet(
+        useDefaultKey: boolean = false): Promise<KeySet> {
         const keySet = new KeySet();
 
-        let currentUrl = await this.sendMessageAndGetResponse(Command.GetCurrentTabUrl);
+        // 查詢目前的分頁的網址。
+        let currentUrl = await this.getCurrentTabUrl(Message.QueryCurrentTab);
 
         if (currentUrl === undefined) {
+            // 在擴充功能頁面無法取得目前分頁的網址。
             currentUrl = window.location.href;
         }
 
@@ -1976,14 +1997,18 @@ export class Function {
         keySet.isLocalHostVideo = currentUrl.indexOf("file:///") !== -1;
         keySet.isExtensionPage = currentUrl.indexOf("extension://") !== -1;
 
-        // 判斷是否使用預設鍵值、是否為動畫瘋網站的網址或是否為本機網址。
-        if (useDefaultKey === true || keySet.isGamerAniVideo || keySet.isLocalHostVideo) {
+        if (useDefaultKey === true ||
+            keySet.isGamerAniVideo ||
+            keySet.isLocalHostVideo ||
+            keySet.isExtensionPage) {
+            // 判斷是否使用預設鍵值、是否為動畫瘋網站的網址、是否為本機影片網址或是否為擴充功能頁面。
+
             keySet.key = KeyName.DefaultTimestampDataKeyName;
-        } else if (keySet.isYouTubeVideo || keySet.isTwitchVideo || keySet.isBilibiliVideo) {
+        } else if (keySet.isYouTubeVideo ||
+            keySet.isTwitchVideo ||
+            keySet.isBilibiliVideo) {
             // 判斷是否為 YouTube 網站的網址、是否為 Twitch 網站的網址、是否為 Bilibili 網站的網址。
-            keySet.key = `${currentUrl}`;
-        } else if (keySet.isExtensionPage) {
-            // TODO: 2023/11/13 測試用待移除。
+
             keySet.key = `${currentUrl}`;
         } else {
             keySet.key = KeyName.DefaultTimestampDataKeyName;

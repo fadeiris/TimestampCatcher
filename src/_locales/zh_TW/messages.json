@@ -85,7 +85,7 @@
     },
     "stringTimestampTitle": {
         "message": "已紀錄的時間標記資訊",
-        "description": "String: Title for popup.html HTML <textarea id=\"timestampData\"></textarea> element."
+        "description": "String: Title for popup.html HTML <textarea id=\"textTimestampData\"></textarea> element."
     },
     "stringSongTimestamp": {
         "message": "歌曲的時間標記：",

@@ -76,6 +76,20 @@
         <ul>
             <li>
                 <div>
+                    <button type="button" id="btnReloadKey" title="Reload Key"></button>
+                    &nbsp;
+                    <select id="selKey" title="Key">
+                        <option id="oPleaseSelect" value="-1">Please Select</option>
+                    </select>
+                    &nbsp;
+                    <button type="button" id="btnGoTo" title="Go to"></button>
+                    <br />
+                    <textarea id="textTimestampDataPreview" class="timestampDataPreview longContent" rows="15"
+                        title="Timestamp Preview"></textarea>
+                </div>
+            </li>
+            <li>
+                <div>
                     <select id="selExportType" title="Export type">
                         <option id="optTimestamp" value="Timestamp" selected="selected"></option>
                         <option id="optYtComment" value="YtComment"></option>
@@ -85,7 +99,8 @@
                         <option id="optCustomYTPlayerPlaylist_Seconds" value="CustomYTPlayerPlaylist_Seconds"></option>
                         <option id="optJsoncPlaylist" value="JsoncPlaylist"></option>
                         <option id="optCueSheet" value="CueSheet"></option>
-                    </select>&nbsp;
+                    </select>
+                    &nbsp;
                     <button type="button" id="btnExport" title="Export"></button>
                 </div>
             </li>

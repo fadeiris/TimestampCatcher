@@ -85,7 +85,7 @@
     },
     "stringTimestampTitle": {
         "message": "Recorded timestamp",
-        "description": "String: Title for popup.html HTML <textarea id=\"timestampData\"></textarea> element."
+        "description": "String: Title for popup.html HTML <textarea id=\"textTimestampData\"></textarea> element."
     },
     "stringSongTimestamp": {
         "message": "Song timestamp",

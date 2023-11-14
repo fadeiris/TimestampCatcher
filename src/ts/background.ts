@@ -1,6 +1,6 @@
 "use strict";
 
-import { CMID, Command, KeyName, Function } from "./function";
+import { CMID, Command, KeyName, Function, Message } from "./function";
 
 chrome.runtime.onInstalled.addListener(() => {
     // 先移除 contextMenus。
@@ -48,15 +48,15 @@ chrome.contextMenus.onClicked.addListener((
     info: chrome.contextMenus.OnClickData,
     _tab?: chrome.tabs.Tab): void => {
     if (info.menuItemId === CMID.ExtractTimestamp) {
-        Function.sendMessage(Command.ExtractTimestamp, true).catch(error => {
+        Function.sendMessageToTab(Command.ExtractTimestamp, true).catch(error => {
             Function.writeConsoleLog(error);
         });
     } else if (info.menuItemId === CMID.ExtractTimestamp_AutoAppendEndToken) {
-        Function.sendMessage(Command.ExtractTimestampAutoAppendEndToken, true).catch(error => {
+        Function.sendMessageToTab(Command.ExtractTimestampAutoAppendEndToken, true).catch(error => {
             Function.writeConsoleLog(error);
         });
     } else if (info.menuItemId === CMID.ViewYtThumbnail) {
-        Function.sendMessage(Command.ViewYtThumbnail, true).catch(error => {
+        Function.sendMessageToTab(Command.ViewYtThumbnail, true).catch(error => {
             Function.writeConsoleLog(error);
         });
     }
@@ -64,31 +64,33 @@ chrome.contextMenus.onClicked.addListener((
 
 chrome.commands.onCommand.addListener((command) => {
     if (command === Command.RecordTimestamp) {
-        Function.sendMessage(command, false).catch(error => {
+        Function.sendMessageToTab(command, false).catch(error => {
             Function.writeConsoleLog(error);
         });
     } else if (command === Command.TakeScreenshot) {
-        Function.sendMessage(command, false).catch(error => {
+        Function.sendMessageToTab(command, false).catch(error => {
             Function.writeConsoleLog(error);
         });
     } else if (command === Command.Rewind) {
-        Function.sendMessage(command, false).catch(error => {
+        Function.sendMessageToTab(command, false).catch(error => {
             Function.writeConsoleLog(error);
         });
     } else if (command === Command.FastForward) {
-        Function.sendMessage(command, false).catch(error => {
+        Function.sendMessageToTab(command, false).catch(error => {
             Function.writeConsoleLog(error);
         });
     } else if (command === Command.PauseSync) {
-        Function.sendMessage(command, false).catch(error => {
+        Function.sendMessageToTab(command, false).catch(error => {
             Function.writeConsoleLog(error);
         });
     }
 });
 
-chrome.runtime.onMessage.addListener(async (message, _sender, _sendResponse) => {
-    if (message === Function.MessageWakeUp) {
+chrome.runtime.onMessage.addListener(async (message, _sender, sendResponse) => {
+    if (message === Message.WakeUp) {
         await updateExtensionApperance();
+    } else if (message === Message.QueryCurrentTab) {
+        sendResponse(Function.queryCurrentTab());
     } else {
         Function.writeConsoleLog(message);
     }

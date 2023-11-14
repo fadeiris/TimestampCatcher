@@ -101,6 +101,14 @@ textarea:focus-visible {
     border-radius: 15px;
 }
 
+#selKey {
+    margin-bottom: 4px;
+}
+
+.timestampDataPreview {
+    width: 98% !important;
+}
+
 @media (prefers-color-scheme: dark) {
     html {
         background-color: #333333;
@@ -140,6 +148,12 @@ textarea:focus-visible {
     }
 
     #dScreenshotSetting {
+        margin-top: 8px;
+        border: solid 1px #eeeeee;
+        border-radius: 15px;
+    }
+
+    #dExportBlock {
         margin-top: 8px;
         border: solid 1px #eeeeee;
         border-radius: 15px;

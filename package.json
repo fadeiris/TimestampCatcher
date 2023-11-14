@@ -10,7 +10,7 @@
     "buildFx": "webpack --config webpack.prod.fx.js"
   },
   "dependencies": {
-    "@types/chrome": "^0.0.250",
+    "@types/chrome": "^0.0.251",
     "@types/node": "^20.9.0"
   },
   "devDependencies": {

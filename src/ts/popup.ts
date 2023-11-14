@@ -6,7 +6,7 @@ let elemBtnRemoveAll: HTMLButtonElement | null = null;
 let elemBtnReload: HTMLButtonElement | null = null;
 let elemSelExportType: HTMLSelectElement | null = null;
 let elemBtnExport: HTMLButtonElement | null = null;
-let elemTimestampData: HTMLTextAreaElement | null = null;
+let elemTextTimestampData: HTMLTextAreaElement | null = null;
 let elemBtnDownloadLocalVideoPlayer: HTMLAnchorElement | null = null;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -23,8 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const timer = setTimeout(async () => {
                 const keySet = await Function.getKeySet();
 
-                // TODO: 2023/11/13 測試用待移除。
-                alert(`鍵值：${keySet.key}`);
+                console.log(keySet);
 
                 await loadTimestampData(keySet.key);
 
@@ -42,7 +41,7 @@ function initPopupGlobalVariable(): void {
     elemBtnReload = document.getElementById("btnReload") as HTMLButtonElement;
     elemSelExportType = document.getElementById("selExportType") as HTMLSelectElement;
     elemBtnExport = document.getElementById("btnExport") as HTMLButtonElement;
-    elemTimestampData = document.getElementById("timestampData") as HTMLTextAreaElement;
+    elemTextTimestampData = document.getElementById("textTimestampData") as HTMLTextAreaElement;
     elemBtnDownloadLocalVideoPlayer = document.getElementById("btnDownloadLocalVideoPlayer") as HTMLAnchorElement;
 }
 
@@ -119,8 +118,8 @@ function loadPopupUIi18n(): void {
         elemBtnExport.title = chrome.i18n.getMessage("stringBtnExport");
     }
 
-    if (elemTimestampData !== null) {
-        elemTimestampData.title = chrome.i18n.getMessage("stringTimestampTitle");
+    if (elemTextTimestampData !== null) {
+        elemTextTimestampData.title = chrome.i18n.getMessage("stringTimestampTitle");
     }
 
     if (elemBtnDownloadLocalVideoPlayer !== null) {
@@ -196,9 +195,9 @@ function registerPopupListenEvent(): void {
         }
     });
 
-    elemTimestampData?.addEventListener("change", async () => {
+    elemTextTimestampData?.addEventListener("change", async () => {
         const keySet = await Function.getKeySet();
-        const value = elemTimestampData?.value ?? "";
+        const value = elemTextTimestampData?.value ?? "";
         const isOkay = await Function.saveTimestampData(keySet.key, value);
 
         if (isOkay === true) {
@@ -238,15 +237,15 @@ async function loadTimestampData(key: string): Promise<void> {
         const timestampData = await Function.getSavedTimestampData(key);
         const enableYTUtaWakuMode = await Function.getSavedDataValueByKey(KeyName.EnableYTUtaWakuMode, false);
 
-        if (elemTimestampData !== null) {
+        if (elemTextTimestampData !== null) {
             let newTimestampData = "";
 
             if (timestampData !== undefined) {
                 newTimestampData = timestampData;
             }
 
-            elemTimestampData.value = newTimestampData;
-            elemTimestampData.scrollTop = elemTimestampData.scrollHeight;
+            elemTextTimestampData.value = newTimestampData;
+            elemTextTimestampData.scrollTop = elemTextTimestampData.scrollHeight;
 
             Function.writeConsoleLog(chrome.i18n.getMessage("messageLoadedTimestampData"));
 

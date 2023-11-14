@@ -14,6 +14,10 @@ let elemEnableAddAniGamerDanMu: HTMLInputElement | null = null;
 let elemSelExportType: HTMLSelectElement | null = null;
 let elemBtnExport: HTMLButtonElement | null = null;
 let elemBtnDownloadLocalVideoPlayer: HTMLAnchorElement | null = null;
+let elemBtnReloadKey: HTMLButtonElement | null = null;
+let elemSelKey: HTMLSelectElement | null = null;
+let elemBtnGoTo: HTMLButtonElement | null = null;
+let elemTextTimestampDataPreview: HTMLTextAreaElement | null = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     document.onreadystatechange = async () => {
@@ -51,6 +55,10 @@ function initOptionsGlobalVariables(): void {
     elemSelExportType = document.getElementById("selExportType") as HTMLSelectElement;
     elemBtnExport = document.getElementById("btnExport") as HTMLButtonElement;
     elemBtnDownloadLocalVideoPlayer = document.getElementById("btnDownloadLocalVideoPlayer") as HTMLAnchorElement;
+    elemBtnReloadKey = document.getElementById("btnReloadKey") as HTMLButtonElement;
+    elemSelKey = document.getElementById("selKey") as HTMLSelectElement;
+    elemBtnGoTo = document.getElementById("btnGoTo") as HTMLButtonElement;
+    elemTextTimestampDataPreview = document.getElementById("textTimestampDataPreview") as HTMLTextAreaElement;
 }
 
 /**
@@ -168,6 +176,8 @@ function loadOptionsUIi18n(): void {
         elemBtnDownloadLocalVideoPlayer.textContent = chrome.i18n.getMessage("stringBtnDownloadLocalVideoPlayer");
         elemBtnDownloadLocalVideoPlayer.title = chrome.i18n.getMessage("stringBtnDownloadLocalVideoPlayer");
     }
+
+    // TODO: 2023/11/14 待配合新增新項目。
 }
 
 /**
@@ -311,42 +321,75 @@ function registerOptionsListenEvent(): void {
         }
     });
 
-    elemBtnExport?.addEventListener("click", async () => {
-        // TODO: 2023/11/13 需要改成將 key 用選擇的。
-        const keySet = await Function.getKeySet();
-        const selectedValue = elemSelExportType?.value;
+    elemBtnReloadKey?.addEventListener("click", (event) => {
+        event.preventDefault();
 
-        switch (selectedValue) {
+        Test();
+    });
+
+    elemSelKey?.addEventListener("change", async (event) => {
+        const elem = event.currentTarget as HTMLSelectElement;
+        const key = elem.value;
+        const timestampData = await Function.getSavedTimestampData(key);
+
+        if (elemTextTimestampDataPreview !== undefined && elemTextTimestampDataPreview !== null) {
+            elemTextTimestampDataPreview.textContent = timestampData;
+        }
+    });
+
+    elemBtnGoTo?.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        const key = elemSelKey?.value ?? "";
+
+        if (key === "" || key === "-1") {
+            alert("key!");
+
+            return;
+        }
+
+        window.open(key, "_blank");
+    });
+
+    elemBtnExport?.addEventListener("click", async () => {
+        const key = elemSelKey?.value ?? "";
+        const selectedExportTypeValue = elemSelExportType?.value;
+
+        if (key === "" || key === "-1") {
+            alert("key!");
+
+            return;
+        }
+
+        switch (selectedExportTypeValue) {
             case "Timestamp":
-                Function.exportTimestamp(keySet.key);
+                Function.exportTimestamp(key);
                 break;
             case "YtComment":
-                Function.exportYtComment(keySet.key);
+                Function.exportYtComment(key);
                 break;
             case "YtTimestampUrls":
-                Function.exportYtTimestampUrls(keySet.key);
+                Function.exportYtTimestampUrls(key);
                 break;
             case "CustomYTPlayerPlaylist_Timestamps":
-                Function.exportSpeicalFormat(keySet.key, false, PlaylistType.Timestamps);
+                Function.exportSpeicalFormat(key, false, PlaylistType.Timestamps);
                 break;
             case "CustomYTPlayerPlaylist_Seconds":
-                Function.exportSpeicalFormat(keySet.key, false, PlaylistType.Seconds);
+                Function.exportSpeicalFormat(key, false, PlaylistType.Seconds);
                 break;
             case "JsoncPlaylist":
-                Function.exportSpeicalFormat(keySet.key, true, PlaylistType.Seconds);
+                Function.exportSpeicalFormat(key, true, PlaylistType.Seconds);
                 break;
             case "CueSheet":
-                Function.exportCueSheet(keySet.key);
+                Function.exportCueSheet(key);
                 break;
             default:
-                Function.exportTimestamp(keySet.key);
+                Function.exportTimestamp(key);
                 break;
         }
     });
 
     elemBtnDownloadLocalVideoPlayer?.addEventListener("click", () => {
-        // TODO: 2023/11/13 新功能測試中。
-        /*
         Function.playBeep(0);
 
         const tempAnchor = document.createElement("a");
@@ -360,9 +403,6 @@ function registerOptionsListenEvent(): void {
         tempAnchor.click();
 
         document.body.removeChild(tempAnchor);
-        */
-
-        Test();
     });
 }
 
@@ -370,19 +410,18 @@ function registerOptionsListenEvent(): void {
  * 載入設定資料
  */
 async function loadOptionsData(): Promise<void> {
-    const optionsData = await Function.getSavedDataValueByKeys(
-        [
-            KeyName.EnableOutputLog,
-            KeyName.EnableSoundEffect,
-            KeyName.EnableFormattedYTTimestamp,
-            KeyName.EnableYTUtaWakuMode,
-            KeyName.EnableLegacyKeyListener,
-            KeyName.EnableLeftSideSpacePadding,
-            KeyName.EnableAppendingStartEndToken,
-            KeyName.MIME,
-            KeyName.EnableAddAniGamerDanMu,
-            KeyName.AppendSeconds
-        ],
+    const optionsData = await Function.getSavedDataValueByKeys([
+        KeyName.EnableOutputLog,
+        KeyName.EnableSoundEffect,
+        KeyName.EnableFormattedYTTimestamp,
+        KeyName.EnableYTUtaWakuMode,
+        KeyName.EnableLegacyKeyListener,
+        KeyName.EnableLeftSideSpacePadding,
+        KeyName.EnableAppendingStartEndToken,
+        KeyName.MIME,
+        KeyName.EnableAddAniGamerDanMu,
+        KeyName.AppendSeconds
+    ],
         false);
 
     if (optionsData !== undefined) {
@@ -422,6 +461,8 @@ async function loadOptionsData(): Promise<void> {
             elemEnableAddAniGamerDanMu.checked = optionsData[KeyName.EnableAddAniGamerDanMu];
         }
     }
+
+    Test();
 }
 
 /**
@@ -429,19 +470,18 @@ async function loadOptionsData(): Promise<void> {
  */
 async function Test(): Promise<void> {
     // 需要排除的鍵值。
-    const excludedKeys =
-        [
-            KeyName.EnableOutputLog,
-            KeyName.EnableSoundEffect,
-            KeyName.EnableFormattedYTTimestamp,
-            KeyName.EnableYTUtaWakuMode,
-            KeyName.EnableLegacyKeyListener,
-            KeyName.EnableLeftSideSpacePadding,
-            KeyName.EnableAppendingStartEndToken,
-            KeyName.MIME,
-            KeyName.EnableAddAniGamerDanMu,
-            KeyName.AppendSeconds
-        ];
+    const excludedKeys = [
+        KeyName.EnableOutputLog,
+        KeyName.EnableSoundEffect,
+        KeyName.EnableFormattedYTTimestamp,
+        KeyName.EnableYTUtaWakuMode,
+        KeyName.EnableLegacyKeyListener,
+        KeyName.EnableLeftSideSpacePadding,
+        KeyName.EnableAppendingStartEndToken,
+        KeyName.MIME,
+        KeyName.EnableAddAniGamerDanMu,
+        KeyName.AppendSeconds
+    ];
 
     let keys = await Function.getSavedDataKeys();
 
@@ -455,11 +495,12 @@ async function Test(): Promise<void> {
         }
     });
 
-    // 輸出鍵值。
-    console.log(keys);
+    keys.forEach((item) => {
+        const elemOption = document.createElement("option");
 
-    const dataSet = await Function.getSavedDataValueByKeys(keys, true);
+        elemOption.value = item;
+        elemOption.text = item;
 
-    // 取出儲存的時間標記資料。
-    console.log(dataSet);
+        elemSelKey?.appendChild(elemOption);
+    });
 }
