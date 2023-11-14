@@ -21,11 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
             registerPopupListenEvent();
 
             const timer = setTimeout(async () => {
-                const keySet = await Function.getKeySet();
+                await Function.getKeySet()
+                    .then(async keySet => {
+                        console.log(keySet);
 
-                console.log(keySet);
-
-                await loadTimestampData(keySet.key);
+                        await loadTimestampData(keySet.key);
+                    });
 
                 clearTimeout(timer);
             }, Function.CommonTimeout);
@@ -143,69 +144,77 @@ function registerPopupListenEvent(): void {
         const confirmDelete = confirm(chrome.i18n.getMessage("messageConfirmClearAll"));
 
         if (confirmDelete === true) {
-            const keySet = await Function.getKeySet();
-            const isOkay = await Function.removeSavedDataByKey(keySet.key);
+            await Function.getKeySet()
+                .then(async keySet => {
+                    await Function.removeSavedDataByKey(keySet.key).then(isOkay => {
+                        if (isOkay === true) {
+                            Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
+                            Function.playBeep(0);
 
-            if (isOkay === true) {
-                Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
-                Function.playBeep(0);
-
-                loadTimestampData(keySet.key);
-            }
+                            loadTimestampData(keySet.key);
+                        }
+                    });
+                });
         }
     });
 
     elemBtnReload?.addEventListener("click", async () => {
-        Function.playBeep(0);
+        await Function.getKeySet()
+            .then(keySet => {
+                Function.playBeep(0);
 
-        const keySet = await Function.getKeySet();
-
-        loadTimestampData(keySet.key);
+                loadTimestampData(keySet.key);
+            });
     });
 
     elemBtnExport?.addEventListener("click", async () => {
-        const keySet = await Function.getKeySet();
-        const selectedValue = elemSelExportType?.value;
+        await Function.getKeySet()
+            .then(keySet => {
+                const selectedValue = elemSelExportType?.value;
 
-        switch (selectedValue) {
-            case "Timestamp":
-                Function.exportTimestamp(keySet.key);
-                break;
-            case "YtComment":
-                Function.exportYtComment(keySet.key);
-                break;
-            case "YtTimestampUrls":
-                Function.exportYtTimestampUrls(keySet.key);
-                break;
-            case "CustomYTPlayerPlaylist_Timestamps":
-                Function.exportSpeicalFormat(keySet.key, false, PlaylistType.Timestamps);
-                break;
-            case "CustomYTPlayerPlaylist_Seconds":
-                Function.exportSpeicalFormat(keySet.key, false, PlaylistType.Seconds);
-                break;
-            case "JsoncPlaylist":
-                Function.exportSpeicalFormat(keySet.key, true, PlaylistType.Seconds);
-                break;
-            case "CueSheet":
-                Function.exportCueSheet(keySet.key);
-                break;
-            default:
-                Function.exportTimestamp(keySet.key);
-                break;
-        }
+                switch (selectedValue) {
+                    case "Timestamp":
+                        Function.exportTimestamp(keySet.key);
+                        break;
+                    case "YtComment":
+                        Function.exportYtComment(keySet.key);
+                        break;
+                    case "YtTimestampUrls":
+                        Function.exportYtTimestampUrls(keySet.key);
+                        break;
+                    case "CustomYTPlayerPlaylist_Timestamps":
+                        Function.exportSpeicalFormat(keySet.key, false, PlaylistType.Timestamps);
+                        break;
+                    case "CustomYTPlayerPlaylist_Seconds":
+                        Function.exportSpeicalFormat(keySet.key, false, PlaylistType.Seconds);
+                        break;
+                    case "JsoncPlaylist":
+                        Function.exportSpeicalFormat(keySet.key, true, PlaylistType.Seconds);
+                        break;
+                    case "CueSheet":
+                        Function.exportCueSheet(keySet.key);
+                        break;
+                    default:
+                        Function.exportTimestamp(keySet.key);
+                        break;
+                }
+            });
     });
 
     elemTextTimestampData?.addEventListener("change", async () => {
-        const keySet = await Function.getKeySet();
-        const value = elemTextTimestampData?.value ?? "";
-        const isOkay = await Function.saveTimestampData(keySet.key, value);
+        await Function.getKeySet()
+            .then(async keySet => {
+                const value = elemTextTimestampData?.value ?? "";
+                await Function.saveTimestampData(keySet.key, value)
+                    .then(isOkay => {
+                        if (isOkay === true) {
+                            Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
+                            Function.playBeep(0);
 
-        if (isOkay === true) {
-            Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
-            Function.playBeep(0);
-
-            loadTimestampData(keySet.key);
-        }
+                            loadTimestampData(keySet.key);
+                        }
+                    });
+            })
     });
 
     elemBtnDownloadLocalVideoPlayer?.addEventListener("click", () => {

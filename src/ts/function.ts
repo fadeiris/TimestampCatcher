@@ -479,7 +479,11 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，儲存的結果，當值為 true 則表示儲存成功，若值為 false 則是儲存失敗。
      */
     static async saveTimestampData(key: string, value: string): Promise<boolean> {
-        return await this.saveTimestampDataByKey(key, value);
+        return new Promise(async resolve => {
+            const isOkay = await this.saveTimestampDataByKey(key, value);
+
+            resolve(isOkay);
+        });
     }
 
     /**
@@ -490,10 +494,10 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，儲存的結果，當值為 true 則表示儲存成功，若值為 false 則是儲存失敗。
      */
     static saveTimestampDataByKey(key: string, value: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             chrome.storage.local.set({ [key]: value }, () => {
                 this.processLastError(() => {
-                    reject(false);
+                    resolve(false);
                 });
 
                 this.writeConsoleLog(`${chrome.i18n.getMessage("stringRecordedTimestamp")}\n# \n${value}`);
@@ -510,7 +514,11 @@ export class Function {
      * @returns {Promise<string>} 字串，已儲存時間標記的資料。
      */
     static async getSavedTimestampData(key: string): Promise<string> {
-        return await this.getSavedTimestampDataByKey(key);
+        return new Promise(async resolve => {
+            const savedTimestampData = await this.getSavedTimestampDataByKey(key);
+
+            resolve(savedTimestampData);
+        });
     }
 
     /**
@@ -520,10 +528,10 @@ export class Function {
      * @returns {Promise<string>} 字串，已儲存時間標記的資料。
      */
     static async getSavedTimestampDataByKey(key: string): Promise<string> {
-        return new Promise((resolve, reject) => {
-            chrome.storage.local.get(key, (items) => {
+        return new Promise(resolve => {
+            chrome.storage.local.get(key, items => {
                 this.processLastError(() => {
-                    reject("");
+                    resolve("");
                 });
 
                 resolve(items[key]);
@@ -540,11 +548,11 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，儲存的結果，當值為 true 則表示儲存成功，若值為 false 則是儲存失敗。
      */
     static saveDataValueByKey(key: string, value: any, useLocal: boolean = true): Promise<boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             if (useLocal === true) {
                 chrome.storage.local.set({ [key]: value }, () => {
                     this.processLastError(() => {
-                        reject(false);
+                        resolve(false);
                     });
 
                     this.writeConsoleLog(`${value}`);
@@ -554,7 +562,7 @@ export class Function {
             } else {
                 chrome.storage.sync.set({ [key]: value }, () => {
                     this.processLastError(() => {
-                        reject(false);
+                        resolve(false);
                     });
 
                     this.writeConsoleLog(`${value}`);
@@ -572,19 +580,19 @@ export class Function {
      * @returns {Promise<string[] | undefined>} 字串陣列或是 undefined，已儲存資料的鍵值。
      */
     static async getSavedDataKeys(useLocal: boolean = true): Promise<string[] | undefined> {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             if (useLocal === true) {
-                chrome.storage.local.get(null, (items) => {
+                chrome.storage.local.get(null, items => {
                     this.processLastError(() => {
-                        reject(undefined);
+                        resolve(undefined);
                     });
 
                     resolve(Object.keys(items));
                 });
             } else {
-                chrome.storage.sync.get(null, (items) => {
+                chrome.storage.sync.get(null, items => {
                     this.processLastError(() => {
-                        reject(undefined);
+                        resolve(undefined);
                     });
 
                     resolve(Object.keys(items));
@@ -598,22 +606,22 @@ export class Function {
      *
      * @param {string} key 字串，鍵值。
      * @param {boolean} useLocal 布林值，是否使用 local，預設值為 true，若是值為 false 則是使用 sync。
-     * @returns {Promise<any>} any，已儲存資料的值。
+     * @returns {Promise<any>} any，已儲存資料的值，值有可能會等於 undefined。
      */
     static async getSavedDataValueByKey(key: string, useLocal: boolean = true): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             if (useLocal === true) {
-                chrome.storage.local.get([key], (items) => {
+                chrome.storage.local.get([key], items => {
                     this.processLastError(() => {
-                        reject(undefined);
+                        resolve(undefined);
                     });
 
                     resolve(items[key]);
                 });
             } else {
-                chrome.storage.sync.get([key], (items) => {
+                chrome.storage.sync.get([key], items => {
                     this.processLastError(() => {
-                        reject(undefined);
+                        resolve(undefined);
                     });
 
                     resolve(items[key]);
@@ -627,22 +635,22 @@ export class Function {
      *
      * @param {string[]} keys 字串陣列，鍵值組。
      * @param {boolean} useLocal 布林值，是否使用 local，預設值為 true，若是值為 false 則是使用 sync。
-     * @returns {Promise<any>} any，已儲存資料的值。
+     * @returns {Promise<any>} any，已儲存資料的值，值有可能會等於 undefined。
      */
     static async getSavedDataValueByKeys(keys: string[], useLocal: boolean = true): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             if (useLocal === true) {
-                chrome.storage.local.get(keys, (items) => {
+                chrome.storage.local.get(keys, items => {
                     this.processLastError(() => {
-                        reject(undefined);
+                        resolve(undefined);
                     });
 
                     resolve(items);
                 });
             } else {
-                chrome.storage.sync.get(keys, (items) => {
+                chrome.storage.sync.get(keys, items => {
                     this.processLastError(() => {
-                        reject(undefined);
+                        resolve(undefined);
                     });
 
                     resolve(items);
@@ -658,10 +666,10 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，儲存的結果，當值為 true 則表示儲存成功，若值為 false 則是儲存失敗。
      */
     static removeSavedDataByKey(key: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             chrome.storage.local.remove(key, () => {
                 this.processLastError(() => {
-                    reject(false);
+                    resolve(false);
                 });
 
                 resolve(true);
@@ -679,7 +687,8 @@ export class Function {
         chrome.contextMenus.update(key, {
             title: title,
         }, () => {
-            this.processLastError();
+            // background.js 不能使用 alert()，故於此處關閉。
+            this.processLastError(undefined, false);
         });
     }
 
@@ -689,7 +698,15 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkCanOutput(): Promise<boolean> {
-        return await this.getSavedDataValueByKey(KeyName.EnableOutputLog, false);
+        return new Promise(async resolve => {
+            const savedDataValue = await this.getSavedDataValueByKey(KeyName.EnableOutputLog, false);
+
+            if (savedDataValue === undefined) {
+                resolve(false);
+            } else {
+                resolve(savedDataValue);
+            }
+        });
     }
 
     /**
@@ -698,7 +715,15 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkCanPlay(): Promise<boolean> {
-        return await this.getSavedDataValueByKey(KeyName.EnableSoundEffect, false);
+        return new Promise(async resolve => {
+            const savedDataValue = await this.getSavedDataValueByKey(KeyName.EnableSoundEffect, false);
+
+            if (savedDataValue === undefined) {
+                resolve(false);
+            } else {
+                resolve(savedDataValue);
+            }
+        });
     }
 
     /**
@@ -707,7 +732,15 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableFormattedYTTimestamp(): Promise<boolean> {
-        return await this.getSavedDataValueByKey(KeyName.EnableFormattedYTTimestamp, false);
+        return new Promise(async resolve => {
+            const savedDataValue = await this.getSavedDataValueByKey(KeyName.EnableFormattedYTTimestamp, false);
+
+            if (savedDataValue === undefined) {
+                resolve(false);
+            } else {
+                resolve(savedDataValue);
+            }
+        });
     }
 
     /**
@@ -716,7 +749,15 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableYTUtaWakuMode(): Promise<boolean> {
-        return await this.getSavedDataValueByKey(KeyName.EnableYTUtaWakuMode, false);
+        return new Promise(async resolve => {
+            const savedDataValue = await this.getSavedDataValueByKey(KeyName.EnableYTUtaWakuMode, false);
+
+            if (savedDataValue === undefined) {
+                resolve(false);
+            } else {
+                resolve(savedDataValue);
+            }
+        });
     }
 
     /**
@@ -725,7 +766,15 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableLegacyKeyListener(): Promise<boolean> {
-        return await this.getSavedDataValueByKey(KeyName.EnableLegacyKeyListener, false);
+        return new Promise(async resolve => {
+            const savedDataValue = await this.getSavedDataValueByKey(KeyName.EnableLegacyKeyListener, false);
+
+            if (savedDataValue === undefined) {
+                resolve(false);
+            } else {
+                resolve(savedDataValue);
+            }
+        });
     }
 
     /**
@@ -734,7 +783,15 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableLeftSideSpacePadding(): Promise<boolean> {
-        return await this.getSavedDataValueByKey(KeyName.EnableLeftSideSpacePadding, false);
+        return new Promise(async resolve => {
+            const savedDataValue = await this.getSavedDataValueByKey(KeyName.EnableLeftSideSpacePadding, false);
+
+            if (savedDataValue === undefined) {
+                resolve(false);
+            } else {
+                resolve(savedDataValue);
+            }
+        });
     }
 
     /**
@@ -743,7 +800,15 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableAppendingStartEndToken(): Promise<boolean> {
-        return await this.getSavedDataValueByKey(KeyName.EnableAppendingStartEndToken, false);
+        return new Promise(async resolve => {
+            const savedDataValue = await this.getSavedDataValueByKey(KeyName.EnableAppendingStartEndToken, false);
+
+            if (savedDataValue === undefined) {
+                resolve(false);
+            } else {
+                resolve(savedDataValue);
+            }
+        });
     }
 
     /**
@@ -752,7 +817,15 @@ export class Function {
      * @returns {Promise<string>} 字串，MIME。
      */
     static async getMIME(): Promise<string> {
-        return await this.getSavedDataValueByKey(KeyName.MIME, false);
+        return new Promise(async resolve => {
+            const savedDataValue = await this.getSavedDataValueByKey(KeyName.MIME, false);
+
+            if (savedDataValue === undefined) {
+                resolve("");
+            } else {
+                resolve(savedDataValue);
+            }
+        });
     }
 
     /**
@@ -761,7 +834,15 @@ export class Function {
      * @returns {Promise<boolean>} 布林值，值。
      */
     static async checkEnableAddAniGamerDanMu(): Promise<boolean> {
-        return await this.getSavedDataValueByKey(KeyName.EnableAddAniGamerDanMu, false);
+        return new Promise(async resolve => {
+            const savedDataValue = await this.getSavedDataValueByKey(KeyName.EnableAddAniGamerDanMu, false);
+
+            if (savedDataValue === undefined) {
+                resolve(false);
+            } else {
+                resolve(savedDataValue);
+            }
+        });
     }
 
     /**
@@ -770,13 +851,15 @@ export class Function {
      * @returns {Promise<number>} 數值，值。
      */
     static async getAppendSeconds(): Promise<number> {
-        let appendSeconds = await this.getSavedDataValueByKey(KeyName.AppendSeconds, false);
+        return new Promise(async resolve => {
+            const savedDataValue = await this.getSavedDataValueByKey(KeyName.AppendSeconds, false);
 
-        if (appendSeconds === undefined) {
-            appendSeconds = Function.DefaultAppendSeconds;
-        }
-
-        return appendSeconds;
+            if (savedDataValue === undefined) {
+                resolve(Function.DefaultAppendSeconds);
+            } else {
+                resolve(savedDataValue);
+            }
+        });
     }
 
     /**
@@ -870,18 +953,25 @@ export class Function {
      *
      * 來源：https://developer.chrome.com/docs/extensions/reference/tabs/
      *
-     * @returns {Promise<chrome.tabs.Tab>} chrome.tabs.Tab。
+     * @returns {Promise<chrome.tabs.Tab | undefined>} chrome.tabs.Tab 或是 undefined。
      */
-    static async queryCurrentTab(): Promise<chrome.tabs.Tab> {
-        const queryInfo: chrome.tabs.QueryInfo = {
-            active: true,
-            currentWindow: true
-        };
+    static async queryCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
+        return new Promise(async resolve => {
+            const queryInfo: chrome.tabs.QueryInfo = {
+                active: true,
+                currentWindow: true
+            };
 
-        // `tab` will either be a `tabs.Tab` instance or `undefined`.
-        let [tab] = await chrome.tabs.query(queryInfo);
+            // `tab` will either be a `tabs.Tab` instance or `undefined`.
+            let [tab] = await chrome.tabs.query(queryInfo);
 
-        return tab;
+            // background.js 不能使用 alert()，故於此處關閉。
+            this.processLastError(() => {
+                resolve(undefined);
+            }, false);
+
+            resolve(tab);
+        });
     }
 
     /**
@@ -915,7 +1005,8 @@ export class Function {
         // 當啟用時不再傳送訊息至 core.js。
         if (isContextMenu === true || useLegacyKeyListener !== true) {
             chrome.tabs.sendMessage(tabId, command, (_response) => {
-                this.processLastError();
+                // background.js 不能使用 alert()，故於此處關閉。
+                this.processLastError(undefined, false);
             });
         }
     }
@@ -951,45 +1042,35 @@ export class Function {
     /**
      * 取得目前的分頁網址
      *
-     * @param {string} message 字串，訊息。
      * @returns {Promise<string | undefined>} 字串或是 undefined，分頁的網址。
      */
-    static async getCurrentTabUrl(message: string): Promise<string | undefined> {
-        // TODO: 2023/11/14 待處理無法正確取得目前分頁網址的問題。
-        return new Promise((resolve, reject) => {
-            let tab: chrome.tabs.Tab | undefined;
+    static async getCurrentTabUrl(): Promise<string | undefined> {
+        return new Promise(resolve => {
+            let currentTab: chrome.tabs.Tab | undefined;
 
             // 傳送訊息至 background.js
             // 查詢並取得分頁。
-            chrome.runtime.sendMessage(message, (response) => {
-                console.log("response");
-                console.log(response);
-
+            chrome.runtime.sendMessage(Message.QueryCurrentTab, response => {
                 this.processLastError(() => {
-                    reject(undefined);
+                    resolve(undefined);
                 });
 
                 if (response === undefined) {
                     this.writeConsoleLog(chrome.i18n.getMessage("messageTabsIsEmpty"));
 
-                    reject(undefined);
+                    resolve(undefined);
                 }
 
-                tab = response;
+                currentTab = response;
 
-                console.log("tab");
-                console.log(tab);
-
-                const tabId: number | undefined = tab?.id;
+                const tabId: number | undefined = currentTab?.id;
 
                 if (tabId === undefined) {
                     this.writeConsoleLog(chrome.i18n.getMessage("messageTabIdIsUndefined"));
                 }
 
-                console.log(`tabId: ${tabId}`);
-                console.log(`tab?.url: ${tab?.url}`);
-
-                resolve(tab?.url ?? undefined);
+                // 回傳目前的分頁網址。
+                resolve(currentTab?.url)
             });
         });
     }
@@ -1978,43 +2059,46 @@ export class Function {
      */
     static async getKeySet(
         useDefaultKey: boolean = false): Promise<KeySet> {
-        const keySet = new KeySet();
+        return new Promise(async resolve => {
+            const keySet = new KeySet();
 
-        // 查詢目前的分頁的網址。
-        let currentUrl = await this.getCurrentTabUrl(Message.QueryCurrentTab);
+            // 查詢目前的分頁的網址。
+            let currentTabUrl = await this.getCurrentTabUrl();
 
-        if (currentUrl === undefined) {
-            // 在擴充功能頁面無法取得目前分頁的網址。
-            currentUrl = window.location.href;
-        }
+            if (currentTabUrl === undefined) {
+                // 在擴充功能頁面無法取得目前分頁的網址。
+                currentTabUrl = window.location.href;
+            }
 
-        keySet.url = currentUrl;
-        // 非嚴謹判斷目前的網頁的網址。
-        keySet.isYouTubeVideo = currentUrl.indexOf("watch?v=") !== -1;
-        keySet.isTwitchVideo = currentUrl.indexOf("twitch.tv/") !== -1;
-        keySet.isGamerAniVideo = currentUrl.indexOf("ani.gamer.com.tw/animeVideo.php?sn=") !== -1;
-        keySet.isBilibiliVideo = currentUrl.indexOf("bilibili.com/video/") !== -1;
-        keySet.isLocalHostVideo = currentUrl.indexOf("file:///") !== -1;
-        keySet.isExtensionPage = currentUrl.indexOf("extension://") !== -1;
+            keySet.url = currentTabUrl;
+            // TODO: 2023/11/15 需要再調整判斷邏輯。
+            // 非嚴謹判斷目前的網頁的網址。
+            keySet.isYouTubeVideo = currentTabUrl.indexOf("watch?v=") !== -1;
+            keySet.isTwitchVideo = currentTabUrl.indexOf("twitch.tv/") !== -1;
+            keySet.isGamerAniVideo = currentTabUrl.indexOf("ani.gamer.com.tw/animeVideo.php?sn=") !== -1;
+            keySet.isBilibiliVideo = currentTabUrl.indexOf("bilibili.com/video/") !== -1;
+            keySet.isLocalHostVideo = currentTabUrl.indexOf("file:///") !== -1;
+            keySet.isExtensionPage = currentTabUrl.indexOf("extension://") !== -1;
 
-        if (useDefaultKey === true ||
-            keySet.isGamerAniVideo ||
-            keySet.isLocalHostVideo ||
-            keySet.isExtensionPage) {
-            // 判斷是否使用預設鍵值、是否為動畫瘋網站的網址、是否為本機影片網址或是否為擴充功能頁面。
+            if (useDefaultKey === true ||
+                keySet.isGamerAniVideo ||
+                keySet.isLocalHostVideo ||
+                keySet.isExtensionPage) {
+                // 判斷是否使用預設鍵值、是否為動畫瘋網站的網址、是否為本機影片網址或是否為擴充功能頁面。
 
-            keySet.key = KeyName.DefaultTimestampDataKeyName;
-        } else if (keySet.isYouTubeVideo ||
-            keySet.isTwitchVideo ||
-            keySet.isBilibiliVideo) {
-            // 判斷是否為 YouTube 網站的網址、是否為 Twitch 網站的網址、是否為 Bilibili 網站的網址。
+                keySet.key = KeyName.DefaultTimestampDataKeyName;
+            } else if (keySet.isYouTubeVideo ||
+                keySet.isTwitchVideo ||
+                keySet.isBilibiliVideo) {
+                // 判斷是否為 YouTube 網站的網址、是否為 Twitch 網站的網址、是否為 Bilibili 網站的網址。
 
-            keySet.key = `${currentUrl}`;
-        } else {
-            keySet.key = KeyName.DefaultTimestampDataKeyName;
-        }
+                keySet.key = `${currentTabUrl}`;
+            } else {
+                keySet.key = KeyName.DefaultTimestampDataKeyName;
+            }
 
-        return keySet;
+            resolve(keySet);
+        });
     }
 
     /**
@@ -2022,16 +2106,23 @@ export class Function {
      *
      * @param {Function} callback 回呼函式，預設值是 undefined。
      * @param {boolean} useAlert 布林值，是否使用 alert()，預設值為 true。
+     * @returns {string | undefined} 字串或是 undefined，最後的錯誤訊息。
      */
-    static processLastError(callback?: Function, useAlert: boolean = true): void {
+    static processLastError(callback?: Function, useAlert: boolean = true): string | undefined {
+        let lastErrorMesssage = undefined;
+
         if (chrome.runtime.lastError) {
-            this.writeConsoleLog(chrome.runtime.lastError?.message);
+            lastErrorMesssage = chrome.runtime.lastError?.message;
+
+            this.writeConsoleLog(lastErrorMesssage);
 
             if (useAlert === true) {
-                alert(chrome.runtime.lastError?.message);
+                alert(lastErrorMesssage);
             }
 
             callback;
         }
+
+        return lastErrorMesssage;
     }
 }

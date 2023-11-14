@@ -15,8 +15,8 @@ chrome.runtime.onInstalled.addListener(() => {
         ],
         id: CMID.ExtractTimestamp
     }, () => {
-        // 2023/11/13 因使用情境之關係，故不以 alert() 顯示錯誤訊息內容。
-        Function.processLastError(false);
+        // background.js 不能使用 alert()，故於此處關閉。
+        Function.processLastError(undefined, false);
     });
 
     chrome.contextMenus.create({
@@ -27,8 +27,8 @@ chrome.runtime.onInstalled.addListener(() => {
         ],
         id: CMID.ExtractTimestamp_AutoAppendEndToken
     }, () => {
-        // 2023/11/13 因使用情境之關係，故不以 alert() 顯示錯誤訊息內容。
-        Function.processLastError(false);
+        // background.js 不能使用 alert()，故於此處關閉。
+        Function.processLastError(undefined, false);
     });
 
     chrome.contextMenus.create({
@@ -39,8 +39,8 @@ chrome.runtime.onInstalled.addListener(() => {
         ],
         id: CMID.ViewYtThumbnail
     }, () => {
-        // 2023/11/13 因使用情境之關係，故不以 alert() 顯示錯誤訊息內容。
-        Function.processLastError(false);
+        // background.js 不能使用 alert()，故於此處關閉。
+        Function.processLastError(undefined, false);
     });
 });
 
@@ -86,11 +86,16 @@ chrome.commands.onCommand.addListener((command) => {
     }
 });
 
-chrome.runtime.onMessage.addListener(async (message, _sender, sendResponse) => {
+// 來源：https://stackoverflow.com/q/72494154
+// 來源：https://stackoverflow.com/a/53024910
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message === Message.WakeUp) {
-        await updateExtensionApperance();
+        updateExtensionApperance();
     } else if (message === Message.QueryCurrentTab) {
-        sendResponse(Function.queryCurrentTab());
+        Function.queryCurrentTab().then(tab => sendResponse(tab));
+
+        // 為 sendResponse 保留訊息傳送頻道開啟。
+        return true;
     } else {
         Function.writeConsoleLog(message);
     }
@@ -99,13 +104,10 @@ chrome.runtime.onMessage.addListener(async (message, _sender, sendResponse) => {
 /**
  * 更新擴充功能的外觀
  */
-async function updateExtensionApperance(): Promise<void> {
+function updateExtensionApperance(): void {
     // 設定徽章。
-    const enableYTUtaWakuMode = await Function.getSavedDataValueByKey(
-        KeyName.EnableYTUtaWakuMode,
-        false);
-
-    Function.showYTUtaWakuMode(enableYTUtaWakuMode);
+    Function.getSavedDataValueByKey(KeyName.EnableYTUtaWakuMode, false)
+        .then(enableYTUtaWakuMode => Function.showYTUtaWakuMode(enableYTUtaWakuMode));
 
     // 更新 contextMenus 的標題。
     Function.updateContextMenusTitle(
