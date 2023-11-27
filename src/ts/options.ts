@@ -1,6 +1,7 @@
 "enable strict";
 
-import { Function, KeyName, PlaylistType } from "./function";
+import { KeyName, PlaylistType } from "./valueSets";
+import { Function } from "./function";
 
 let elemEnableOutputLog: HTMLInputElement | null = null;
 let elemEnableSoundEffect: HTMLInputElement | null = null;

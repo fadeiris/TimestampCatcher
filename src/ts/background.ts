@@ -1,6 +1,7 @@
 "use strict";
 
-import { CMID, Command, KeyName, Function, Message } from "./function";
+import { CMID, Command, Message, KeyName } from "./valueSets";
+import { Function } from "./function";
 
 chrome.runtime.onInstalled.addListener(() => {
     // 先移除 contextMenus。

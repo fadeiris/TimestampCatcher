@@ -1,6 +1,7 @@
 "use strict";
 
-import { Function, KeyName, PlaylistType } from "./function";
+import { KeyName, PlaylistType } from "./valueSets";
+import { Function } from "./function";
 
 let elemBtnRemoveAll: HTMLButtonElement | null = null;
 let elemBtnReload: HTMLButtonElement | null = null;

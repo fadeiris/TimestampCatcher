@@ -1,6 +1,7 @@
 "use strict";
 
-import { Command, Function, KeySet, Message, Seperators } from "./function";
+import { Command, KeySet, Message, Seperators } from "./valueSets";
+import { Function } from "./function";
 
 document.addEventListener("DOMContentLoaded", () => {
     document.onreadystatechange = async () => {
