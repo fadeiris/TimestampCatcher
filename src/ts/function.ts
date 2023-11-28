@@ -1,6 +1,7 @@
 "use strict";
 
-import { KeyName, Seperators, Message, PlaylistType, KeySet } from "./valueSets";
+import { PlaylistType } from "./enumSets";
+import { KeyName, Seperators, Message, KeySet } from "./classSets";
 import "./dateExt";
 
 /**

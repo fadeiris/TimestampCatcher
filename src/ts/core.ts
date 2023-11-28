@@ -1,6 +1,6 @@
 "use strict";
 
-import { Command, KeySet, Message, Seperators } from "./valueSets";
+import { Command, KeySet, Message, Seperators } from "./classSets";
 import { Function } from "./function";
 
 document.addEventListener("DOMContentLoaded", () => {

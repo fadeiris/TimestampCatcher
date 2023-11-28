@@ -1,13 +1,13 @@
 "use strict";
 
-import { CMID, Command, Message, KeyName } from "./valueSets";
+import { CMID, Command, Message, KeyName } from "./classSets";
 import { Function } from "./function";
 
 chrome.runtime.onInstalled.addListener(() => {
-    // 先移除 contextMenus。
+    // 先移除全部的 contextMenus。
     chrome.contextMenus.removeAll();
 
-    // 再重新建立 contextMenus。
+    // 建立 contextMenus。
     chrome.contextMenus.create({
         title: chrome.i18n.getMessage("stringContextMenuExtractTimestamp"),
         contexts: ["selection"],

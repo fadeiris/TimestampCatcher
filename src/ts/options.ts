@@ -1,6 +1,7 @@
-"enable strict";
+"use strict";
 
-import { KeyName, PlaylistType } from "./valueSets";
+import { PlaylistType } from "./enumSets";
+import { KeyName } from "./classSets";
 import { Function } from "./function";
 
 let elemEnableOutputLog: HTMLInputElement | null = null;
@@ -496,6 +497,10 @@ async function Test(): Promise<void> {
         }
     });
 
+    // 來源：https://stackoverflow.com/a/65413839
+    elemSelKey?.replaceChildren(...keys);
+
+    /*
     keys.forEach((item) => {
         const elemOption = document.createElement("option");
 
@@ -504,4 +509,5 @@ async function Test(): Promise<void> {
 
         elemSelKey?.appendChild(elemOption);
     });
+    */
 }
