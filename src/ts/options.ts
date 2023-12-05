@@ -497,17 +497,22 @@ async function Test(): Promise<void> {
         }
     });
 
-    // 來源：https://stackoverflow.com/a/65413839
-    elemSelKey?.replaceChildren(...keys);
+    // 插入至陣列的第一筆。
+    keys.unshift("Please Select");
 
-    /*
+    // 移除現有的選項。
+    // 來源：https://stackoverflow.com/a/40606838
+    while (elemSelKey?.firstChild) {
+        elemSelKey?.firstChild.remove()
+    }
+
+    // 重新插入選項。
     keys.forEach((item) => {
         const elemOption = document.createElement("option");
 
-        elemOption.value = item;
+        elemOption.value = item === "Please Select" ? "-1" : item;
         elemOption.text = item;
 
         elemSelKey?.appendChild(elemOption);
     });
-    */
 }

@@ -1843,7 +1843,6 @@ export class Function {
             }
 
             keySet.url = currentTabUrl;
-            // TODO: 2023/11/15 需要再調整判斷邏輯。
             // 非嚴謹判斷目前的網頁的網址。
             keySet.isYouTubeVideo = currentTabUrl.indexOf("watch?v=") !== -1;
             keySet.isTwitchVideo = currentTabUrl.indexOf("twitch.tv/") !== -1;
@@ -1869,6 +1868,7 @@ export class Function {
 
                 keySet.key = `${currentTabUrl}`;
             } else {
+                // Fallback。
                 keySet.key = KeyName.DefaultTimestampDataKeyName;
             }
 
