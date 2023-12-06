@@ -231,6 +231,30 @@
         "message": "{文件名称}.{扩展名}",
         "description": "String: FILE in CUE file."
     },
+    "stringBtnReloadKey": {
+        "message": "重新加载键值",
+        "description": "String: Text for options.html HTML <button id=\"btnReloadKey\"></button> element."
+    },
+    "stringSelKeyTitle": {
+        "message": "键值",
+        "description": "String: String: Title for options.html HTML <select id=\"selKey\"></select> element."
+    },
+    "stringPleaseSelect": {
+        "message": "请选择",
+        "description": "String: Please Select"
+    },
+    "stringBtnGoTo": {
+        "message": "前往",
+        "description": "String: Text for options.html HTML <button id=\"btnGoTo\"></button> element."
+    },
+    "stringTextTimestampDataPreviewTitle": {
+        "message": "时间标记数据预览",
+        "description": "String: String: Title for options.html HTML <textarea id=\"textTimestampDataPreview\"></textarea> element."
+    },
+    "messageSelectAValidKeyValue": {
+        "message": "请选择有效的键值。",
+        "description": "Message: Select a valid key value."
+    },
     "messageTimestampDataUpdated": {
         "message": "已更新纪录的时间标记信息。",
         "description": "Message: Already update recored timestamp data."

@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const timer = setTimeout(async () => {
                 await loadOptionsData();
+                await loadSavedDataKeys();
 
                 clearTimeout(timer);
             }, Function.CommonTimeout);
@@ -179,7 +180,29 @@ function loadOptionsUIi18n(): void {
         elemBtnDownloadLocalVideoPlayer.title = chrome.i18n.getMessage("stringBtnDownloadLocalVideoPlayer");
     }
 
-    // TODO: 2023/11/14 待配合新增新項目。
+    if (elemBtnReloadKey !== null) {
+        elemBtnReloadKey.textContent = chrome.i18n.getMessage("stringBtnReloadKey");
+        elemBtnReloadKey.title = chrome.i18n.getMessage("stringBtnReloadKey");
+    }
+
+    if (elemSelKey !== null) {
+        elemSelKey.title = chrome.i18n.getMessage("stringSelKeyTitle");
+    }
+
+    const elemOptPleaseSelect = document.getElementById("optPleaseSelect");
+
+    if (elemOptPleaseSelect !== null) {
+        elemOptPleaseSelect.textContent = chrome.i18n.getMessage("stringPleaseSelect");
+    }
+
+    if (elemBtnGoTo !== null) {
+        elemBtnGoTo.textContent = chrome.i18n.getMessage("stringBtnGoTo");
+        elemBtnGoTo.title = chrome.i18n.getMessage("stringBtnGoTo");
+    }
+
+    if (elemTextTimestampDataPreview !== null) {
+        elemTextTimestampDataPreview.title = chrome.i18n.getMessage("stringTextTimestampDataPreviewTitle");
+    }
 }
 
 /**
@@ -326,7 +349,16 @@ function registerOptionsListenEvent(): void {
     elemBtnReloadKey?.addEventListener("click", (event) => {
         event.preventDefault();
 
-        Test();
+        // 重新載入已儲存的資料鍵值。
+        loadSavedDataKeys();
+
+        // 於 300 毫秒後再執行。
+        const timer = setTimeout(() => {
+            // 觸發鍵值下拉式選單的 "change" 事件。
+            elemSelKey?.dispatchEvent(new Event("change"));
+
+            clearTimeout(timer);
+        }, 300)
     });
 
     elemSelKey?.addEventListener("change", async (event) => {
@@ -345,7 +377,7 @@ function registerOptionsListenEvent(): void {
         const key = elemSelKey?.value ?? "";
 
         if (key === "" || key === "-1") {
-            alert("key!");
+            alert(chrome.i18n.getMessage("messageSelectAValidKeyValue"));
 
             return;
         }
@@ -358,7 +390,7 @@ function registerOptionsListenEvent(): void {
         const selectedExportTypeValue = elemSelExportType?.value;
 
         if (key === "" || key === "-1") {
-            alert("key!");
+            alert(chrome.i18n.getMessage("messageSelectAValidKeyValue"));
 
             return;
         }
@@ -463,14 +495,12 @@ async function loadOptionsData(): Promise<void> {
             elemEnableAddAniGamerDanMu.checked = optionsData[KeyName.EnableAddAniGamerDanMu];
         }
     }
-
-    Test();
 }
 
 /**
- * 測試
+ * 載入已儲存的資料鍵值
  */
-async function Test(): Promise<void> {
+async function loadSavedDataKeys(): Promise<void> {
     // 需要排除的鍵值。
     const excludedKeys = [
         KeyName.EnableOutputLog,
@@ -497,8 +527,10 @@ async function Test(): Promise<void> {
         }
     });
 
+    const keyPleaseSelect = chrome.i18n.getMessage("stringPleaseSelect");
+
     // 插入至陣列的第一筆。
-    keys.unshift("Please Select");
+    keys.unshift(keyPleaseSelect);
 
     // 移除現有的選項。
     // 來源：https://stackoverflow.com/a/40606838
@@ -510,7 +542,11 @@ async function Test(): Promise<void> {
     keys.forEach((item) => {
         const elemOption = document.createElement("option");
 
-        elemOption.value = item === "Please Select" ? "-1" : item;
+        if (item === keyPleaseSelect) {
+            elemOption.id = "optPleaseSelect";
+        }
+
+        elemOption.value = item === keyPleaseSelect ? "-1" : item;
         elemOption.text = item;
 
         elemSelKey?.appendChild(elemOption);

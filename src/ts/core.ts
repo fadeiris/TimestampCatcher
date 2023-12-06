@@ -374,7 +374,7 @@ async function recordTimestamp(keySet: KeySet): Promise<void> {
 
     let seconds = video?.currentTime ?? 0.0;
 
-    // 2022-11-16 目前找不到方法取得 Bilibili 網站直播的目前時間。
+    // TODO: 2022/11/16 目前找不到方法取得 Bilibili 網站直播的目前時間。
 
     // 判斷是否為 Twitch 的頁面。
     if (keySet.isTwitchVideo) {
@@ -1025,12 +1025,10 @@ function injectWebUIForYouTube(): void {
         const css5 = ".extCustomButton:hover {" +
             "border: 2px solid goldenrod;" +
             "}";
+        const cssSets = [css1, css2, css3, css4, css5];
 
-        Function.insertStyleSheetRule(css1);
-        Function.insertStyleSheetRule(css2);
-        Function.insertStyleSheetRule(css3);
-        Function.insertStyleSheetRule(css4);
-        Function.insertStyleSheetRule(css5);
+        // 插入 CSS 規則。
+        Function.insertStyleSheetRules(cssSets);
 
         const elemWebUIFrame = document.getElementById("dWebUIFrame") as HTMLDivElement;
 

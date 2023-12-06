@@ -231,6 +231,30 @@
         "message": "{File name}.{Extension name}",
         "description": "String: FILE in CUE file."
     },
+    "stringBtnReloadKey": {
+        "message": "Reload keys",
+        "description": "String: Text for options.html HTML <button id=\"btnReloadKey\"></button> element."
+    },
+    "stringSelKeyTitle": {
+        "message": "Keys",
+        "description": "String: String: Title for options.html HTML <select id=\"selKey\"></select> element."
+    },
+    "stringPleaseSelect": {
+        "message": "Please Select",
+        "description": "String: Please Select"
+    },
+    "stringBtnGoTo": {
+        "message": "Go To",
+        "description": "String: Text for options.html HTML <button id=\"btnGoTo\"></button> element."
+    },
+    "stringTextTimestampDataPreviewTitle": {
+        "message": "Timestamp Preview",
+        "description": "String: String: Title for options.html HTML <textarea id=\"textTimestampDataPreview\"></textarea> element."
+    },
+    "messageSelectAValidKeyValue": {
+        "message": "Select a valid key value.",
+        "description": "Message: Select a valid key value."
+    },
     "messageTimestampDataUpdated": {
         "message": "Already update recored timestamp data.",
         "description": "Message: Already update recored timestamp data."

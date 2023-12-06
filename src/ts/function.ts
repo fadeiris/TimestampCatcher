@@ -113,7 +113,7 @@ export class Function {
         let decimalPoint = "";
 
         if (allowDecimalPoint === true) {
-            // TODO: 2022/5/5 不確定是否有問題。
+            // TODO: 2022/5/5 不確定是否會有問題。
             // 強制將 ".padStart(3, "0")" 改為 ".padStart(2, "0")"。
             decimalPoint = `:${milliseconds.toString().padStart(2, "0")}`;
         } else {
@@ -1033,22 +1033,34 @@ export class Function {
      *
      * 來源：https://stackoverflow.com/a/48941794
      *
-     * @param {string} value 字串，值。
+     * @param {string | string[]} value 字串或字串陣列，值。
      */
-    static insertStyleSheetRule(value: string): void {
-        const sheets: StyleSheetList = document.styleSheets;
+    static insertStyleSheetRules(value: string | string[]): void {
+        try {
+            const sheets: StyleSheetList = document.styleSheets;
 
-        if (sheets.length === 0) {
-            const newStyle = document.createElement("style");
+            if (sheets.length === 0) {
+                const newStyle = document.createElement("style");
 
-            newStyle.appendChild(document.createTextNode(""));
+                newStyle.appendChild(document.createTextNode(""));
 
-            document.head.appendChild(newStyle);
+                document.head.appendChild(newStyle);
+            }
+
+            const sheet: CSSStyleSheet = sheets[sheets.length - 1];
+
+            if (typeof value === 'string') {
+                sheet.insertRule(value, sheet.cssRules.length);
+            } else if (Array.isArray(value) === true) {
+                value.forEach(item => {
+                    sheet.insertRule(item, sheet.cssRules.length);
+                });
+            } else {
+                this.writeConsoleLog("CSS 規則插入失敗，value 值的類型不為 string 或 string[]。");
+            }
+        } catch (error) {
+            this.writeConsoleLog(error);
         }
-
-        const sheet: CSSStyleSheet = sheets[sheets.length - 1];
-
-        sheet.insertRule(value, sheet.cssRules.length);
     }
 
     /**
