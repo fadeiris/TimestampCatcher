@@ -25,18 +25,19 @@ let elemTextTimestampDataPreview: HTMLTextAreaElement | null = null;
 document.addEventListener("DOMContentLoaded", () => {
     document.onreadystatechange = async () => {
         if (document.readyState === "complete") {
-            await Function.initExtension().then(() => {
-                initOptionsGlobalVariables();
-                loadOptionsUIi18n();
-                registerOptionsListenEvent();
-            }).then(() => {
-                const timer = setTimeout(async () => {
-                    await loadOptionsData()
-                        .then(async () => await loadSavedDataKeys());
+            await Function.initExtension()
+                .then(() => {
+                    initOptionsGlobalVariables();
+                    loadOptionsUIi18n();
+                    registerOptionsListenEvent();
+                }).then(() => {
+                    const timer = setTimeout(async () => {
+                        await loadOptionsData()
+                            .then(async () => await loadSavedDataKeys());
 
-                    clearTimeout(timer);
-                }, Function.CommonTimeout);
-            });
+                        clearTimeout(timer);
+                    }, Function.CommonTimeout);
+                });
         }
     };
 });

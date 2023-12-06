@@ -14,20 +14,21 @@ let elemBtnDownloadLocalVideoPlayer: HTMLAnchorElement | null = null;
 document.addEventListener("DOMContentLoaded", () => {
     document.onreadystatechange = async () => {
         if (document.readyState === "complete") {
-            await Function.initExtension().then(() => {
-                initPopupGlobalVariable();
-                loadPopupUIi18n();
-                registerPopupListenEvent();
-            }).then(() => {
-                const timer = setTimeout(async () => {
-                    await Function.getKeySet()
-                        .then(async keySet => {
-                            await loadTimestampData(keySet.key);
-                        });
+            await Function.initExtension()
+                .then(() => {
+                    initPopupGlobalVariable();
+                    loadPopupUIi18n();
+                    registerPopupListenEvent();
+                }).then(() => {
+                    const timer = setTimeout(async () => {
+                        await Function.getKeySet()
+                            .then(async keySet => {
+                                await loadTimestampData(keySet.key);
+                            });
 
-                    clearTimeout(timer);
-                }, Function.CommonTimeout);
-            });
+                        clearTimeout(timer);
+                    }, Function.CommonTimeout);
+                });
         }
     };
 });
