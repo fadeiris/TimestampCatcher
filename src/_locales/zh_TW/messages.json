@@ -247,6 +247,10 @@
         "message": "前往",
         "description": "String: Text for options.html HTML <button id=\"btnGoTo\"></button> element."
     },
+    "stringBtnDeleteKey": {
+        "message": "刪除鍵值",
+        "description": "String: Text for options.html HTML <button id=\"btnDeleteKey\"></button> element."
+    },
     "stringTextTimestampDataPreviewTitle": {
         "message": "時間標記資料預覽",
         "description": "String: String: Title for options.html HTML <textarea id=\"textTimestampDataPreview\"></textarea> element."

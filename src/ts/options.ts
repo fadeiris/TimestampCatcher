@@ -19,25 +19,24 @@ let elemBtnDownloadLocalVideoPlayer: HTMLAnchorElement | null = null;
 let elemBtnReloadKey: HTMLButtonElement | null = null;
 let elemSelKey: HTMLSelectElement | null = null;
 let elemBtnGoTo: HTMLButtonElement | null = null;
+let elemBtnDeleteKey: HTMLButtonElement | null = null;
 let elemTextTimestampDataPreview: HTMLTextAreaElement | null = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     document.onreadystatechange = async () => {
         if (document.readyState === "complete") {
-            await Function.initExtension();
+            await Function.initExtension().then(() => {
+                initOptionsGlobalVariables();
+                loadOptionsUIi18n();
+                registerOptionsListenEvent();
+            }).then(() => {
+                const timer = setTimeout(async () => {
+                    await loadOptionsData()
+                        .then(async () => await loadSavedDataKeys());
 
-            initOptionsGlobalVariables();
-
-            loadOptionsUIi18n();
-
-            registerOptionsListenEvent();
-
-            const timer = setTimeout(async () => {
-                await loadOptionsData();
-                await loadSavedDataKeys();
-
-                clearTimeout(timer);
-            }, Function.CommonTimeout);
+                    clearTimeout(timer);
+                }, Function.CommonTimeout);
+            });
         }
     };
 });
@@ -62,6 +61,7 @@ function initOptionsGlobalVariables(): void {
     elemSelKey = document.getElementById("selKey") as HTMLSelectElement;
     elemBtnGoTo = document.getElementById("btnGoTo") as HTMLButtonElement;
     elemTextTimestampDataPreview = document.getElementById("textTimestampDataPreview") as HTMLTextAreaElement;
+    elemBtnDeleteKey = document.getElementById("btnDeleteKey") as HTMLButtonElement;
 }
 
 /**
@@ -198,6 +198,11 @@ function loadOptionsUIi18n(): void {
     if (elemBtnGoTo !== null) {
         elemBtnGoTo.textContent = chrome.i18n.getMessage("stringBtnGoTo");
         elemBtnGoTo.title = chrome.i18n.getMessage("stringBtnGoTo");
+    }
+
+    if (elemBtnDeleteKey !== null) {
+        elemBtnDeleteKey.textContent = chrome.i18n.getMessage("stringBtnDeleteKey");
+        elemBtnDeleteKey.title = chrome.i18n.getMessage("stringBtnDeleteKey");
     }
 
     if (elemTextTimestampDataPreview !== null) {
@@ -350,15 +355,10 @@ function registerOptionsListenEvent(): void {
         event.preventDefault();
 
         // 重新載入已儲存的資料鍵值。
-        loadSavedDataKeys();
-
-        // 於 300 毫秒後再執行。
-        const timer = setTimeout(() => {
+        loadSavedDataKeys().then(() => {
             // 觸發鍵值下拉式選單的 "change" 事件。
             elemSelKey?.dispatchEvent(new Event("change"));
-
-            clearTimeout(timer);
-        }, 300)
+        });
     });
 
     elemSelKey?.addEventListener("change", async (event) => {
@@ -383,6 +383,36 @@ function registerOptionsListenEvent(): void {
         }
 
         window.open(key, "_blank");
+    });
+
+    elemBtnDeleteKey?.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        const key = elemSelKey?.value ?? "";
+
+        if (key === "" || key === "-1") {
+            alert(chrome.i18n.getMessage("messageSelectAValidKeyValue"));
+
+            return;
+        }
+
+        const confirmDelete = confirm(chrome.i18n.getMessage("messageConfirmClearAll"));
+
+        if (confirmDelete === true) {
+            await Function.removeSavedDataByKey(key)
+                .then(isOkay => {
+                    if (isOkay === true) {
+                        Function.playBeep(0);
+                        Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
+
+                        // 重新載入已儲存的資料鍵值。
+                        loadSavedDataKeys().then(() => {
+                            // 觸發鍵值下拉式選單的 "change" 事件。
+                            elemSelKey?.dispatchEvent(new Event("change"));
+                        });
+                    }
+                });
+        }
     });
 
     elemBtnExport?.addEventListener("click", async () => {

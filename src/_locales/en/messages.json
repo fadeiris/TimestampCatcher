@@ -247,6 +247,10 @@
         "message": "Go To",
         "description": "String: Text for options.html HTML <button id=\"btnGoTo\"></button> element."
     },
+    "stringBtnDeleteKey": {
+        "message": "Delete key",
+        "description": "String: Text for options.html HTML <button id=\"btnDeleteKey\"></button> element."
+    },
     "stringTextTimestampDataPreviewTitle": {
         "message": "Timestamp Preview",
         "description": "String: String: Title for options.html HTML <textarea id=\"textTimestampDataPreview\"></textarea> element."

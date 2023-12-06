@@ -6,25 +6,25 @@ import { Function } from "./function";
 document.addEventListener("DOMContentLoaded", () => {
     document.onreadystatechange = async () => {
         if (document.readyState === "complete") {
-            await Function.initExtension();
+            await Function.initExtension().then(async () => {
+                // 傳送訊息至 background.js
+                chrome.runtime.sendMessage(Message.WakeUp);
 
-            // 傳送訊息至 background.js
-            chrome.runtime.sendMessage(Message.WakeUp);
+                // 用來應對 Vivaldi 網頁瀏覽器，還不支援擴充功能自定義快速鍵的狀況。
+                const enableLegacyKeyListener = await Function.checkEnableLegacyKeyListener();
 
-            // 用來應對 Vivaldi 網頁瀏覽器，還不支援擴充功能自定義快速鍵的狀況。
-            const enableLegacyKeyListener = await Function.checkEnableLegacyKeyListener();
+                if (enableLegacyKeyListener === true) {
+                    registerEventListener();
+                }
+            }).then(() => {
+                // 延後執行注入 HTML 元素。
+                const timer = setTimeout(() => {
+                    injectElemToVideoPlayerControl();
+                    injectWebUIForYouTube();
 
-            if (enableLegacyKeyListener === true) {
-                registerEventListener();
-            }
-
-            // 延後執行注入 HTML 元素。
-            const timer = setTimeout(() => {
-                injectElemToVideoPlayerControl();
-                injectWebUIForYouTube();
-
-                clearTimeout(timer);
-            }, Function.CommonTimeout);
+                    clearTimeout(timer);
+                }, Function.CommonTimeout);
+            });
         }
     };
 });
