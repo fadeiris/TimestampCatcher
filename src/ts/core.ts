@@ -4,9 +4,9 @@ import { Command, KeySet, Message, Seperators } from "./classSets";
 import { Function } from "./function";
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.onreadystatechange = async () => {
+    document.onreadystatechange = () => {
         if (document.readyState === "complete") {
-            await Function.initExtension()
+            Function.initExtension()
                 .then(async () => {
                     // 傳送訊息至 background.js
                     chrome.runtime.sendMessage(Message.WakeUp);

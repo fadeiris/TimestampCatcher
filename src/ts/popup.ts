@@ -12,9 +12,9 @@ let elemTextTimestampData: HTMLTextAreaElement | null = null;
 let elemBtnDownloadLocalVideoPlayer: HTMLAnchorElement | null = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.onreadystatechange = async () => {
+    document.onreadystatechange = () => {
         if (document.readyState === "complete") {
-            await Function.initExtension()
+            Function.initExtension()
                 .then(() => {
                     initPopupGlobalVariable();
                     loadPopupUIi18n();
@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 }).then(() => {
                     const timer = setTimeout(async () => {
                         await Function.getKeySet()
-                            .then(async keySet => {
-                                await loadTimestampData(keySet.key);
+                            .then(keySet => {
+                                loadTimestampData(keySet.key);
                             });
 
                         clearTimeout(timer);

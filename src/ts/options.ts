@@ -23,17 +23,17 @@ let elemBtnDeleteKey: HTMLButtonElement | null = null;
 let elemTextTimestampDataPreview: HTMLTextAreaElement | null = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-    document.onreadystatechange = async () => {
+    document.onreadystatechange = () => {
         if (document.readyState === "complete") {
-            await Function.initExtension()
+            Function.initExtension()
                 .then(() => {
                     initOptionsGlobalVariables();
                     loadOptionsUIi18n();
                     registerOptionsListenEvent();
                 }).then(() => {
-                    const timer = setTimeout(async () => {
-                        await loadOptionsData()
-                            .then(async () => await loadSavedDataKeys());
+                    const timer = setTimeout(() => {
+                        loadOptionsData()
+                            .then(() => loadSavedDataKeys());
 
                         clearTimeout(timer);
                     }, Function.CommonTimeout);
@@ -356,10 +356,11 @@ function registerOptionsListenEvent(): void {
         event.preventDefault();
 
         // 重新載入已儲存的資料鍵值。
-        loadSavedDataKeys().then(() => {
-            // 觸發鍵值下拉式選單的 "change" 事件。
-            elemSelKey?.dispatchEvent(new Event("change"));
-        });
+        loadSavedDataKeys()
+            .then(() => {
+                // 觸發鍵值下拉式選單的 "change" 事件。
+                elemSelKey?.dispatchEvent(new Event("change"));
+            });
     });
 
     elemSelKey?.addEventListener("change", async (event) => {
@@ -377,7 +378,9 @@ function registerOptionsListenEvent(): void {
 
         const key = elemSelKey?.value ?? "";
 
-        if (key === "" || key === "-1") {
+        if (key === "" ||
+            key === "-1" ||
+            key === KeyName.DefaultTimestampDataKeyName) {
             alert(chrome.i18n.getMessage("messageSelectAValidKeyValue"));
 
             return;
@@ -407,10 +410,11 @@ function registerOptionsListenEvent(): void {
                         Function.writeConsoleLog(chrome.i18n.getMessage("messageTimestampDataUpdated"));
 
                         // 重新載入已儲存的資料鍵值。
-                        loadSavedDataKeys().then(() => {
-                            // 觸發鍵值下拉式選單的 "change" 事件。
-                            elemSelKey?.dispatchEvent(new Event("change"));
-                        });
+                        loadSavedDataKeys()
+                            .then(() => {
+                                // 觸發鍵值下拉式選單的 "change" 事件。
+                                elemSelKey?.dispatchEvent(new Event("change"));
+                            });
                     }
                 });
         }
