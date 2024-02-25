@@ -167,19 +167,21 @@ function injectElemToVideoPlayerControl(): void {
     const selectorBilibili2 = ".web-player-controller-wrap";
     const selectorBilibili3 = ".squirtle-controller-wrap-left";
     const selectorBilibili4 = ".bpx-player-control-bottom-center";
+    const selectorZANLive = ".prism-quality > .quality-select";
 
     const currentUrl = window.location.href;
     const isLocalHostVideo = currentUrl.indexOf("file:///") !== - 1;
 
     const elemVideo = document.querySelector("video") as HTMLVideoElement;
     const elemYTLeftCtrl = document.querySelector(selectorYT) as HTMLDivElement;
-    // 2022-11-16 針對 Twitch 網站的備註。
+    // 2022/11/16 針對 Twitch 網站的備註。
     // 因 Twitch 網站網頁設計之緣故，他們的頁面載入機制疑似為 Partial Page Loading。
     // 所以當影片切換時，按鈕無法重新再被注入一次，需要手動使用 Ctrl + F5 重新載入頁面。
     const elemTwitchLeftCtrl = document.querySelectorAll(selectorTH) as NodeList;
     const elemGamerAniLeftCtrl = document.querySelector(selectorGamerAni) as HTMLDivElement;
+    const elemZANLiveCtrl = document.querySelector(selectorZANLive) as HTMLDivElement;
 
-    // 2022-02-03 針對 Bilibili 網站的備註。
+    // 2022/2/3 針對 Bilibili 網站的備註。
     // 因 Bilibili 網站網頁設計之緣故，他們的頁面載入機制疑似為 Partial Page Loading。
     // 所以當影片切換時，按鈕無法重新再被注入一次，需要手動使用 Ctrl + F5 重新載入頁面。
     // 另，因 Bilibili 網站的影片播放機制是使用他們自家自製的播放器，
@@ -318,6 +320,10 @@ function injectElemToVideoPlayerControl(): void {
             elemTempAnchor.style.float = "left";
 
             elemBiliBiliLeftCtrl.appendChild(elemTempAnchor);
+        }
+
+        if (elemZANLiveCtrl !== undefined && elemZANLiveCtrl !== null) {
+            elemZANLiveCtrl.appendChild(elemTempAnchor);
         }
     }
 

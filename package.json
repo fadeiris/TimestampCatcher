@@ -1,6 +1,6 @@
 {
   "name": "timestamp_catcher",
-  "version": "1.17.2",
+  "version": "1.17.3",
   "scripts": {
     "ins_dep": "npm install",
     "update": "npm update",

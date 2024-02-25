@@ -2,7 +2,7 @@
     "name": "__MSG_appName__",
     "description": "__MSG_appDesc__",
     "default_locale": "en",
-    "version": "1.17.2",
+    "version": "1.17.3",
     "manifest_version": 3,
     "action": {
         "default_popup": "html/popup.html",
@@ -28,7 +28,8 @@
         "*://*.youtube.com/*",
         "*://*.twitch.tv/*",
         "*://ani.gamer.com.tw/*",
-        "*://*.bilibili.com/*"
+        "*://*.bilibili.com/*",
+        "*://www.zan-live.com/*"
     ],
     "web_accessible_resources": [
         {
@@ -40,7 +41,8 @@
                 "*://*.youtube.com/*",
                 "*://*.twitch.tv/*",
                 "*://ani.gamer.com.tw/*",
-                "*://*.bilibili.com/*"
+                "*://*.bilibili.com/*",
+                "*://www.zan-live.com/*"
             ]
         },
         {
@@ -52,7 +54,8 @@
                 "*://*.youtube.com/*",
                 "*://*.twitch.tv/*",
                 "*://ani.gamer.com.tw/*",
-                "*://*.bilibili.com/*"
+                "*://*.bilibili.com/*",
+                "*://www.zan-live.com/*"
             ]
         }
     ],
@@ -63,7 +66,8 @@
                 "*://*.youtube.com/*",
                 "*://*.twitch.tv/*",
                 "*://ani.gamer.com.tw/*",
-                "*://*.bilibili.com/*"
+                "*://*.bilibili.com/*",
+                "*://www.zan-live.com/*"
             ],
             "js": [
                 "js/core.js"
