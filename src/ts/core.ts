@@ -222,7 +222,10 @@ function injectElemToVideoPlayerControl(): void {
         const elemTempAnchor = createAnchor(
             "btnRecordTimestamp",
             "stringRecordTimestamp",
-            async () => {
+            async (event: Event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
                 await Function.getKeySet()
                     .then(keySet => recordTimestamp(keySet));
             });
@@ -272,7 +275,10 @@ function injectElemToVideoPlayerControl(): void {
         const elemTempAnchor = createAnchor(
             "btnTakeScreenshot",
             "stringTakeScreenshot",
-            async () => {
+            async (event: Event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
                 await Function.getKeySet()
                     .then(keySet => takeScreenshot(keySet));
             });
