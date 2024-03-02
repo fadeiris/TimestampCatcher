@@ -138,26 +138,26 @@ export class KeyName {
 /**
  * 類別：分隔符號
  */
-export class Seperators {
+export class Separators {
     /**
      * 分隔符號 1 "｜"
      */
-    static Seperator1 = "｜";
+    static Separator1 = "｜";
 
     /**
      * 分隔符號 2 "^"
      */
-    static Seperator2 = "^";
+    static Separator2 = "^";
 
     /**
      * 分隔符號 3 ","
      */
-    static Seperator3 = ",";
+    static Separator3 = ",";
 
     /**
      * 分隔符號 4 "-------"
      */
-    static Seperator4 = "-------";
+    static Separator4 = "-------";
 }
 
 /**

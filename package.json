@@ -1,6 +1,6 @@
 {
   "name": "timestamp_catcher",
-  "version": "1.17.3",
+  "version": "1.17.4",
   "scripts": {
     "ins_dep": "npm install",
     "update": "npm update",
@@ -10,8 +10,8 @@
     "buildFx": "webpack --config webpack.prod.fx.js"
   },
   "dependencies": {
-    "@types/chrome": "^0.0.261",
-    "@types/node": "^20.11.20"
+    "@types/chrome": "^0.0.262",
+    "@types/node": "^20.11.24"
   },
   "devDependencies": {
     "clean-webpack-plugin": "*",

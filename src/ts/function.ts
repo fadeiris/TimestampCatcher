@@ -1,7 +1,7 @@
 "use strict";
 
 import { PlaylistType } from "./enumSets";
-import { KeyName, Seperators, Message, KeySet } from "./classSets";
+import { KeyName, Separators, Message, KeySet } from "./classSets";
 import "./dateExt";
 
 /**
@@ -875,18 +875,18 @@ export class Function {
                     videoId !== null &&
                     videoId !== "" &&
                     tempOutputData === null) {
-                    tempOutputData = `${videoId}${Seperators.Seperator2}`;
+                    tempOutputData = `${videoId}${Separators.Separator2}`;
                 }
 
                 // 分隔用行。
-                if (line === Seperators.Seperator4) {
+                if (line === Separators.Separator4) {
                     return;
                 }
 
                 if (line.indexOf(i18nUrl) !== -1) {
                     videoId = this.getYouTubeId(line.replace(i18nUrl, ""));
 
-                    tempOutputData = `${videoId}${Seperators.Seperator2}`;
+                    tempOutputData = `${videoId}${Separators.Separator2}`;
 
                     return;
                 }
@@ -907,7 +907,7 @@ export class Function {
 
                         // 判斷是否為開始的點。
                         if (line.indexOf(i18nStart) !== -1) {
-                            let separatorCount = [...tempOutputData!].filter(l => l === Seperators.Seperator2).length;
+                            let separatorCount = [...tempOutputData!].filter(l => l === Separators.Separator2).length;
 
                             clipName = line.replace(this.CommentToken, "").replace(i18nStart, "").trimStart();
 
@@ -918,7 +918,7 @@ export class Function {
                             if (clipName !== undefined && clipName !== null && clipName !== "") {
                                 // 針對連續的（開始）補上結束時間。
                                 if (separatorCount === 1) {
-                                    tempOutputData += `${songIdx}${Seperators.Seperator2}${clipName}${Seperators.Seperator2}`;
+                                    tempOutputData += `${songIdx}${Separators.Separator2}${clipName}${Separators.Separator2}`;
                                 } else {
                                     tempOutputData += "0";
 
@@ -926,14 +926,14 @@ export class Function {
 
                                     outputData.push(tempOutputData!);
 
-                                    tempOutputData = `${videoId}${Seperators.Seperator2}${songIdx}${Seperators.Seperator2}${clipName}${Seperators.Seperator2}`;
+                                    tempOutputData = `${videoId}${Separators.Separator2}${songIdx}${Separators.Separator2}${clipName}${Separators.Separator2}`;
                                 }
 
                                 songIdx++;
                             }
                         }
                     } else {
-                        const timestampSet = line.split(Seperators.Seperator1);
+                        const timestampSet = line.split(Separators.Separator1);
 
                         if (timestampSet.length > 0 &&
                             timestampSet[0] !== undefined &&
@@ -945,9 +945,9 @@ export class Function {
                                 // timestampCount 為 0 時。
                                 if (timestampCount === 0) {
                                     if (seconds === true) {
-                                        tempOutputData += `${timestampSet[2]}${Seperators.Seperator2}`;
+                                        tempOutputData += `${timestampSet[2]}${Separators.Separator2}`;
                                     } else {
-                                        tempOutputData += `${timestampSet[1]}${Seperators.Seperator2}`;
+                                        tempOutputData += `${timestampSet[1]}${Separators.Separator2}`;
                                     }
 
                                     timestampCount++;
@@ -970,7 +970,7 @@ export class Function {
                                 if (index >= (allLines.length - 2) && tempOutputData !== null) {
                                     const lastChar = tempOutputData.charAt(tempOutputData.length - 1);
 
-                                    if (lastChar === Seperators.Seperator2) {
+                                    if (lastChar === Separators.Separator2) {
                                         if (seconds === true) {
                                             tempOutputData += "0";
                                         } else {
@@ -1105,9 +1105,9 @@ export class Function {
 
             timestamp = `${processedTimestamp} `;
         } else {
-            timestamp = `${this.convertToTimestamp(seconds)}${Seperators.Seperator1}` +
-                `${this.convertToYTTimestamp(seconds, enableFormatted)}${Seperators.Seperator1}` +
-                `${Math.round(seconds)}${Seperators.Seperator1}` +
+            timestamp = `${this.convertToTimestamp(seconds)}${Separators.Separator1}` +
+                `${this.convertToYTTimestamp(seconds, enableFormatted)}${Separators.Separator1}` +
+                `${Math.round(seconds)}${Separators.Separator1}` +
                 `${this.convertToTwitchTimestamp(seconds)}`;
         }
 
@@ -1177,7 +1177,7 @@ export class Function {
                 if (lastLine.indexOf(this.CommentToken) !== 0 ||
                     lastLine.indexOf(this.CommentToken) === -1) {
                     // 當找到 "," 時，移除 ","。
-                    if (lastLine.indexOf(Seperators.Seperator3) !== -1) {
+                    if (lastLine.indexOf(Separators.Separator3) !== -1) {
                         resultValue = `${keepLines.join("\n")}\n`;
                         // 來源：https://thewebdev.info/2021/06/20/how-to-replace-the-last-occurrence-of-a-character-in-a-string-in-javascript/
                         resultValue += `${lastLine.replace(/,([^,]*)$/, "$1")}\n`;

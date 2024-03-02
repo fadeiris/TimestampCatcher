@@ -1,6 +1,6 @@
 "use strict";
 
-import { Command, KeySet, Message, Seperators } from "./classSets";
+import { Command, KeySet, Message, Separators } from "./classSets";
 import { Function } from "./function";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -399,6 +399,7 @@ async function recordTimestamp(keySet: KeySet): Promise<void> {
             liveTimeText !== "") {
             // 將 liveTimeText 轉換成秒數。
             const convertedSeconds = Function.convertTimeStringToSeconds(liveTimeText);
+
             let offsetSeconds = 0;
 
             // 當 convertedSeconds 大於 0 時。
@@ -462,11 +463,25 @@ async function recordTimestamp(keySet: KeySet): Promise<void> {
 
         const startToken = enableAppendingStartEndToken === true ?
             chrome.i18n.getMessage("stringTimestampStart") :
-            "";
+            "",
+            endToken = enableAppendingStartEndToken === true ?
+                chrome.i18n.getMessage("stringTimestampEnd") :
+                "";
+
+        // 理論上 startTokenIndex 以及 endTokenIndex 都不能為 -1。
+        const startTokenIndex = oldValue.lastIndexOf(startToken),
+            endTokenIndex = oldValue.lastIndexOf(endToken);
+
+        let actualToken = startTokenIndex > endTokenIndex ? endToken : startToken;
+
+        // 當 startTokenIndex 為 -1 時，則表示尚未插入過 "（開始）"。
+        if (startTokenIndex === -1) {
+            actualToken = startToken;
+        }
 
         await Function.saveTimestampData(
             keySet.key,
-            `${oldValue}${Function.CommentToken} ${startToken}\n${timestamp}\n`);
+            `${oldValue}${Function.CommentToken} ${actualToken}\n${timestamp}\n`);
     }
 
     // 讓網頁 UI 重新載入時間標記資料。
@@ -598,11 +613,9 @@ async function extractTimestamp(keySet: KeySet, autoAddEndToken: boolean = false
  * @param {boolean} autoAddEndToken 布林值，用於判斷是否將下一筆的開始時間當作是上一筆的結束時間，預設值為 false。
  */
 async function doExtractYouTubeComment(keySet: KeySet, autoAddEndToken: boolean = false): Promise<void> {
-    // TODO: 2022/11/5 未來可能會需要再調整程式碼。
+    // TODO: 2024/3/2 未來可能會需要再調整程式碼。
     let tempDataSet: string[] = [],
-        composeStr = "",
-        unknownNameCount = 1,
-        tempNameStr = "";
+        composeStr = "";
 
     const selection = document.getSelection();
     const range = selection?.getRangeAt(0);
@@ -665,144 +678,43 @@ async function doExtractYouTubeComment(keySet: KeySet, autoAddEndToken: boolean 
     let totalPushCount = 0;
 
     tempNode2DArray.forEach((nodeArray) => {
-        let pushCount = 0, overValue = -1;
+        let pushCount = 0;
 
-        nodeArray.forEach((node, childIndex, array) => {
-            if (node instanceof HTMLAnchorElement) {
+        nodeArray.forEach((node, _childIndex, _array) => {
+            // 2024/3/2 YouTube 留言新格式。
+            if (node.nodeName !== "SPAN") {
+                // 不進行任何處理。
+                return;
+            }
+
+            // 理論上時間標記連結只會只有一個子項目。
+            if (node.childNodes.length !== 1) {
+                // 不進行任何處理。
+                return;
+            }
+
+            const childNode = node.childNodes[0];
+
+            if (childNode instanceof HTMLAnchorElement) {
                 const textContent = node.textContent ?? "";
 
                 // 時間標記連結。
                 if (textContent.indexOf("#") === -1 &&
                     textContent.indexOf("http") === -1) {
-                    const youTubeData = Function.getYouTubeIdAndStartSec(node.href);
+                    const youTubeData = Function.getYouTubeIdAndStartSec(childNode.href);
 
-                    composeStr += `${youTubeData[0]}${Seperators.Seperator2}${youTubeData[1]}${Seperators.Seperator2}`;
+                    composeStr += `${youTubeData[0]}${Separators.Separator2}${youTubeData[1]}${Separators.Separator2}`;
 
-                    if (tempNameStr !== "") {
-                        composeStr += tempNameStr;
+                    tempDataSet.push(composeStr);
 
-                        tempDataSet.push(composeStr);
+                    pushCount++;
 
-                        pushCount++;
-
-                        // 清空 composeStr 供下一次使用。
-                        composeStr = "";
-
-                        // 清空 tempNameStr 供下一次使用。
-                        tempNameStr = "";
-                    }
-                } else {
-                    // # 標籤或網址連結。
-                    tempNameStr += textContent;
-                }
-            } else if (node instanceof HTMLSpanElement) {
-                // 判斷 array 的長度是否大於 3。
-                if (array.length > 3) {
-                    // 判斷 array 的長度是否大於 5。
-                    if (array.length > 5) {
-                        // 當 overValue 為 -1 時，設定 overValue 的值。
-                        if (overValue === -1) {
-                            overValue = array.length - 5;
-                        }
-
-                        // 判斷 childIndex 是否小於 overValue，
-                        // 排除第一個時間標記前的任何字串。
-                        if (childIndex <= overValue) {
-                            // 不進行任何處理。
-                            return;
-                        } else {
-                            // 重設 overValue。
-                            overValue = -1;
-                        }
-                    } else {
-                        // 排除第一個時間標記前的任何字串。
-                        if (childIndex === 0) {
-                            // 不進行任何處理。
-                            return;
-                        }
-                    }
-                }
-
-                // 去掉換行字元跟移除開頭的空白。
-                let trimedTextContent = node.textContent
-                    ?.replace(/[\n\r]/g, "")
-                    .trimStart();
-
-                if (trimedTextContent !== undefined &&
-                    trimedTextContent?.length > 0) {
-                    // 判斷最後一個字元是否為 #。
-                    if (trimedTextContent.slice(-1) === "#") {
-                        // 移除字串尾巴的 #。
-                        trimedTextContent = trimedTextContent.slice(0, -1).trimEnd();
-                    }
-
-                    if (composeStr === "") {
-                        // 當 composeStr 為空白時，則表示時間標記不在字串前方，
-                        // 而可能是在的中段或是最尾端。
-
-                        // 將歌曲名稱指派給 tempNameStr。
-                        tempNameStr += trimedTextContent;
-                    } else {
-                        // 判斷 composeStr 是否沒內容。
-                        if (composeStr.indexOf(Seperators.Seperator2) !== -1) {
-                            composeStr += trimedTextContent;
-
-                            tempDataSet.push(composeStr);
-
-                            pushCount++;
-
-                            // 清空 composeStr 供下一次使用。
-                            composeStr = "";
-
-                            // 清空 tempNameStr 供下一次使用。
-                            tempNameStr = "";
-                        } else {
-                            // 判斷 composeStr 是否沒內容。
-                            if (composeStr === "" || composeStr.length <= 0) {
-                                return;
-                            } else {
-                                // 針對只有時間標記的資料，補一個暫用的名稱。
-                                composeStr += `${chrome.i18n.getMessage("stringUnknownName")} ${unknownNameCount}`;
-
-                                unknownNameCount++;
-
-                                tempDataSet.push(composeStr);
-
-                                pushCount++;
-
-                                // 清空 composeStr 供下一次使用。
-                                composeStr = "";
-
-                                // 清空 tempNameStr 供下一次使用。
-                                tempNameStr = "";
-                            }
-                        }
-                    }
+                    // 清空 composeStr 供下一次使用。
+                    composeStr = "";
                 }
             } else {
                 // 不進行任何處理。
                 return;
-            }
-
-            // 當 childIndex 為 array 的內最後一個項目時，
-            // 且 tempNameStr 不為空白時。
-            if (childIndex === array.length - 1 &&
-                tempNameStr !== "") {
-                let targetIndex = totalPushCount - 1;
-
-                if (pushCount >= 1) {
-                    targetIndex += pushCount;
-                }
-
-                if (targetIndex < 0) {
-                    targetIndex = 0;
-                }
-
-                // 將 tempNameStr 附加至 tempDataSet[targetIndex]。
-                tempDataSet[targetIndex] += tempNameStr;
-
-                // 清空 tempNameStr 供下一次使用。
-                tempNameStr = "";
             }
         });
 
@@ -815,12 +727,10 @@ async function doExtractYouTubeComment(keySet: KeySet, autoAddEndToken: boolean 
         const startToken = enableAppendingStartEndToken === true ? chrome.i18n.getMessage("stringTimestampStart") : "",
             endToken = enableAppendingStartEndToken === true ? chrome.i18n.getMessage("stringTimestampEnd") : "";
 
-        let outputStr = "",
-            tempStr = "",
-            previousSongName = "";
+        let outputStr = "", tempStr = "";
 
         tempDataSet.forEach(async (item, index) => {
-            const data = item.split(Seperators.Seperator2),
+            const data = item.split(Separators.Separator2),
                 videoId = data[0],
                 songName = Function.removeUrl(data[2]);
 
@@ -836,121 +746,71 @@ async function doExtractYouTubeComment(keySet: KeySet, autoAddEndToken: boolean 
             }
 
             // 組成時間標記字串。
-            let timestamp = `${Function.convertToTimestamp(seconds)}${Seperators.Seperator1}` +
-                `${Function.convertToYTTimestamp(seconds, enableFormatted)}${Seperators.Seperator1}` +
-                `${Math.round(seconds)}${Seperators.Seperator1}` +
+            let timestamp = `${Function.convertToTimestamp(seconds)}${Separators.Separator1}` +
+                `${Function.convertToYTTimestamp(seconds, enableFormatted)}${Separators.Separator1}` +
+                `${Math.round(seconds)}${Separators.Separator1}` +
                 `${Function.convertToTwitchTimestamp(seconds)}`;
 
-            // 當 tempStr 不為空值時，在補全 tempStr 後，清空 tempStr。
-            if (tempStr !== "") {
-                outputStr += `${tempStr.replace("{SongName}", songName)}` +
-                    `${Function.CommentToken} ${songName}` +
-                    `${endToken}\n` +
-                    `${timestamp}\n\n`;
+            const currentLine = `${Function.CommentToken} ${index + 1}. ${songName}` +
+                `${startToken}\n` +
+                `${timestamp}\n\n`;
 
-                // 清空以供下一次使用。
-                tempStr = "";
+            if (autoAddEndToken === true && index > 0) {
+                outputStr = outputStr.replace(/[\n\r]$/g, "") +
+                    `${tempStr}${endToken}\n${timestamp}\n\n` +
+                    currentLine;
+
+                // 幫最後一個開始補上結束時間點。
+                if (index === tempDataSet.length - 1) {
+                    // TODO: 2024/3/2 待看是否要改為可以讓使用者自行設定。
+                    // 自動附加秒數當作結束時間。
+                    seconds += await Function.getAppendSeconds();
+
+                    // 產生結束的時間標記字串。
+                    timestamp = `${Function.convertToTimestamp(seconds)}${Separators.Separator1}` +
+                        `${Function.convertToYTTimestamp(seconds, enableFormatted)}${Separators.Separator1}` +
+                        `${Math.round(seconds)}${Separators.Separator1}` +
+                        `${Function.convertToTwitchTimestamp(seconds)}`;
+
+                    outputStr = outputStr.replace(/[\n\r]$/g, "") +
+                        `${Function.CommentToken} ${index + 1}. ${songName}` +
+                        `${endToken}\n${timestamp}\n\n\n`;
+                }
             } else {
-                let notMatchSeperatorCase = true;
-
-                // 分隔符號案例。
-                const seperatorCase = [
-                    // 空值不是分隔符號。
-                    "",
-                    "-", "- ", " - ", " -",
-                    "~", "~ ", " ~ ", " ~",
-                    "、", "、 ", " 、 ", " 、",
-                    "～", "～ ", " ～ ", " ～",
-                    ",", ", ", " , ", " ,",
-                    "，", "， ", " ， ", " ，"
-                ];
-
-                for (let i = 0; i < seperatorCase.length; i++) {
-                    const seperator = seperatorCase[i];
-
-                    if (songName === seperator) {
-                        notMatchSeperatorCase = false;
-
-                        break;
-                    }
-                }
-
-                // 判斷 songName 是否不為空值、"-" 或是 "~"（以及相關的數種組合）。
-                // 當 songName 為上列值時，則表示留言內是用該值分隔開始與結束時間。
-                if (notMatchSeperatorCase) {
-                    // 當不為第一筆資料，也不為最後一筆資料時，且 autoAddEndToken 的值為 true 時。
-                    if ((index !== 0 && index <= tempDataSet.length - 1) &&
-                        autoAddEndToken === true) {
-                        outputStr += `${Function.CommentToken} ${previousSongName}` +
-                            `${endToken}\n` +
-                            `${timestamp}\n\n`;
-                    } else {
-                        // 幫第一筆之後的補上 "\n"。
-                        if (index !== 0) {
-                            outputStr += "\n";
-                        }
-                    }
-
-                    outputStr += `${Function.CommentToken} ${songName}` +
-                        `${startToken}\n` +
-                        `${timestamp}\n`;
-
-                    // 幫最後一筆的補上 "\n"。
-                    if (index === tempDataSet.length - 1) {
-                        // 當 autoAddEndToken 的值為 true 時，幫最後一個開始補上結束時間點。
-                        if (autoAddEndToken === true) {
-                            // TODO: 2022/10/3 待看是否要改為可以讓使用者自行設定。
-                            // 自動附加秒數當作結束時間。
-                            seconds += await Function.getAppendSeconds();
-
-                            // 產生結束的時間標記字串。
-                            timestamp = `${Function.convertToTimestamp(seconds)}${Seperators.Seperator1}` +
-                                `${Function.convertToYTTimestamp(seconds, enableFormatted)}${Seperators.Seperator1}` +
-                                `${Math.round(seconds)}${Seperators.Seperator1}` +
-                                `${Function.convertToTwitchTimestamp(seconds)}`;
-
-                            outputStr += `${Function.CommentToken} ${songName}` +
-                                `${endToken}\n` +
-                                `${timestamp}\n`;
-                        }
-
-                        outputStr += "\n";
-                    }
-
-                    // 設定 previousSongName 的值。
-                    previousSongName = songName;
-                } else {
-                    // 將資料暫存至 tempStr。
-                    tempStr += `${Function.CommentToken} {SongName}` +
-                        `${startToken}\n` +
-                        `${timestamp}\n`;
-                }
+                outputStr += currentLine;
             }
+
+            tempStr = `${Function.CommentToken} ${index + 1}. ${songName}`;
         });
 
-        // 清空 previousSongName 的值。
-        previousSongName = "";
+        // 清空變數。
+        tempStr = "";
 
-        // 判斷 outputStr 是否為空值。
-        if (outputStr !== "") {
-            // 移除最尾端的換含字元。
-            outputStr = outputStr.replace(/[\n\r]$/g, "");
+        // 延後 300 毫秒再執行，以免字串還沒處理完成時就儲存。
+        const timeout = setTimeout(async () => {
+            // 判斷 outputStr 是否為空值。
+            if (outputStr !== "") {
+                // 移除最尾端的換含字元。
+                outputStr = outputStr.replace(/[\n\r]$/g, "");
 
-            await Function.saveTimestampData(keySet.key, `${outputStr}`);
+                await Function.saveTimestampData(keySet.key, `${outputStr}`);
 
-            // 讓網頁 UI 重新載入時間標記資料。
-            const timer = setTimeout(async () => {
-                await loadTimestampForWebUI(keySet);
+                // 讓網頁 UI 重新載入時間標記資料。
+                const timer = setTimeout(async () => {
+                    await loadTimestampForWebUI(keySet);
 
-                clearTimeout(timer);
-            }, Function.CommonTimeout);
-        } else {
-            const errMsg2 = chrome.i18n.getMessage("messageTimestampParsedFailed");
+                    clearTimeout(timer);
+                }, Function.CommonTimeout);
+            } else {
+                const errMsg2 = chrome.i18n.getMessage("messageTimestampParsedFailed");
 
-            Function.writeConsoleLog(errMsg2);
+                Function.writeConsoleLog(errMsg2);
 
-            alert(errMsg2);
-        }
+                alert(errMsg2);
+            }
+
+            clearTimeout(timeout);
+        }, 300);
     } else {
         const errMsg1 = chrome.i18n.getMessage("messageTheSelectionError");
 
@@ -1353,7 +1213,7 @@ async function syncTimestamp(
             // 當 lastLine 不為空白時，即有找到有值的最後一行。
             if (lastLine !== "") {
                 // 若 lastLine 內含有 "," 則不進行處裡。
-                if (lastLine.indexOf(Seperators.Seperator3) === -1) {
+                if (lastLine.indexOf(Separators.Separator3) === -1) {
                     // 排除註解行。
                     if (lastLine.indexOf(Function.CommentToken) !== 0 ||
                         lastLine.indexOf(Function.CommentToken) === -1) {
@@ -1362,8 +1222,8 @@ async function syncTimestamp(
                         // 當 pasueSyncMode 為 true 時。
                         if (pasueSyncMode === true) {
                             // 當沒有 "," 時才補上。
-                            if (lastLine.indexOf(Seperators.Seperator3) === -1) {
-                                textarea.value += `${lastLine}${Seperators.Seperator3}\n`;
+                            if (lastLine.indexOf(Separators.Separator3) === -1) {
+                                textarea.value += `${lastLine}${Separators.Separator3}\n`;
                             }
                         } else {
                             // 取得新的時間標記資訊。
@@ -1379,7 +1239,7 @@ async function syncTimestamp(
                     // 當 pasueSyncMode 為 true 時。
                     if (pasueSyncMode === true) {
                         // 當有 "," 時移除 ","。
-                        if (lastLine.indexOf(Seperators.Seperator3) !== -1) {
+                        if (lastLine.indexOf(Separators.Separator3) !== -1) {
                             textarea.value = `${keepLines.join("\n")}\n`;
                             // 來源：https://thewebdev.info/2021/06/20/how-to-replace-the-last-occurrence-of-a-character-in-a-string-in-javascript/
                             textarea.value += `${lastLine.replace(/,([^,]*)$/, "$1")}\n`;
